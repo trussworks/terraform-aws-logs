@@ -1,0 +1,87 @@
+{
+  "Id": "cloudtrail-bucket-policy",
+  "Statement": [
+    {
+      "Action": "s3:GetBucketAcl",
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "cloudtrail.amazonaws.com"
+      },
+      "Resource": "arn:aws:s3:::${bucket_name}",
+      "Sid": "cloudtrail-logs-get-bucket-acl"
+    },
+    {
+      "Action": "s3:PutObject",
+      "Condition": {
+        "StringEquals": {
+          "s3:x-amz-acl": "bucket-owner-full-control"
+        }
+      },
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "cloudtrail.amazonaws.com"
+      },
+      "Resource": "arn:aws:s3:::${bucket_name}/${cloudtrail_logs_prefix}/*",
+      "Sid": "cloudtrail-logs-put-object"
+    },
+    {
+      "Action": [
+        "s3:PutObject"
+      ],
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": [
+          "${elb_log_account_arn}"
+        ]
+      },
+      "Resource": "arn:aws:s3:::${bucket_name}/${elb_logs_prefix}/*",
+      "Sid": "elb-logs-put-object"
+    },
+    {
+      "Action": "s3:PutObject",
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "arn:aws:iam::${redshift_log_account_id}:user/logs"
+      },
+      "Resource": "arn:aws:s3:::${bucket_name}/${redshift_logs_prefix}/*",
+      "Sid": "redshift-logs-put-object"
+    },
+    {
+      "Action": "s3:GetBucketAcl",
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "arn:aws:iam::${redshift_log_account_id}:user/logs"
+      },
+      "Resource": "arn:aws:s3:::${bucket_name}",
+      "Sid": "redshift-logs-get-bucket-acl"
+    },
+    {
+      "Action": "s3:GetBucketAcl",
+      "Effect": "Allow",
+      "Principal": {
+        "Service": [
+          "config.amazonaws.com"
+        ]
+      },
+      "Resource": "arn:aws:s3:::${bucket_name}",
+      "Sid": "config-permissions-check"
+    },
+    {
+      "Action": "s3:PutObject",
+      "Condition": {
+        "StringEquals": {
+          "s3:x-amz-acl": "bucket-owner-full-control"
+        }
+      },
+      "Effect": "Allow",
+      "Principal": {
+        "Service": [
+          "config.amazonaws.com"
+        ]
+      },
+      "Resource": "arn:aws:s3:::${bucket_name}/${config_logs_prefix}/*",
+      "Sid": " config-bucket-delivery"
+    }
+  ],
+  "Version": "2012-10-17"
+}
