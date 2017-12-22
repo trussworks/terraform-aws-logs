@@ -1,18 +1,19 @@
-Module that sets up a single S3 bucket for storing logs from various AWS
-services and enables CloudTrail on all regions. Logs will expire after
-a default of 90 days.
+Creates and configures an S3 bucket for storing logs from various AWS
+services and enables CloudTrail on all regions. Logs will expire after a
+default of 90 days.
 
 Logging from the following services is supported:
- * CloudTrail - https://aws.amazon.com/cloudtrail/
- * ELB - https://aws.amazon.com/elasticloadbalancing/
- * RedShift - https://aws.amazon.com/redshift/
- * Config - https://aws.amazon.com/config/
 
-Usage:
+* [CloudTrail](https://aws.amazon.com/cloudtrail/)
+* [Config](https://aws.amazon.com/config/)
+* [ELB](https://aws.amazon.com/elasticloadbalancing/)
+* [RedShift](https://aws.amazon.com/redshift/)
+
+## Usage
 
     module "aws_logs" {
-      source         = "../modules/aws_logs"
-      s3_bucket_name = "truss-aws-logs"
+      source         = "trussworks/aws/logs"
+      s3_bucket_name = "my-company-aws-logs"
       region         = "us-west-2"
       expiration     = 90
     }
@@ -21,23 +22,23 @@ Usage:
 
 ## Inputs
 
-| Name | Description | Default | Required |
-|------|-------------|:-----:|:-----:|
-| s3_bucket_name | The name of the s3 bucket that will be used for AWS logs | - | yes |
-| region | The region where the AWS S3 bucket will be created | - | yes |
-| expiration | The number of days to keep AWS logs around | `90` | no |
-| elb_logs_prefix | The S3 prefix for ELB logs | `elb` | no |
-| cloudtrail_logs_prefix | The S3 prefix for CloudTrail logs | `cloudtrail` | no |
-| redshift_logs_prefix | The S3 prefix for RedShift logs | `redshift` | no |
-| config_logs_prefix | The S3 prefix for AWS Config logs | `config` | no |
+| Name | Description | Type | Default | Required |
+|------|-------------|:----:|:-----:|:-----:|
+| cloudtrail_logs_prefix | S3 prefix for CloudTrail logs. | string | `cloudtrail` | no |
+| config_logs_prefix | S3 prefix for AWS Config logs. | string | `config` | no |
+| elb_logs_prefix | S3 prefix for ELB logs. | string | `elb` | no |
+| expiration | Number of days to keep AWS logs around. | string | `90` | no |
+| redshift_logs_prefix | S3 prefix for RedShift logs. | string | `redshift` | no |
+| region | Region where the AWS S3 bucket will be created. | string | - | yes |
+| s3_bucket_name | S3 bucket to store AWS logs in. | string | - | yes |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
-| aws_logs_bucket | AWS logs S3 bucket name |
-| cloudtrail_logs_path | S3 path for cloudtrail logs |
-| elb_logs_path | S3 path for ELB logs |
-| redshift_logs_path | S3 path for RedShift logs |
-| configs_logs_path | S3 path for Config logs |
+| aws_logs_bucket | S3 bucket containing AWS logs. |
+| cloudtrail_logs_path | S3 path for CloudTrail logs. |
+| configs_logs_path | S3 path for Config logs. |
+| elb_logs_path | S3 path for ELB logs. |
+| redshift_logs_path | S3 path for RedShift logs. |
 
