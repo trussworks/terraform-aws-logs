@@ -19,7 +19,6 @@ Logging from the following services is supported:
     }
 
 
-
 ## Inputs
 
 | Name | Description | Type | Default | Required |

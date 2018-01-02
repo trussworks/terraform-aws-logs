@@ -18,7 +18,6 @@
  *       region         = "us-west-2"
  *       expiration     = 90
  *     }
- *
  */
 
 // Get the account id of the AWS ELB service account in a given region for the
@@ -32,16 +31,16 @@ data "aws_redshift_service_account" "main" {}
 // JSON template defining all the access controls to allow AWS services to write
 // to this bucket
 data "template_file" "aws_logs_policy" {
-  template = "${file("${path.module}/aws-logs-policy.json")}"
+  template = "${file("${path.module}/policy.tpl")}"
 
   vars = {
-    bucket_name             = "${var.s3_bucket_name}"
-    elb_log_account_arn     = "${data.aws_elb_service_account.main.arn}"
-    redshift_log_account_id = "${data.aws_redshift_service_account.main.id}"
-    elb_logs_prefix         = "${var.elb_logs_prefix}"
-    redshift_logs_prefix    = "${var.redshift_logs_prefix}"
+    bucket                  = "${var.s3_bucket_name}"
     cloudtrail_logs_prefix  = "${var.cloudtrail_logs_prefix}"
     config_logs_prefix      = "${var.config_logs_prefix}"
+    elb_log_account_arn     = "${data.aws_elb_service_account.main.arn}"
+    elb_logs_prefix         = "${var.elb_logs_prefix}"
+    redshift_log_account_id = "${data.aws_redshift_service_account.main.id}"
+    redshift_logs_prefix    = "${var.redshift_logs_prefix}"
   }
 }
 
@@ -57,6 +56,14 @@ resource "aws_s3_bucket" "aws_logs" {
 
     expiration {
       days = "${var.expiration}"
+    }
+  }
+
+  server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        sse_algorithm = "AES256"
+      }
     }
   }
 
