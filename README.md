@@ -6,7 +6,7 @@ Logging from the following services is supported:
 
 * [CloudTrail](https://aws.amazon.com/cloudtrail/)
 * [Config](https://aws.amazon.com/config/)
-* [ELB](https://aws.amazon.com/elasticloadbalancing/)
+* [Elastic Load Balancing](https://aws.amazon.com/elasticloadbalancing/)
 * [RedShift](https://aws.amazon.com/redshift/)
 
 ## Usage
@@ -23,6 +23,7 @@ Logging from the following services is supported:
 
 | Name | Description | Type | Default | Required |
 |------|-------------|:----:|:-----:|:-----:|
+| alb_logs_prefix | S3 prefix for ALB logs. | string | `alb` | no |
 | cloudtrail_logs_prefix | S3 prefix for CloudTrail logs. | string | `cloudtrail` | no |
 | config_logs_prefix | S3 prefix for AWS Config logs. | string | `config` | no |
 | elb_logs_prefix | S3 prefix for ELB logs. | string | `elb` | no |

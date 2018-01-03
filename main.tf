@@ -7,7 +7,7 @@
  *
  * * [CloudTrail](https://aws.amazon.com/cloudtrail/)
  * * [Config](https://aws.amazon.com/config/)
- * * [ELB](https://aws.amazon.com/elasticloadbalancing/)
+ * * [Elastic Load Balancing](https://aws.amazon.com/elasticloadbalancing/)
  * * [RedShift](https://aws.amazon.com/redshift/)
  *
  * ## Usage
@@ -39,6 +39,7 @@ data "template_file" "aws_logs_policy" {
     config_logs_prefix      = "${var.config_logs_prefix}"
     elb_log_account_arn     = "${data.aws_elb_service_account.main.arn}"
     elb_logs_prefix         = "${var.elb_logs_prefix}"
+    alb_logs_prefix         = "${var.alb_logs_prefix}"
     redshift_log_account_id = "${data.aws_redshift_service_account.main.id}"
     redshift_logs_prefix    = "${var.redshift_logs_prefix}"
   }
