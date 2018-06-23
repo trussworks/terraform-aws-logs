@@ -8,6 +8,7 @@ Logging from the following services is supported:
 * [Config](https://aws.amazon.com/config/)
 * [Elastic Load Balancing](https://aws.amazon.com/elasticloadbalancing/)
 * [RedShift](https://aws.amazon.com/redshift/)
+* [S3](https://aws.amazon.com/s3/)
 
 ## Usage
 
