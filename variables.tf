@@ -11,6 +11,13 @@ variable "region" {
 variable "expiration" {
   description = "Number of days to keep AWS logs around."
   default     = 90
+  type        = "string"
+}
+
+variable "enable_cloudtrail" {
+  description = "Enable CloudTrail to log to the AWS logs bucket."
+  default     = true
+  type        = "string"
 }
 
 variable "elb_logs_prefix" {
