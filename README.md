@@ -28,6 +28,7 @@ Logging from the following services is supported:
 | cloudtrail_logs_prefix | S3 prefix for CloudTrail logs. | string | `cloudtrail` | no |
 | config_logs_prefix | S3 prefix for AWS Config logs. | string | `config` | no |
 | elb_logs_prefix | S3 prefix for ELB logs. | string | `elb` | no |
+| enable_cloudtrail | Enable CloudTrail to log to the AWS logs bucket. | string | `true` | no |
 | expiration | Number of days to keep AWS logs around. | string | `90` | no |
 | redshift_logs_prefix | S3 prefix for RedShift logs. | string | `redshift` | no |
 | region | Region where the AWS S3 bucket will be created. | string | - | yes |

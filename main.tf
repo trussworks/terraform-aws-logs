@@ -77,6 +77,8 @@ resource "aws_s3_bucket" "aws_logs" {
 }
 
 resource "aws_cloudtrail" "cloudtrail" {
+  count = "${var.enable_cloudtrail ? 1 : 0}"
+
   name           = "cloudtrail"
   s3_key_prefix  = "cloudtrail"
   s3_bucket_name = "${var.s3_bucket_name}"
