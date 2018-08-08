@@ -1,3 +1,9 @@
+variable "cloudtrail_cloudwatch_logs_group" {
+  description = "The name of the CloudWatch Logs group to send CloudTrail events."
+  default     = "cloudtrail-events"
+  type        = "string"
+}
+
 variable "s3_bucket_name" {
   description = "S3 bucket to store AWS logs in."
   type        = "string"
