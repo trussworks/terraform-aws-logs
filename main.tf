@@ -103,7 +103,7 @@ data "aws_iam_policy_document" "cloudtrail_assume_role" {
   }
 }
 
-data "aws_iam_policy_document" "cloudtrail_cloudwarch_logs" {
+data "aws_iam_policy_document" "cloudtrail_cloudwatch_logs" {
   statement {
     sid = "WriteCloudWatchLogs"
 
@@ -127,7 +127,7 @@ resource "aws_iam_role" "main" {
 resource "aws_iam_policy" "main" {
   count  = "${var.enable_cloudtrail ? 1 : 0}"
   name   = "cloudtrail-cloudwatch-logs-policy"
-  policy = "${data.aws_iam_policy_document.cloudtrail_cloudwarch_logs.json}"
+  policy = "${data.aws_iam_policy_document.cloudtrail_cloudwatch_logs.json}"
 }
 
 resource "aws_iam_policy_attachment" "main" {
@@ -154,6 +154,7 @@ resource "aws_cloudwatch_log_group" "main" {
 resource "aws_cloudtrail" "cloudtrail" {
   depends_on = [
     "aws_cloudwatch_log_group.main",
+    "aws_s3_bucket.aws_logs",
   ]
 
   count = "${var.enable_cloudtrail ? 1 : 0}"
@@ -170,5 +171,4 @@ resource "aws_cloudtrail" "cloudtrail" {
 
   # enable log file validation to detect tampering
   enable_log_file_validation = true
-  depends_on                 = ["aws_s3_bucket.aws_logs"]
 }
