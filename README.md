@@ -1,6 +1,7 @@
 Creates and configures an S3 bucket for storing logs from various AWS
 services and enables CloudTrail on all regions. Logs will expire after a
-default of 90 days.
+default of 90 days. Includes support for sending CloudTrail events to a
+CloudWatch Logs group.
 
 Logging from the following services is supported:
 
@@ -25,6 +26,7 @@ Logging from the following services is supported:
 | Name | Description | Type | Default | Required |
 |------|-------------|:----:|:-----:|:-----:|
 | alb_logs_prefix | S3 prefix for ALB logs. | string | `alb` | no |
+| cloudtrail_cloudwatch_logs_group | The name of the CloudWatch Logs group to send CloudTrail events. | string | `cloudtrail-events` | no |
 | cloudtrail_logs_prefix | S3 prefix for CloudTrail logs. | string | `cloudtrail` | no |
 | config_logs_prefix | S3 prefix for AWS Config logs. | string | `config` | no |
 | elb_logs_prefix | S3 prefix for ELB logs. | string | `elb` | no |
@@ -39,6 +41,7 @@ Logging from the following services is supported:
 | Name | Description |
 |------|-------------|
 | aws_logs_bucket | S3 bucket containing AWS logs. |
+| cloudtrail_cloudwatch_logs_arn | The ARN of the CloudWatch Logs group storing CloudTrail Events. |
 | cloudtrail_logs_path | S3 path for CloudTrail logs. |
 | configs_logs_path | S3 path for Config logs. |
 | elb_logs_path | S3 path for ELB logs. |
