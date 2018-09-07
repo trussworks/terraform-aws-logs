@@ -69,6 +69,19 @@
       "Sid": "alb-logs-put-object"
     },
     {
+      "Action": [
+        "s3:PutObject"
+      ],
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": [
+          "${elb_log_account_arn}"
+        ]
+      },
+      "Resource": "arn:aws:s3:::${bucket}/${nlb_logs_prefix}/*",
+      "Sid": "nlb-logs-put-object"
+    },
+    {
       "Action": "s3:PutObject",
       "Effect": "Allow",
       "Principal": {

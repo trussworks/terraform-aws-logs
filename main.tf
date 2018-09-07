@@ -48,6 +48,7 @@ data "template_file" "aws_logs_policy" {
     elb_log_account_arn     = "${data.aws_elb_service_account.main.arn}"
     elb_logs_prefix         = "${var.elb_logs_prefix}"
     alb_logs_prefix         = "${var.alb_logs_prefix}"
+    nlb_logs_prefix         = "${var.nlb_logs_prefix}"
     redshift_log_account_id = "${data.aws_redshift_service_account.main.id}"
     redshift_logs_prefix    = "${var.redshift_logs_prefix}"
   }
