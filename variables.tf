@@ -38,6 +38,12 @@ variable "alb_logs_prefix" {
   type        = "string"
 }
 
+variable "nlb_logs_prefix" {
+  description = "S3 prefix for NLB logs."
+  default     = "nlb"
+  type        = "string"
+}
+
 variable "cloudtrail_logs_prefix" {
   description = "S3 prefix for CloudTrail logs."
   default     = "cloudtrail"
