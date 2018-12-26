@@ -15,7 +15,7 @@
  * ## Usage
  *
  *     module "aws_logs" {
- *       source         = "trussworks/aws/logs"
+ *       source         = "trussworks/logs/aws"
  *       s3_bucket_name = "my-company-aws-logs"
  *       region         = "us-west-2"
  *       expiration     = 90
