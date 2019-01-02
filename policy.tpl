@@ -43,6 +43,29 @@
       "Sid": "cloudtrail-logs-put-object"
     },
     {
+      "Action": "s3:GetBucketAcl",
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "logs.${region}.amazonaws.com"
+      },
+      "Resource": "arn:aws:s3:::${bucket}",
+      "Sid": "cloudwatch-logs-get-bucket-acl"
+    },
+    {
+      "Action": "s3:PutObject",
+      "Condition": {
+        "StringEquals": {
+          "s3:x-amz-acl": "bucket-owner-full-control"
+        }
+      },
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "logs.${region}.amazonaws.com"
+      },
+      "Resource": "arn:aws:s3:::${bucket}/${cloudwatch_logs_prefix}/*",
+      "Sid": "cloudwatch-logs-put-object"
+    },
+    {
       "Action": [
         "s3:PutObject"
       ],

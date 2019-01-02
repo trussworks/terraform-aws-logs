@@ -42,7 +42,9 @@ data "template_file" "aws_logs_policy" {
   template = "${file("${path.module}/policy.tpl")}"
 
   vars = {
+    region                  = "${var.region}"
     bucket                  = "${var.s3_bucket_name}"
+    cloudwatch_logs_prefix  = "${var.cloudwatch_logs_prefix}"
     cloudtrail_logs_prefix  = "${var.cloudtrail_logs_prefix}"
     config_logs_prefix      = "${var.config_logs_prefix}"
     elb_log_account_arn     = "${data.aws_elb_service_account.main.arn}"

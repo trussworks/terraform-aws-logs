@@ -38,6 +38,12 @@ variable "alb_logs_prefix" {
   type        = "string"
 }
 
+variable "cloudwatch_logs_prefix" {
+  description = "S3 prefix for CloudWatch log exports."
+  default     = "cloudwatch"
+  type        = "string"
+}
+
 variable "cloudtrail_logs_prefix" {
   description = "S3 prefix for CloudTrail logs."
   default     = "cloudtrail"

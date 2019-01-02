@@ -28,6 +28,7 @@ Logging from the following services is supported:
 | alb\_logs\_prefix | S3 prefix for ALB logs. | string | `alb` | no |
 | cloudtrail\_cloudwatch\_logs\_group | The name of the CloudWatch Logs group to send CloudTrail events. | string | `cloudtrail-events` | no |
 | cloudtrail\_logs\_prefix | S3 prefix for CloudTrail logs. | string | `cloudtrail` | no |
+| cloudwatch\_logs\_prefix | S3 prefix for CloudWatch log exports. | string | `cloudwatch` | no |
 | config\_logs\_prefix | S3 prefix for AWS Config logs. | string | `config` | no |
 | elb\_logs\_prefix | S3 prefix for ELB logs. | string | `elb` | no |
 | enable\_cloudtrail | Enable CloudTrail to log to the AWS logs bucket. | string | `true` | no |
