@@ -20,6 +20,12 @@ variable "expiration" {
   type        = "string"
 }
 
+variable "cloudwatch_log_group_retention" {
+  description = "Number of days to keep AWS logs around in specific log group."
+  default     = 90
+  type        = "string"
+}
+
 variable "enable_cloudtrail" {
   description = "Enable CloudTrail to log to the AWS logs bucket."
   default     = true

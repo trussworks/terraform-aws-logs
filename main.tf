@@ -146,7 +146,7 @@ resource "aws_iam_policy_attachment" "main" {
 resource "aws_cloudwatch_log_group" "main" {
   count             = "${var.enable_cloudtrail ? 1 : 0}"
   name              = "${var.cloudtrail_cloudwatch_logs_group}"
-  retention_in_days = "${var.expiration}"
+  retention_in_days = "${var.cloudwatch_log_group_retention}"
 }
 
 #
