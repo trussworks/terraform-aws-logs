@@ -18,7 +18,7 @@
  *       source         = "trussworks/logs/aws"
  *       s3_bucket_name = "my-company-aws-logs"
  *       region         = "us-west-2"
- *       expiration     = 90
+ *       s3_log_bucket_retention     = 90
  *     }
  */
 
@@ -71,8 +71,8 @@ resource "aws_s3_bucket" "aws_logs" {
     prefix  = "/*"
     enabled = true
 
-    expiration {
-      days = "${var.expiration}"
+    s3_log_bucket_retention {
+      days = "${var.s3_log_bucket_retention}"
     }
   }
 
@@ -146,7 +146,7 @@ resource "aws_iam_policy_attachment" "main" {
 resource "aws_cloudwatch_log_group" "main" {
   count             = "${var.enable_cloudtrail ? 1 : 0}"
   name              = "${var.cloudtrail_cloudwatch_logs_group}"
-  retention_in_days = "${var.expiration}"
+  retention_in_days = "${var.cloudwatch_log_group_retention}"
 }
 
 #
