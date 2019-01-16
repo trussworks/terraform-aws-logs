@@ -15,10 +15,10 @@
  * ## Usage
  *
  *     module "aws_logs" {
- *       source         = "trussworks/logs/aws"
- *       s3_bucket_name = "my-company-aws-logs"
- *       region         = "us-west-2"
- *       s3_log_bucket_retention     = 90
+ *       source                  = "trussworks/logs/aws"
+ *       s3_bucket_name          = "my-company-aws-logs"
+ *       region                  = "us-west-2"
+ *       s3_log_bucket_retention = 90
  *     }
  */
 
