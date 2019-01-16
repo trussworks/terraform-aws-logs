@@ -18,7 +18,7 @@
  *       source         = "trussworks/logs/aws"
  *       s3_bucket_name = "my-company-aws-logs"
  *       region         = "us-west-2"
- *       expiration     = 90
+ *       s3_log_bucket_retention     = 90
  *     }
  */
 
@@ -71,8 +71,8 @@ resource "aws_s3_bucket" "aws_logs" {
     prefix  = "/*"
     enabled = true
 
-    expiration {
-      days = "${var.expiration}"
+    s3_log_bucket_retention {
+      days = "${var.s3_log_bucket_retention}"
     }
   }
 

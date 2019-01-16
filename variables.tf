@@ -14,7 +14,7 @@ variable "region" {
   type        = "string"
 }
 
-variable "expiration" {
+variable "s3_log_bucket_retention" {
   description = "Number of days to keep AWS logs around."
   default     = 90
   type        = "string"
