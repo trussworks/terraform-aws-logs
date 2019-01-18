@@ -71,7 +71,7 @@ resource "aws_s3_bucket" "aws_logs" {
     prefix  = "/*"
     enabled = true
 
-    s3_log_bucket_retention {
+    expiration {
       days = "${var.s3_log_bucket_retention}"
     }
   }
