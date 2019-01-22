@@ -1,10 +1,9 @@
 /**
  * Supports two main uses cases:
  *
- * 1. Creates and configures a single private S3 bucket for storing logs from various AWS
- * services, which are nested as bucket prefixes, and enables CloudTrail on all regions. Logs will expire after a
+ * 1. Creates and configures a single private S3 bucket for storing logs from various AWS services, which are nested as bucket prefixes, and enables CloudTrail on all regions. Logs will expire after a
  * default of 90 days, with option to configure retention value. Includes support for sending CloudTrail events to a CloudWatch Logs group.
- * 
+ *
  * 2. Creates and configures a single private S3 bucket for a single AWS service, and enables CloudTrail
  * on all regions. Logs will expire after a default of 90 days, with option to configure retention value. Includes support for sending CloudTrail events to a CloudWatch Logs group.
  *
@@ -17,7 +16,7 @@
  * * [S3](https://aws.amazon.com/s3/)
  *
  * ## Usage for a single log bucket to store logs from all services as bucket prefixes:
- *    
+ *
  *    # Turns on cloudtrail by default, and allows all services to log to bucket
  *     module "aws_logs" {
  *       source                  = "trussworks/logs/aws"
@@ -26,7 +25,7 @@
  *     }
  *
  * ## Usage for a single log bucket to store logs from a *single* service:
- *    
+ *
  *    # Turns on cloudtrail by default, and allows only the service specified (elb in this case) to log to the bucket
  *     module "aws_logs" {
  *       source                  = "trussworks/logs/aws"
