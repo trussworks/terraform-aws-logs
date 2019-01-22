@@ -25,18 +25,23 @@ Logging from the following services is supported:
 
 | Name | Description | Type | Default | Required |
 |------|-------------|:----:|:-----:|:-----:|
-| alb\_logs\_prefix | S3 prefix for ALB logs. | string | `alb` | no |
-| cloudtrail\_cloudwatch\_logs\_group | The name of the CloudWatch Logs group to send CloudTrail events. | string | `cloudtrail-events` | no |
-| cloudtrail\_logs\_prefix | S3 prefix for CloudTrail logs. | string | `cloudtrail` | no |
-| cloudwatch\_log\_group\_retention | Number of days to keep AWS logs around in specific log group. | string | `90` | no |
-| cloudwatch\_logs\_prefix | S3 prefix for CloudWatch log exports. | string | `cloudwatch` | no |
-| config\_logs\_prefix | S3 prefix for AWS Config logs. | string | `config` | no |
-| elb\_logs\_prefix | S3 prefix for ELB logs. | string | `elb` | no |
-| enable\_cloudtrail | Enable CloudTrail to log to the AWS logs bucket. | string | `true` | no |
-| redshift\_logs\_prefix | S3 prefix for RedShift logs. | string | `redshift` | no |
-| region | Region where the AWS S3 bucket will be created. | string | - | yes |
-| s3\_bucket\_name | S3 bucket to store AWS logs in. | string | - | yes |
-| s3\_log\_bucket\_retention | Number of days to keep AWS logs around. | string | `90` | no |
+| alb\_logs\_prefix | S3 prefix for ALB logs. | string | `"alb"` | no |
+| cloudtrail\_cloudwatch\_logs\_group | The name of the CloudWatch Logs group to send CloudTrail events. | string | `"cloudtrail-events"` | no |
+| cloudtrail\_logs\_prefix | S3 prefix for CloudTrail logs. | string | `"cloudtrail"` | no |
+| cloudwatch\_log\_group\_retention | Number of days to keep AWS logs around in specific log group. | string | `"90"` | no |
+| cloudwatch\_logs\_prefix | S3 prefix for CloudWatch log exports. | string | `"cloudwatch"` | no |
+| config\_logs\_prefix | S3 prefix for AWS Config logs. | string | `"config"` | no |
+| elb\_logs\_prefix | S3 prefix for ELB logs. | string | `"elb"` | no |
+| enable\_alb | Create one bucket with ALB service as the bucket key. | string | `"false"` | no |
+| enable\_all\_services | Create one bucket with all services as bucket keys. | string | `"true"` | no |
+| enable\_cloudtrail | Enable CloudTrail to log to the AWS logs bucket. | string | `"true"` | no |
+| enable\_config | Create one bucket with Config service as the bucket key. | string | `"false"` | no |
+| enable\_elb | Create one bucket with ELB service as the bucket key. | string | `"false"` | no |
+| enable\_redshift | Create one bucket with Redshift service as the bucket key. | string | `"false"` | no |
+| redshift\_logs\_prefix | S3 prefix for RedShift logs. | string | `"redshift"` | no |
+| region | Region where the AWS S3 bucket will be created. | string | n/a | yes |
+| s3\_bucket\_name | S3 bucket to store AWS logs in. | string | n/a | yes |
+| s3\_log\_bucket\_retention | Number of days to keep AWS logs around. | string | `"90"` | no |
 
 ## Outputs
 

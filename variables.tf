@@ -67,3 +67,34 @@ variable "config_logs_prefix" {
   default     = "config"
   type        = "string"
 }
+
+# Service Switches
+variable "enable_all_services" {
+  description = "Create one bucket with all services as bucket keys."
+  default     = true
+  type        = "string"
+}
+
+variable "enable_alb" {
+  description = "Create one bucket with ALB service as the bucket key."
+  default     = false
+  type        = "string"
+}
+
+variable "enable_config" {
+  description = "Create one bucket with Config service as the bucket key."
+  default     = false
+  type        = "string"
+}
+
+variable "enable_elb" {
+  description = "Create one bucket with ELB service as the bucket key."
+  default     = false
+  type        = "string"
+}
+
+variable "enable_redshift" {
+  description = "Create one bucket with Redshift service as the bucket key."
+  default     = false
+  type        = "string"
+}
