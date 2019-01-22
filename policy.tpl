@@ -1,25 +1,8 @@
 {
   "Id": "trussworks-aws-logs",
   "Statement": [
+    %{ if enable_all_services || enable_cloudtrail }
     {
-      "Action": [
-        "s3:PutObject",
-        "s3:PutObjectAcl"
-      ],
-      "Condition": {
-        "StringEquals": {
-          "s3:x-amz-acl": [
-            "public-read",
-            "public-read-write"
-          ]
-        }
-      },
-      "Effect": "Deny",
-      "Principal": "*",
-      "Resource": "arn:aws:s3:::${bucket}/*",
-      "Sid": "ensure-private-read-write"
-    }
-    %{ if enable_all_services || enable_cloudtrail }, {
       "Action": "s3:GetBucketAcl",
       "Effect": "Allow",
       "Principal": {
