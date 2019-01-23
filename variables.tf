@@ -104,4 +104,3 @@ variable "enable_s3" {
   default     = false
   type        = "string"
 }
-
