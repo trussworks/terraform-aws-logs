@@ -2,35 +2,34 @@
  * Supports two main uses cases:
  *
  * 1. Creates and configures a single private S3 bucket for storing logs from various AWS services, which are nested as bucket prefixes, and enables CloudTrail on all regions. Logs will expire after a default of 90 days, with option to configure retention value. Includes support for sending CloudTrail events to a CloudWatch Logs group.
- *
- * 2. Creates and configures a single private S3 bucket for a single AWS service, and enables CloudTrail on all regions. Logs will expire after a default of 90 days, with option to configure retention value. Includes support for sending CloudTrail events to a CloudWatch Logs group.
+ * 1. Creates and configures a single private S3 bucket for a single AWS service, and enables CloudTrail on all regions. Logs will expire after a default of 90 days, with option to configure retention value. Includes support for sending CloudTrail events to a CloudWatch Logs group.
  *
  * Logging from the following services is supported for both cases:
  *
  * * [CloudTrail](https://aws.amazon.com/cloudtrail/)
  * * [Config](https://aws.amazon.com/config/)
- * * [Elastic Load Balancing (and Application Load Balancing (ALB))](https://aws.amazon.com/elasticloadbalancing/)
+ * * [Classic Load Balancer (ELB) and Application Load Balancer (ALB)](https://aws.amazon.com/elasticloadbalancing/)
  * * [RedShift](https://aws.amazon.com/redshift/)
  * * [S3](https://aws.amazon.com/s3/)
  *
- * ## Usage for a single log bucket to store logs from all services as bucket prefixes
+ * ## Usage for a single log bucket storing logs from multiple services
  *
  *     # Turns on cloudtrail by default, and allows all services to log to bucket
  *     module "aws_logs" {
- *       source                  = "trussworks/logs/aws"
- *       s3_bucket_name          = "my-company-aws-logs"
- *       region                  = "us-west-2"
+ *       source         = "trussworks/logs/aws"
+ *       s3_bucket_name = "my-company-aws-logs"
+ *       region         = "us-west-2"
  *     }
  *
- * ## Usage for a single log bucket to store logs from a *single* service
+ * ## Usage for a single log bucket storing logs from a single service
  *
  *     # Turns on cloudtrail by default, and allows only the service specified (elb in this case) to log to the bucket
  *     module "aws_logs" {
- *       source                  = "trussworks/logs/aws"
- *       s3_bucket_name          = "my-company-aws-logs-elb"
- *       region                  = "us-west-2"
- *       enable_all_services     = false
- *       enable_elb              = true
+ *       source              = "trussworks/logs/aws"
+ *       s3_bucket_name      = "my-company-aws-logs-elb"
+ *       region              = "us-west-2"
+ *       default_enable = false
+ *       enable_elb          = true
  *     }
  */
 
@@ -56,7 +55,7 @@ data "template_file" "aws_logs_policy" {
   vars = {
     region                  = "${var.region}"
     bucket                  = "${var.s3_bucket_name}"
-    enable_all_services     = "${var.enable_all_services}"
+    default_enable          = "${var.default_enable}"
     enable_cloudtrail       = "${var.enable_cloudtrail}"
     cloudtrail_logs_prefix  = "${var.cloudtrail_logs_prefix}"
     enable_cloudwatch       = "${var.enable_cloudwatch}"
@@ -81,11 +80,8 @@ data "template_file" "aws_logs_policy" {
 resource "aws_s3_bucket" "aws_logs" {
   bucket = "${var.s3_bucket_name}"
 
-  acl    = "${var.enable_all_services || var.enable_s3  ? "log-delivery-write" : "private"}"
+  acl    = "${var.default_enable || !var.enable_s3  ? "log-delivery-write" : "private"}"
   region = "${var.region}"
-
-  # TODO - This needs to be unset for s3 log bucket - currently breaks
-  policy = "${data.template_file.aws_logs_policy.rendered}"
 
   lifecycle_rule {
     id      = "expire_all_logs"
@@ -108,6 +104,13 @@ resource "aws_s3_bucket" "aws_logs" {
   tags {
     Name = "${var.s3_bucket_name}"
   }
+}
+
+resource "aws_s3_bucket_policy" "bucket_policy" {
+  bucket = "${aws_s3_bucket.aws_logs.id}"
+  count  = "${var.default_enable || !var.enable_s3 ? 1 : 0}"
+
+  policy = "${data.template_file.aws_logs_policy.rendered}"
 }
 
 resource "aws_s3_bucket_public_access_block" "public_access_block" {

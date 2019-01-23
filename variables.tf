@@ -57,7 +57,7 @@ variable "config_logs_prefix" {
 }
 
 # Service Switches
-variable "enable_all_services" {
+variable "default_enable" {
   description = "Create one bucket with all services as bucket keys."
   default     = true
   type        = "string"
