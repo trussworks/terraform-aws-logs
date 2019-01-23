@@ -80,7 +80,7 @@ data "template_file" "aws_logs_policy" {
 resource "aws_s3_bucket" "aws_logs" {
   bucket = "${var.s3_bucket_name}"
 
-  acl    = "${var.default_enable || !var.enable_s3  ? "log-delivery-write" : "private"}"
+  acl    = "${var.default_enable || var.enable_s3  ? "log-delivery-write" : "private"}"
   region = "${var.region}"
 
   lifecycle_rule {
