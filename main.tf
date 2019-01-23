@@ -83,6 +83,7 @@ resource "aws_s3_bucket" "aws_logs" {
 
   acl    = "${var.enable_all_services || var.enable_s3  ? "log-delivery-write" : "private"}"
   region = "${var.region}"
+  # TODO - This needs to be unset for s3 log bucket - currently breaks
   policy = "${data.template_file.aws_logs_policy.rendered}"
 
   lifecycle_rule {
