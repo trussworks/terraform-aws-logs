@@ -24,7 +24,16 @@
       },
       "Resource": "arn:aws:s3:::${bucket}/${cloudtrail_logs_prefix}/*",
       "Sid": "cloudtrail-logs-put-object"
-    },
+    }
+    %{ endif
+    }
+    %{ if enable_all_services
+    }{
+      ,
+    }
+    %{ endif
+    }
+    %{ if enable_all_services || enable_cloudwatch} {
     {
       "Action": "s3:GetBucketAcl",
       "Effect": "Allow",
@@ -49,7 +58,9 @@
       "Sid": "cloudwatch-logs-put-object"
     }
     %{ endif }
-    %{ if enable_all_services || enable_elb }, {
+    %{ if enable_all_services }{, }
+    %{ endif }
+    %{ if enable_all_services || enable_elb } {
       "Action": [
         "s3:PutObject"
       ],
@@ -63,7 +74,9 @@
       "Sid": "elb-logs-put-object"
     }
     %{ endif }
-    %{ if enable_all_services || enable_alb }, {
+    %{ if enable_all_services}{, }
+    %{ endif }
+    %{ if enable_all_services || enable_alb } {
       "Action": [
         "s3:PutObject"
       ],
@@ -77,7 +90,13 @@
       "Sid": "alb-logs-put-object"
     }
     %{ endif }
-    %{ if enable_all_services || enable_redshift }, {
+        %{ if enable_all_services
+        }{
+          ,
+        }
+    %{ endif
+        }
+    %{ if enable_all_services || enable_redshift } {
       "Action": "s3:PutObject",
       "Effect": "Allow",
       "Principal": {
@@ -96,7 +115,13 @@
       "Sid": "redshift-logs-get-bucket-acl"
     }
     %{ endif }
-    %{ if enable_all_services || enable_config }, {
+        %{ if enable_all_services
+        }{
+          ,
+        }
+    %{ endif
+        }
+    %{ if enable_all_services || enable_config } {
       "Action": "s3:GetBucketAcl",
       "Effect": "Allow",
       "Principal": {

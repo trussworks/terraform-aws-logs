@@ -20,18 +20,6 @@ variable "s3_log_bucket_retention" {
   type        = "string"
 }
 
-variable "cloudwatch_log_group_retention" {
-  description = "Number of days to keep AWS logs around in specific log group."
-  default     = 90
-  type        = "string"
-}
-
-variable "enable_cloudtrail" {
-  description = "Enable CloudTrail to log to the AWS logs bucket."
-  default     = true
-  type        = "string"
-}
-
 variable "elb_logs_prefix" {
   description = "S3 prefix for ELB logs."
   default     = "elb"
@@ -75,6 +63,18 @@ variable "enable_all_services" {
   type        = "string"
 }
 
+variable "enable_cloudtrail" {
+  description = "Enable CloudTrail to log to the AWS logs bucket or the cloudtrail logs bucket."
+  default     = false
+  type        = "string"
+}
+
+variable "enable_cloudwatch" {
+  description = "Enable CloudWatch to log to the AWS logs bucket or the cloudwatch logs bucket."
+  default     = false
+  type        = "string"
+}
+
 variable "enable_alb" {
   description = "Create one bucket with ALB service as the bucket key."
   default     = false
@@ -98,3 +98,10 @@ variable "enable_redshift" {
   default     = false
   type        = "string"
 }
+
+variable "enable_s3" {
+  description = "Create one bucket with S3 service as the bucket key."
+  default     = false
+  type        = "string"
+}
+
