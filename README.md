@@ -1,8 +1,8 @@
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 Supports two main uses cases:
 
-1. Creates and configures a single private S3 bucket for storing logs from various AWS services, which are nested as bucket prefixes, and enables CloudTrail on all regions. Logs will expire after a default of 90 days, with option to configure retention value. Includes support for sending CloudTrail events to a CloudWatch Logs group.
-1. Creates and configures a single private S3 bucket for a single AWS service, and enables CloudTrail on all regions. Logs will expire after a default of 90 days, with option to configure retention value. Includes support for sending CloudTrail events to a CloudWatch Logs group.
+1. Creates and configures a single private S3 bucket for storing logs from various AWS services, which are nested as bucket prefixes. Logs will expire after a default of 90 days, with option to configure retention value.
+1. Creates and configures a single private S3 bucket for a single AWS service. Logs will expire after a default of 90 days, with option to configure retention value.
 
 Logging from the following services is supported for both cases:
 
@@ -14,7 +14,7 @@ Logging from the following services is supported for both cases:
 
 ## Usage for a single log bucket storing logs from multiple services
 
-    # Turns on cloudtrail by default, and allows all services to log to bucket
+    # Allows all services to log to bucket
     module "aws_logs" {
       source         = "trussworks/logs/aws"
       s3_bucket_name = "my-company-aws-logs"
@@ -23,13 +23,13 @@ Logging from the following services is supported for both cases:
 
 ## Usage for a single log bucket storing logs from a single service
 
-    # Turns on cloudtrail by default, and allows only the service specified (elb in this case) to log to the bucket
+    #  Allows only the service specified (elb in this case) to log to the bucket
     module "aws_logs" {
-      source              = "trussworks/logs/aws"
-      s3_bucket_name      = "my-company-aws-logs-elb"
-      region              = "us-west-2"
-      default_enable = false
-      enable_elb          = true
+      source         = "trussworks/logs/aws"
+      s3_bucket_name = "my-company-aws-logs-elb"
+      region         = "us-west-2"
+      default_allow = false
+      allow_elb     = true
     }
 
 ## Inputs
@@ -37,19 +37,19 @@ Logging from the following services is supported for both cases:
 | Name | Description | Type | Default | Required |
 |------|-------------|:----:|:-----:|:-----:|
 | alb\_logs\_prefix | S3 prefix for ALB logs. | string | `alb` | no |
+| allow\_alb | Allow ALB service to log to bucket. | string | `false` | no |
+| allow\_cloudtrail | Allow Cloudtrail service to log to bucket. | string | `false` | no |
+| allow\_cloudwatch | Allow Cloudwatch service to log to bucket. | string | `false` | no |
+| allow\_config | Allow Config service to log to bucket. | string | `false` | no |
+| allow\_elb | Allow ELB service to log to bucket. | string | `false` | no |
+| allow\_redshift | Allow Redshift service to log to bucket. | string | `false` | no |
+| allow\_s3 | Allow S3 service to log to bucket. | string | `false` | no |
 | cloudtrail\_cloudwatch\_logs\_group | The name of the CloudWatch Logs group to send CloudTrail events. | string | `cloudtrail-events` | no |
 | cloudtrail\_logs\_prefix | S3 prefix for CloudTrail logs. | string | `cloudtrail` | no |
 | cloudwatch\_logs\_prefix | S3 prefix for CloudWatch log exports. | string | `cloudwatch` | no |
 | config\_logs\_prefix | S3 prefix for AWS Config logs. | string | `config` | no |
-| default\_enable | Create one bucket with all services as bucket keys. | string | `true` | no |
+| default\_allow | Whether all services should be allowed by default. Individual services can override this default. | string | `true` | no |
 | elb\_logs\_prefix | S3 prefix for ELB logs. | string | `elb` | no |
-| enable\_alb | Create one bucket with ALB service as the bucket key. | string | `false` | no |
-| enable\_cloudtrail | Enable CloudTrail to log to the AWS logs bucket or the cloudtrail logs bucket. | string | `false` | no |
-| enable\_cloudwatch | Enable CloudWatch to log to the AWS logs bucket or the cloudwatch logs bucket. | string | `false` | no |
-| enable\_config | Create one bucket with Config service as the bucket key. | string | `false` | no |
-| enable\_elb | Create one bucket with ELB service as the bucket key. | string | `false` | no |
-| enable\_redshift | Create one bucket with Redshift service as the bucket key. | string | `false` | no |
-| enable\_s3 | Create one bucket with S3 service as the bucket key. | string | `false` | no |
 | redshift\_logs\_prefix | S3 prefix for RedShift logs. | string | `redshift` | no |
 | region | Region where the AWS S3 bucket will be created. | string | - | yes |
 | s3\_bucket\_name | S3 bucket to store AWS logs in. | string | - | yes |

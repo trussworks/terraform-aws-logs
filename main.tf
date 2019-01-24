@@ -28,8 +28,8 @@
  *       source         = "trussworks/logs/aws"
  *       s3_bucket_name = "my-company-aws-logs-elb"
  *       region         = "us-west-2"
- *       default_enable = false
- *       enable_elb     = true
+ *       default_allow = false
+ *       allow_elb     = true
  *     }
  */
 
@@ -55,19 +55,19 @@ data "template_file" "aws_logs_policy" {
   vars = {
     region                  = "${var.region}"
     bucket                  = "${var.s3_bucket_name}"
-    default_enable          = "${var.default_enable}"
-    enable_cloudtrail       = "${var.enable_cloudtrail}"
+    default_allow           = "${var.default_allow}"
+    allow_cloudtrail        = "${var.allow_cloudtrail}"
     cloudtrail_logs_prefix  = "${var.cloudtrail_logs_prefix}"
-    enable_cloudwatch       = "${var.enable_cloudwatch}"
+    allow_cloudwatch        = "${var.allow_cloudwatch}"
     cloudwatch_logs_prefix  = "${var.cloudwatch_logs_prefix}"
-    enable_config           = "${var.enable_config}"
+    allow_config            = "${var.allow_config}"
     config_logs_prefix      = "${var.config_logs_prefix}"
-    enable_elb              = "${var.enable_elb}"
+    allow_elb               = "${var.allow_elb}"
     elb_log_account_arn     = "${data.aws_elb_service_account.main.arn}"
     elb_logs_prefix         = "${var.elb_logs_prefix}"
-    enable_alb              = "${var.enable_alb}"
+    allow_alb               = "${var.allow_alb}"
     alb_logs_prefix         = "${var.alb_logs_prefix}"
-    enable_redshift         = "${var.enable_redshift}"
+    allow_redshift          = "${var.allow_redshift}"
     redshift_log_account_id = "${data.aws_redshift_service_account.main.id}"
     redshift_logs_prefix    = "${var.redshift_logs_prefix}"
   }
@@ -80,7 +80,7 @@ data "template_file" "aws_logs_policy" {
 resource "aws_s3_bucket" "aws_logs" {
   bucket = "${var.s3_bucket_name}"
 
-  acl    = "${var.default_enable || var.enable_s3  ? "log-delivery-write" : "private"}"
+  acl    = "${var.default_allow || var.allow_s3  ? "log-delivery-write" : "private"}"
   region = "${var.region}"
 
   lifecycle_rule {
@@ -108,7 +108,7 @@ resource "aws_s3_bucket" "aws_logs" {
 
 resource "aws_s3_bucket_policy" "bucket_policy" {
   bucket = "${aws_s3_bucket.aws_logs.id}"
-  count  = "${var.default_enable || !var.enable_s3 ? 1 : 0}"
+  count  = "${var.default_allow || !var.allow_s3 ? 1 : 0}"
 
   policy = "${data.template_file.aws_logs_policy.rendered}"
 }

@@ -57,50 +57,50 @@ variable "config_logs_prefix" {
 }
 
 # Service Switches
-variable "default_enable" {
-  description = "Whether all services should be enabled by default. Individual services can override this default."
+variable "default_allow" {
+  description = "Whether all services should be allowed by default. Individual services can override this default."
   default     = true
   type        = "string"
 }
 
-variable "enable_cloudtrail" {
-  description = "Create one bucket with Cloudtrail service as the bucket key."
+variable "allow_cloudtrail" {
+  description = "Allow Cloudtrail service to log to bucket."
   default     = false
   type        = "string"
 }
 
-variable "enable_cloudwatch" {
-  description = "Create one bucket with Cloudwatch service as the bucket key."
+variable "allow_cloudwatch" {
+  description = "Allow Cloudwatch service to log to bucket."
   default     = false
   type        = "string"
 }
 
-variable "enable_alb" {
-  description = "Create one bucket with ALB service as the bucket key."
+variable "allow_alb" {
+  description = "Allow ALB service to log to bucket."
   default     = false
   type        = "string"
 }
 
-variable "enable_config" {
-  description = "Create one bucket with Config service as the bucket key."
+variable "allow_config" {
+  description = "Allow Config service to log to bucket."
   default     = false
   type        = "string"
 }
 
-variable "enable_elb" {
-  description = "Create one bucket with ELB service as the bucket key."
+variable "allow_elb" {
+  description = "Allow ELB service to log to bucket."
   default     = false
   type        = "string"
 }
 
-variable "enable_redshift" {
-  description = "Create one bucket with Redshift service as the bucket key."
+variable "allow_redshift" {
+  description = "Allow Redshift service to log to bucket."
   default     = false
   type        = "string"
 }
 
-variable "enable_s3" {
-  description = "Create one bucket with S3 service as the bucket key."
+variable "allow_s3" {
+  description = "Allow S3 service to log to bucket."
   default     = false
   type        = "string"
 }
