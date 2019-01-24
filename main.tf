@@ -1,8 +1,8 @@
 /**
  * Supports two main uses cases:
  *
- * 1. Creates and configures a single private S3 bucket for storing logs from various AWS services, which are nested as bucket prefixes, and enables CloudTrail on all regions. Logs will expire after a default of 90 days, with option to configure retention value. Includes support for sending CloudTrail events to a CloudWatch Logs group.
- * 1. Creates and configures a single private S3 bucket for a single AWS service, and enables CloudTrail on all regions. Logs will expire after a default of 90 days, with option to configure retention value. Includes support for sending CloudTrail events to a CloudWatch Logs group.
+ * 1. Creates and configures a single private S3 bucket for storing logs from various AWS services, which are nested as bucket prefixes. Logs will expire after a default of 90 days, with option to configure retention value.
+ * 1. Creates and configures a single private S3 bucket for a single AWS service. Logs will expire after a default of 90 days, with option to configure retention value.
  *
  * Logging from the following services is supported for both cases:
  *
@@ -14,7 +14,7 @@
  *
  * ## Usage for a single log bucket storing logs from multiple services
  *
- *     # Turns on cloudtrail by default, and allows all services to log to bucket
+ *     # Allows all services to log to bucket
  *     module "aws_logs" {
  *       source         = "trussworks/logs/aws"
  *       s3_bucket_name = "my-company-aws-logs"
@@ -23,13 +23,13 @@
  *
  * ## Usage for a single log bucket storing logs from a single service
  *
- *     # Turns on cloudtrail by default, and allows only the service specified (elb in this case) to log to the bucket
+ *     #  Allows only the service specified (elb in this case) to log to the bucket
  *     module "aws_logs" {
- *       source              = "trussworks/logs/aws"
- *       s3_bucket_name      = "my-company-aws-logs-elb"
- *       region              = "us-west-2"
+ *       source         = "trussworks/logs/aws"
+ *       s3_bucket_name = "my-company-aws-logs-elb"
+ *       region         = "us-west-2"
  *       default_enable = false
- *       enable_elb          = true
+ *       enable_elb     = true
  *     }
  */
 

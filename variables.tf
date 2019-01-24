@@ -58,19 +58,19 @@ variable "config_logs_prefix" {
 
 # Service Switches
 variable "default_enable" {
-  description = "Create one bucket with all services as bucket keys."
+  description = "Whether all services should be enabled by default. Individual services can override this default."
   default     = true
   type        = "string"
 }
 
 variable "enable_cloudtrail" {
-  description = "Enable CloudTrail to log to the AWS logs bucket or the cloudtrail logs bucket."
+  description = "Create one bucket with Cloudtrail service as the bucket key."
   default     = false
   type        = "string"
 }
 
 variable "enable_cloudwatch" {
-  description = "Enable CloudWatch to log to the AWS logs bucket or the cloudwatch logs bucket."
+  description = "Create one bucket with Cloudwatch service as the bucket key."
   default     = false
   type        = "string"
 }
