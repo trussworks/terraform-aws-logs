@@ -1,24 +1,35 @@
 /**
- * Creates and configures an S3 bucket for storing logs from various AWS
- * services and enables CloudTrail on all regions. Logs will expire after a
- * default of 90 days. Includes support for sending CloudTrail events to a
- * CloudWatch Logs group.
+ * Supports two main uses cases:
  *
- * Logging from the following services is supported:
+ * 1. Creates and configures a single private S3 bucket for storing logs from various AWS services, which are nested as bucket prefixes. Logs will expire after a default of 90 days, with option to configure retention value.
+ * 1. Creates and configures a single private S3 bucket for a single AWS service. Logs will expire after a default of 90 days, with option to configure retention value.
+ *
+ * Logging from the following services is supported for both cases:
  *
  * * [CloudTrail](https://aws.amazon.com/cloudtrail/)
  * * [Config](https://aws.amazon.com/config/)
- * * [Elastic Load Balancing](https://aws.amazon.com/elasticloadbalancing/)
+ * * [Classic Load Balancer (ELB) and Application Load Balancer (ALB)](https://aws.amazon.com/elasticloadbalancing/)
  * * [RedShift](https://aws.amazon.com/redshift/)
  * * [S3](https://aws.amazon.com/s3/)
  *
- * ## Usage
+ * ## Usage for a single log bucket storing logs from multiple services
  *
+ *     # Allows all services to log to bucket
  *     module "aws_logs" {
- *       source                  = "trussworks/logs/aws"
- *       s3_bucket_name          = "my-company-aws-logs"
- *       region                  = "us-west-2"
- *       s3_log_bucket_retention = 90
+ *       source         = "trussworks/logs/aws"
+ *       s3_bucket_name = "my-company-aws-logs"
+ *       region         = "us-west-2"
+ *     }
+ *
+ * ## Usage for a single log bucket storing logs from a single service
+ *
+ *     #  Allows only the service specified (elb in this case) to log to the bucket
+ *     module "aws_logs" {
+ *       source         = "trussworks/logs/aws"
+ *       s3_bucket_name = "my-company-aws-logs-elb"
+ *       region         = "us-west-2"
+ *       default_allow = false
+ *       allow_elb     = true
  *     }
  */
 
@@ -44,12 +55,19 @@ data "template_file" "aws_logs_policy" {
   vars = {
     region                  = "${var.region}"
     bucket                  = "${var.s3_bucket_name}"
-    cloudwatch_logs_prefix  = "${var.cloudwatch_logs_prefix}"
+    default_allow           = "${var.default_allow}"
+    allow_cloudtrail        = "${var.allow_cloudtrail}"
     cloudtrail_logs_prefix  = "${var.cloudtrail_logs_prefix}"
+    allow_cloudwatch        = "${var.allow_cloudwatch}"
+    cloudwatch_logs_prefix  = "${var.cloudwatch_logs_prefix}"
+    allow_config            = "${var.allow_config}"
     config_logs_prefix      = "${var.config_logs_prefix}"
+    allow_elb               = "${var.allow_elb}"
     elb_log_account_arn     = "${data.aws_elb_service_account.main.arn}"
     elb_logs_prefix         = "${var.elb_logs_prefix}"
+    allow_alb               = "${var.allow_alb}"
     alb_logs_prefix         = "${var.alb_logs_prefix}"
+    allow_redshift          = "${var.allow_redshift}"
     redshift_log_account_id = "${data.aws_redshift_service_account.main.id}"
     redshift_logs_prefix    = "${var.redshift_logs_prefix}"
   }
@@ -62,9 +80,8 @@ data "template_file" "aws_logs_policy" {
 resource "aws_s3_bucket" "aws_logs" {
   bucket = "${var.s3_bucket_name}"
 
-  acl    = "log-delivery-write"
+  acl    = "${var.default_allow || var.allow_s3  ? "log-delivery-write" : "private"}"
   region = "${var.region}"
-  policy = "${data.template_file.aws_logs_policy.rendered}"
 
   lifecycle_rule {
     id      = "expire_all_logs"
@@ -89,88 +106,25 @@ resource "aws_s3_bucket" "aws_logs" {
   }
 }
 
-#
-# IAM
-#
+resource "aws_s3_bucket_policy" "bucket_policy" {
+  bucket = "${aws_s3_bucket.aws_logs.id}"
+  count  = "${var.default_allow || !var.allow_s3 ? 1 : 0}"
 
-data "aws_iam_policy_document" "cloudtrail_assume_role" {
-  statement {
-    effect  = "Allow"
-    actions = ["sts:AssumeRole"]
-
-    principals = {
-      type        = "Service"
-      identifiers = ["cloudtrail.amazonaws.com"]
-    }
-  }
+  policy = "${data.template_file.aws_logs_policy.rendered}"
 }
 
-data "aws_iam_policy_document" "cloudtrail_cloudwatch_logs" {
-  statement {
-    sid = "WriteCloudWatchLogs"
+resource "aws_s3_bucket_public_access_block" "public_access_block" {
+  bucket = "${aws_s3_bucket.aws_logs.id}"
 
-    effect = "Allow"
+  # Block new public ACLs and uploading public objects
+  block_public_acls = true
 
-    actions = [
-      "logs:CreateLogStream",
-      "logs:PutLogEvents",
-    ]
+  # Retroactively remove public access granted through public ACLs
+  ignore_public_acls = true
 
-    resources = ["arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:${var.cloudtrail_cloudwatch_logs_group}:*"]
-  }
-}
+  # Block new public bucket policies
+  block_public_policy = true
 
-resource "aws_iam_role" "main" {
-  count              = "${var.enable_cloudtrail ? 1 : 0}"
-  name               = "cloudtrail-cloudwatch-logs-role"
-  assume_role_policy = "${data.aws_iam_policy_document.cloudtrail_assume_role.json}"
-}
-
-resource "aws_iam_policy" "main" {
-  count  = "${var.enable_cloudtrail ? 1 : 0}"
-  name   = "cloudtrail-cloudwatch-logs-policy"
-  policy = "${data.aws_iam_policy_document.cloudtrail_cloudwatch_logs.json}"
-}
-
-resource "aws_iam_policy_attachment" "main" {
-  count      = "${var.enable_cloudtrail ? 1 : 0}"
-  name       = "cloudtrail-cloudwatch-logs-policy-attachment"
-  policy_arn = "${aws_iam_policy.main.arn}"
-  roles      = ["${aws_iam_role.main.name}"]
-}
-
-#
-# CloudWatch Logs
-#
-
-resource "aws_cloudwatch_log_group" "main" {
-  count             = "${var.enable_cloudtrail ? 1 : 0}"
-  name              = "${var.cloudtrail_cloudwatch_logs_group}"
-  retention_in_days = "${var.cloudwatch_log_group_retention}"
-}
-
-#
-# CloudTrail
-#
-
-resource "aws_cloudtrail" "cloudtrail" {
-  depends_on = [
-    "aws_cloudwatch_log_group.main",
-    "aws_s3_bucket.aws_logs",
-  ]
-
-  count = "${var.enable_cloudtrail ? 1 : 0}"
-
-  cloud_watch_logs_group_arn = "${aws_cloudwatch_log_group.main.arn}"
-  cloud_watch_logs_role_arn  = "${aws_iam_role.main.arn}"
-
-  name           = "cloudtrail"
-  s3_key_prefix  = "cloudtrail"
-  s3_bucket_name = "${var.s3_bucket_name}"
-
-  # use a single s3 bucket for all aws regions
-  is_multi_region_trail = true
-
-  # enable log file validation to detect tampering
-  enable_log_file_validation = true
+  # Retroactivley block public and cross-account access if bucket has public policies
+  restrict_public_buckets = true
 }

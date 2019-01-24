@@ -20,18 +20,6 @@ variable "s3_log_bucket_retention" {
   type        = "string"
 }
 
-variable "cloudwatch_log_group_retention" {
-  description = "Number of days to keep AWS logs around in specific log group."
-  default     = 90
-  type        = "string"
-}
-
-variable "enable_cloudtrail" {
-  description = "Enable CloudTrail to log to the AWS logs bucket."
-  default     = true
-  type        = "string"
-}
-
 variable "elb_logs_prefix" {
   description = "S3 prefix for ELB logs."
   default     = "elb"
@@ -65,5 +53,54 @@ variable "redshift_logs_prefix" {
 variable "config_logs_prefix" {
   description = "S3 prefix for AWS Config logs."
   default     = "config"
+  type        = "string"
+}
+
+# Service Switches
+variable "default_allow" {
+  description = "Whether all services should be allowed by default. Individual services can override this default."
+  default     = true
+  type        = "string"
+}
+
+variable "allow_cloudtrail" {
+  description = "Allow Cloudtrail service to log to bucket."
+  default     = false
+  type        = "string"
+}
+
+variable "allow_cloudwatch" {
+  description = "Allow Cloudwatch service to log to bucket."
+  default     = false
+  type        = "string"
+}
+
+variable "allow_alb" {
+  description = "Allow ALB service to log to bucket."
+  default     = false
+  type        = "string"
+}
+
+variable "allow_config" {
+  description = "Allow Config service to log to bucket."
+  default     = false
+  type        = "string"
+}
+
+variable "allow_elb" {
+  description = "Allow ELB service to log to bucket."
+  default     = false
+  type        = "string"
+}
+
+variable "allow_redshift" {
+  description = "Allow Redshift service to log to bucket."
+  default     = false
+  type        = "string"
+}
+
+variable "allow_s3" {
+  description = "Allow S3 service to log to bucket."
+  default     = false
   type        = "string"
 }
