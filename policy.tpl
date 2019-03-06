@@ -28,7 +28,7 @@
     %{ endif }
     %{ if default_allow }{, }
     %{ endif}
-    %{ if default_allow || allow_cloudwatch} {
+    %{ if default_allow || allow_cloudwatch}
     {
       "Action": "s3:GetBucketAcl",
       "Effect": "Allow",
