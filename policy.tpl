@@ -26,9 +26,10 @@
       "Sid": "cloudtrail-logs-put-object"
     }
     %{ endif }
-    %{ if default_allow }{, }
-    %{ endif}
-    %{ if default_allow || allow_cloudwatch}
+    %{ if default_allow || (allow_cloudtrail && (allow_cloudwatch || allow_elb || allow_alb || allow_redshift || allow_config)) }
+    ,
+    %{ endif }
+    %{ if default_allow || allow_cloudwatch }
     {
       "Action": "s3:GetBucketAcl",
       "Effect": "Allow",
@@ -53,7 +54,8 @@
       "Sid": "cloudwatch-logs-put-object"
     }
     %{ endif }
-    %{ if default_allow }{, }
+    %{ if default_allow || (allow_cloudwatch && (allow_elb || allow_alb || allow_redshift || allow_config)) }
+    ,
     %{ endif }
     %{ if default_allow || allow_elb } {
       "Action": [
@@ -69,7 +71,8 @@
       "Sid": "elb-logs-put-object"
     }
     %{ endif }
-    %{ if default_allow}{, }
+    %{ if default_allow || (allow_elb && (allow_alb || allow_redshift || allow_config)) }
+    ,
     %{ endif }
     %{ if default_allow || allow_alb } {
       "Action": [
@@ -85,8 +88,9 @@
       "Sid": "alb-logs-put-object"
     }
     %{ endif }
-    %{ if default_allow}{, }
-    %{ endif}
+    %{ if default_allow || (allow_alb && (allow_redshift || allow_config)) }
+    ,
+    %{ endif }
     %{ if default_allow || allow_redshift } {
       "Action": "s3:PutObject",
       "Effect": "Allow",
@@ -105,8 +109,10 @@
       "Resource": "arn:aws:s3:::${bucket}",
       "Sid": "redshift-logs-get-bucket-acl"
     }
-    %{ endif } %{ if default_allow}{, }
-    %{ endif}
+    %{ endif }
+    %{ if default_allow || (allow_redshift && allow_config) }
+    ,
+    %{ endif }
     %{ if default_allow || allow_config } {
       "Action": "s3:GetBucketAcl",
       "Effect": "Allow",
