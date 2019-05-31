@@ -100,7 +100,7 @@ variable "allow_redshift" {
 }
 
 variable "allow_s3" {
-  description = "Allow S3 service to log to bucket."
+  description = "Allow log delivery writes to the S3 bucket. Must set as True to set bucket ACL to 'log-delivery-write' if not using default_allow."
   default     = false
   type        = "string"
 }

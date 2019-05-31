@@ -12,7 +12,7 @@ Logging from the following services is supported for both cases:
 * [RedShift](https://aws.amazon.com/redshift/)
 * [S3](https://aws.amazon.com/s3/)
 
-## Usage for a single log bucket storing logs from multiple services
+## Usage for a single log bucket storing logs from all services
 
     # Allows all services to log to bucket
     module "aws_logs" {
@@ -28,8 +28,32 @@ Logging from the following services is supported for both cases:
       source         = "trussworks/logs/aws"
       s3_bucket_name = "my-company-aws-logs-elb"
       region         = "us-west-2"
-      default_allow = false
-      allow_elb     = true
+      default_allow  = false
+      allow_s3       = true
+      allow_elb      = true
+    }
+
+## Usage for a single log bucket storing logs from multiple specified services
+
+    #  Allows only the services specified (alb and elb in this case) to log to the bucket
+    module "aws_logs" {
+      source         = "trussworks/logs/aws"
+      s3_bucket_name = "my-company-aws-logs-elb"
+      region         = "us-west-2"
+      default_allow  = false
+      allow_s3       = true
+      allow_alb      = true
+      allow_elb      = true
+    }
+
+## Usage for a private bucket with no policies
+
+    #  Allows no services to log to the bucket
+    module "aws_logs" {
+      source         = "trussworks/logs/aws"
+      s3_bucket_name = "my-company-aws-logs-elb"
+      region         = "us-west-2"
+      default_allow  = false
     }
 
 ## Inputs
