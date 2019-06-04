@@ -104,10 +104,11 @@ resource "aws_s3_bucket" "aws_logs" {
   }
 }
 
-# allow_cloudtrail
-data "aws_iam_policy_document" "cloudtrail" {
+data "aws_iam_policy_document" "bucket_policy" {
+  ## Cloudtrail
   statement {
     actions = ["s3:GetBucketAcl"]
+    effect  = "${(var.default_allow || (var.allow_s3 && var.allow_cloudtrail)) ? "Allow" : "Deny"}"
 
     principals {
       type        = "Service"
@@ -120,6 +121,7 @@ data "aws_iam_policy_document" "cloudtrail" {
 
   statement {
     actions = ["s3:PutObject"]
+    effect  = "${(var.default_allow || (var.allow_s3 && var.allow_cloudtrail)) ? "Allow" : "Deny"}"
 
     condition {
       test     = "StringEquals"
@@ -135,19 +137,11 @@ data "aws_iam_policy_document" "cloudtrail" {
     resources = ["arn:aws:s3:::${var.s3_bucket_name}/${var.cloudtrail_logs_prefix}/*"]
     sid       = "cloudtrail-logs-put-object"
   }
-}
 
-resource "aws_s3_bucket_policy" "bucket_policy_cloudtrail" {
-  bucket = "${aws_s3_bucket.aws_logs.id}"
-  count  = "${var.default_allow || (var.allow_s3 && var.allow_cloudtrail) ? 1 : 0}"
-
-  policy = "${data.aws_iam_policy_document.cloudtrail.json}"
-}
-
-# allow_cloudwatch
-data "aws_iam_policy_document" "cloudwatch" {
+  ## Cloudwatch
   statement {
     actions = ["s3:GetBucketAcl"]
+    effect  = "${(var.default_allow || (var.allow_s3 && var.allow_cloudwatch)) ? "Allow" : "Deny"}"
 
     principals {
       type        = "Service"
@@ -160,6 +154,7 @@ data "aws_iam_policy_document" "cloudwatch" {
 
   statement {
     actions = ["s3:PutObject"]
+    effect  = "${(var.default_allow || (var.allow_s3 && var.allow_cloudwatch)) ? "Allow" : "Deny"}"
 
     condition {
       test     = "StringEquals"
@@ -175,19 +170,11 @@ data "aws_iam_policy_document" "cloudwatch" {
     resources = ["arn:aws:s3:::${var.s3_bucket_name}/${var.cloudwatch_logs_prefix}/*"]
     sid       = "cloudwatch-logs-put-object"
   }
-}
 
-resource "aws_s3_bucket_policy" "bucket_policy_cloudwatch" {
-  bucket = "${aws_s3_bucket.aws_logs.id}"
-  count  = "${var.default_allow || (var.allow_s3 && var.allow_cloudwatch) ? 1 : 0}"
-
-  policy = "${data.aws_iam_policy_document.cloudwatch.json}"
-}
-
-# allow_config
-data "aws_iam_policy_document" "config" {
+  ## Config
   statement {
     actions = ["s3:GetBucketAcl"]
+    effect  = "${(var.default_allow || (var.allow_s3 && var.allow_config)) ? "Allow" : "Deny"}"
 
     principals {
       type        = "Service"
@@ -200,6 +187,7 @@ data "aws_iam_policy_document" "config" {
 
   statement {
     actions = ["s3:PutObject"]
+    effect  = "${(var.default_allow || (var.allow_s3 && var.allow_config)) ? "Allow" : "Deny"}"
 
     condition {
       test     = "StringEquals"
@@ -215,19 +203,11 @@ data "aws_iam_policy_document" "config" {
     resources = ["arn:aws:s3:::${var.s3_bucket_name}/${var.config_logs_prefix}/*"]
     sid       = "config-bucket-delivery"
   }
-}
 
-resource "aws_s3_bucket_policy" "bucket_policy_config" {
-  bucket = "${aws_s3_bucket.aws_logs.id}"
-  count  = "${var.default_allow || (var.allow_s3 && var.allow_config) ? 1 : 0}"
-
-  policy = "${data.aws_iam_policy_document.config.json}"
-}
-
-# allow_elb
-data "aws_iam_policy_document" "elb" {
+  ## ELB
   statement {
     actions = ["s3:PutObject"]
+    effect  = "${(var.default_allow || (var.allow_s3 && var.allow_elb)) ? "Allow" : "Deny"}"
 
     principals {
       type        = "AWS"
@@ -237,19 +217,11 @@ data "aws_iam_policy_document" "elb" {
     resources = ["arn:aws:s3:::${var.s3_bucket_name}/${var.elb_logs_prefix}/*"]
     sid       = "elb-logs-put-object"
   }
-}
 
-resource "aws_s3_bucket_policy" "bucket_policy_elb" {
-  bucket = "${aws_s3_bucket.aws_logs.id}"
-  count  = "${var.default_allow || (var.allow_s3 && var.allow_elb) ? 1 : 0}"
-
-  policy = "${data.aws_iam_policy_document.elb.json}"
-}
-
-# allow_alb
-data "aws_iam_policy_document" "alb" {
+  ## ALB
   statement {
     actions = ["s3:PutObject"]
+    effect  = "${(var.default_allow || (var.allow_s3 && var.allow_alb)) ? "Allow" : "Deny"}"
 
     principals {
       type        = "AWS"
@@ -259,19 +231,11 @@ data "aws_iam_policy_document" "alb" {
     resources = ["arn:aws:s3:::${var.s3_bucket_name}/${var.alb_logs_prefix}/*"]
     sid       = "alb-logs-put-object"
   }
-}
 
-resource "aws_s3_bucket_policy" "bucket_policy_alb" {
-  bucket = "${aws_s3_bucket.aws_logs.id}"
-  count  = "${var.default_allow || (var.allow_s3 && var.allow_alb) ? 1 : 0}"
-
-  policy = "${data.aws_iam_policy_document.alb.json}"
-}
-
-# allow_redshift
-data "aws_iam_policy_document" "redshift" {
+  ## Redshift
   statement {
     actions = ["s3:PutObject"]
+    effect  = "${(var.default_allow || (var.allow_s3 && var.allow_redshift)) ? "Allow" : "Deny"}"
 
     principals {
       type        = "AWS"
@@ -284,6 +248,7 @@ data "aws_iam_policy_document" "redshift" {
 
   statement {
     actions = ["s3:GetBucketAcl"]
+    effect  = "${(var.default_allow || (var.allow_s3 && var.allow_redshift)) ? "Allow" : "Deny"}"
 
     principals {
       type        = "AWS"
@@ -295,11 +260,9 @@ data "aws_iam_policy_document" "redshift" {
   }
 }
 
-resource "aws_s3_bucket_policy" "bucket_policy_redshift" {
+resource "aws_s3_bucket_policy" "bucket_policy" {
   bucket = "${aws_s3_bucket.aws_logs.id}"
-  count  = "${var.default_allow || (var.allow_s3 && var.allow_redshift) ? 1 : 0}"
-
-  policy = "${data.aws_iam_policy_document.redshift.json}"
+  policy = "${data.aws_iam_policy_document.bucket_policy.json}"
 }
 
 resource "aws_s3_bucket_public_access_block" "public_access_block" {
