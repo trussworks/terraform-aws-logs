@@ -58,7 +58,7 @@ variable "config_logs_prefix" {
 
 # Service Switches
 variable "default_allow" {
-  description = "Whether all services should be allowed by default. Individual services can override this default."
+  description = "Whether all services included in this module should be allowed to write to the bucket by default. Alternatively select individual services and also set allow_s3=true. Otherwise bucket ACL is set to 'private'."
   default     = true
   type        = "string"
 }
@@ -100,7 +100,7 @@ variable "allow_redshift" {
 }
 
 variable "allow_s3" {
-  description = "Allow log delivery writes to the S3 bucket. Must set as True to set bucket ACL to 'log-delivery-write' if not using default_allow."
+  description = "Allow log-delivery-writes to the S3 bucket. Must set as True to set bucket ACL to 'log-delivery-write' if not using default_allow. Otherwise bucket ACL is set to 'private'."
   default     = false
   type        = "string"
 }

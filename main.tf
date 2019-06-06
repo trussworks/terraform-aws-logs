@@ -78,6 +78,8 @@ data "aws_caller_identity" "current" {}
 resource "aws_s3_bucket" "aws_logs" {
   bucket = "${var.s3_bucket_name}"
 
+  # For more about ACLs see https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl
+  # For services to write logs to the bucket you want either default_allow or allow_s3 set to True.
   acl    = "${var.default_allow || var.allow_s3 ? "log-delivery-write" : "private"}"
   region = "${var.region}"
 
@@ -108,7 +110,7 @@ data "aws_iam_policy_document" "bucket_policy" {
   ## Cloudtrail
   statement {
     actions = ["s3:GetBucketAcl"]
-    effect  = "${(var.default_allow || (var.allow_s3 && var.allow_cloudtrail)) ? "Allow" : "Deny"}"
+    effect  = "${(var.default_allow || var.allow_cloudtrail) ? "Allow" : "Deny"}"
 
     principals {
       type        = "Service"
@@ -121,7 +123,7 @@ data "aws_iam_policy_document" "bucket_policy" {
 
   statement {
     actions = ["s3:PutObject"]
-    effect  = "${(var.default_allow || (var.allow_s3 && var.allow_cloudtrail)) ? "Allow" : "Deny"}"
+    effect  = "${(var.default_allow || var.allow_cloudtrail) ? "Allow" : "Deny"}"
 
     condition {
       test     = "StringEquals"
@@ -141,7 +143,7 @@ data "aws_iam_policy_document" "bucket_policy" {
   ## Cloudwatch
   statement {
     actions = ["s3:GetBucketAcl"]
-    effect  = "${(var.default_allow || (var.allow_s3 && var.allow_cloudwatch)) ? "Allow" : "Deny"}"
+    effect  = "${(var.default_allow || var.allow_cloudwatch) ? "Allow" : "Deny"}"
 
     principals {
       type        = "Service"
@@ -154,7 +156,7 @@ data "aws_iam_policy_document" "bucket_policy" {
 
   statement {
     actions = ["s3:PutObject"]
-    effect  = "${(var.default_allow || (var.allow_s3 && var.allow_cloudwatch)) ? "Allow" : "Deny"}"
+    effect  = "${(var.default_allow || var.allow_cloudwatch) ? "Allow" : "Deny"}"
 
     condition {
       test     = "StringEquals"
@@ -174,7 +176,7 @@ data "aws_iam_policy_document" "bucket_policy" {
   ## Config
   statement {
     actions = ["s3:GetBucketAcl"]
-    effect  = "${(var.default_allow || (var.allow_s3 && var.allow_config)) ? "Allow" : "Deny"}"
+    effect  = "${(var.default_allow || var.allow_config) ? "Allow" : "Deny"}"
 
     principals {
       type        = "Service"
@@ -187,7 +189,7 @@ data "aws_iam_policy_document" "bucket_policy" {
 
   statement {
     actions = ["s3:PutObject"]
-    effect  = "${(var.default_allow || (var.allow_s3 && var.allow_config)) ? "Allow" : "Deny"}"
+    effect  = "${(var.default_allow || var.allow_config) ? "Allow" : "Deny"}"
 
     condition {
       test     = "StringEquals"
@@ -207,7 +209,7 @@ data "aws_iam_policy_document" "bucket_policy" {
   ## ELB
   statement {
     actions = ["s3:PutObject"]
-    effect  = "${(var.default_allow || (var.allow_s3 && var.allow_elb)) ? "Allow" : "Deny"}"
+    effect  = "${(var.default_allow || var.allow_elb) ? "Allow" : "Deny"}"
 
     principals {
       type        = "AWS"
@@ -221,7 +223,7 @@ data "aws_iam_policy_document" "bucket_policy" {
   ## ALB
   statement {
     actions = ["s3:PutObject"]
-    effect  = "${(var.default_allow || (var.allow_s3 && var.allow_alb)) ? "Allow" : "Deny"}"
+    effect  = "${(var.default_allow || var.allow_alb) ? "Allow" : "Deny"}"
 
     principals {
       type        = "AWS"
@@ -235,7 +237,7 @@ data "aws_iam_policy_document" "bucket_policy" {
   ## Redshift
   statement {
     actions = ["s3:PutObject"]
-    effect  = "${(var.default_allow || (var.allow_s3 && var.allow_redshift)) ? "Allow" : "Deny"}"
+    effect  = "${(var.default_allow || var.allow_redshift) ? "Allow" : "Deny"}"
 
     principals {
       type        = "AWS"
@@ -248,7 +250,7 @@ data "aws_iam_policy_document" "bucket_policy" {
 
   statement {
     actions = ["s3:GetBucketAcl"]
-    effect  = "${(var.default_allow || (var.allow_s3 && var.allow_redshift)) ? "Allow" : "Deny"}"
+    effect  = "${(var.default_allow || var.allow_redshift) ? "Allow" : "Deny"}"
 
     principals {
       type        = "AWS"
