@@ -29,7 +29,6 @@ Logging from the following services is supported for both cases:
       s3_bucket_name = "my-company-aws-logs-elb"
       region         = "us-west-2"
       default_allow  = false
-      allow_s3       = true
       allow_elb      = true
     }
 
@@ -41,7 +40,6 @@ Logging from the following services is supported for both cases:
       s3_bucket_name = "my-company-aws-logs-elb"
       region         = "us-west-2"
       default_allow  = false
-      allow_s3       = true
       allow_alb      = true
       allow_elb      = true
     }
@@ -72,10 +70,11 @@ Logging from the following services is supported for both cases:
 | cloudtrail\_logs\_prefix | S3 prefix for CloudTrail logs. | string | `"cloudtrail"` | no |
 | cloudwatch\_logs\_prefix | S3 prefix for CloudWatch log exports. | string | `"cloudwatch"` | no |
 | config\_logs\_prefix | S3 prefix for AWS Config logs. | string | `"config"` | no |
-| default\_allow | Whether all services should be allowed by default. Individual services can override this default. | string | `"true"` | no |
+| default\_allow | Whether all services included in this module should be allowed to write to the bucket by default. Alternatively select individual services. It's recommended to use the default bucket ACL of log-delivery-write. | string | `"true"` | no |
 | elb\_logs\_prefix | S3 prefix for ELB logs. | string | `"elb"` | no |
 | redshift\_logs\_prefix | S3 prefix for RedShift logs. | string | `"redshift"` | no |
 | region | Region where the AWS S3 bucket will be created. | string | n/a | yes |
+| s3\_bucket\_acl | Set bucket ACL per [AWS S3 Canned ACL](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl) list. | string | `"log-delivery-write"` | no |
 | s3\_bucket\_name | S3 bucket to store AWS logs in. | string | n/a | yes |
 | s3\_log\_bucket\_retention | Number of days to keep AWS logs around. | string | `"90"` | no |
 

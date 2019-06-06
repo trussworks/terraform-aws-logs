@@ -29,7 +29,6 @@
  *       s3_bucket_name = "my-company-aws-logs-elb"
  *       region         = "us-west-2"
  *       default_allow  = false
- *       allow_s3       = true
  *       allow_elb      = true
  *     }
  *
@@ -41,7 +40,6 @@
  *       s3_bucket_name = "my-company-aws-logs-elb"
  *       region         = "us-west-2"
  *       default_allow  = false
- *       allow_s3       = true
  *       allow_alb      = true
  *       allow_elb      = true
  *     }
@@ -77,10 +75,7 @@ data "aws_caller_identity" "current" {}
 
 resource "aws_s3_bucket" "aws_logs" {
   bucket = "${var.s3_bucket_name}"
-
-  # For more about ACLs see https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl
-  # For services to write logs to the bucket you want either default_allow or allow_s3 set to True.
-  acl    = "${var.default_allow || var.allow_s3 ? "log-delivery-write" : "private"}"
+  acl    = "${var.s3_bucket_acl}"
   region = "${var.region}"
 
   lifecycle_rule {
@@ -268,6 +263,8 @@ resource "aws_s3_bucket_policy" "bucket_policy" {
 }
 
 resource "aws_s3_bucket_public_access_block" "public_access_block" {
+  depends_on = ["aws_s3_bucket_policy.bucket_policy"]
+
   bucket = "${aws_s3_bucket.aws_logs.id}"
 
   # Block new public ACLs and uploading public objects
