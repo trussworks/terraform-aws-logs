@@ -87,3 +87,21 @@ Logging from the following services is supported for both cases:
 | redshift\_logs\_path | S3 path for RedShift logs. |
 
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+
+## Upgrade Paths
+
+### Upgrading from 2.1.X to 3.X.X
+
+Before upgrading you will want to make sure you are on the latest version of 2.1.X.
+
+The variable `allow_s3` has been removed. If you were using the variable `allow_s3` to manage the bucket ACL or policy
+creation you'll want to make changes as the variable has been removed. For the bucket ACL you will now use
+`s3_bucket_acl` which is set to `log-delivery-write` by default. If you had `default_allow=false` and `allow_s3=false`
+you'll want to set `s3_bucket_acl="private"`.
+
+If you are using `default_allow=true` you can skip the rest of this upgrade guide.
+
+As for policy creation, all policies are now turned on or off via the `allow_*` variables. By setting these to `true`
+the `effect` block in the bucket policy for that resource will be modified to `Allow` whereas by default it will be
+set to `Deny`. Previously this module used a template to add or remove JSON text from the policy before rendering.
+The new module explicitly adds all resource policies as `Deny` and leaves it up to you to enable them.
