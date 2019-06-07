@@ -50,6 +50,7 @@ Logging from the following services is supported for both cases:
     module "aws_logs" {
       source         = "trussworks/logs/aws"
       s3_bucket_name = "my-company-aws-logs-elb"
+      s3_bucket_acl  = "private"
       region         = "us-west-2"
       default_allow  = false
     }
