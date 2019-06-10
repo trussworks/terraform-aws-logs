@@ -70,7 +70,7 @@ variable "allow_cloudtrail" {
 }
 
 variable "allow_cloudwatch" {
-  description = "Allow Cloudwatch service to log to bucket."
+  description = "Allow Cloudwatch service to export logs to bucket."
   default     = false
   type        = "string"
 }
