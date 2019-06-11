@@ -62,7 +62,7 @@ Logging from the following services is supported for both cases:
 | alb\_logs\_prefix | S3 prefix for ALB logs. | string | `"alb"` | no |
 | allow\_alb | Allow ALB service to log to bucket. | string | `"false"` | no |
 | allow\_cloudtrail | Allow Cloudtrail service to log to bucket. | string | `"false"` | no |
-| allow\_cloudwatch | Allow Cloudwatch service to log to bucket. | string | `"false"` | no |
+| allow\_cloudwatch | Allow Cloudwatch service to export logs to bucket. | string | `"false"` | no |
 | allow\_config | Allow Config service to log to bucket. | string | `"false"` | no |
 | allow\_elb | Allow ELB service to log to bucket. | string | `"false"` | no |
 | allow\_redshift | Allow Redshift service to log to bucket. | string | `"false"` | no |
