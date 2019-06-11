@@ -1,9 +1,3 @@
-variable "cloudtrail_cloudwatch_logs_group" {
-  description = "The name of the CloudWatch Logs group to send CloudTrail events."
-  default     = "cloudtrail-events"
-  type        = "string"
-}
-
 variable "s3_bucket_name" {
   description = "S3 bucket to store AWS logs in."
   type        = "string"
@@ -17,6 +11,12 @@ variable "region" {
 variable "s3_log_bucket_retention" {
   description = "Number of days to keep AWS logs around."
   default     = 90
+  type        = "string"
+}
+
+variable "s3_bucket_acl" {
+  description = "Set bucket ACL per [AWS S3 Canned ACL](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl) list."
+  default     = "log-delivery-write"
   type        = "string"
 }
 
@@ -58,7 +58,7 @@ variable "config_logs_prefix" {
 
 # Service Switches
 variable "default_allow" {
-  description = "Whether all services should be allowed by default. Individual services can override this default."
+  description = "Whether all services included in this module should be allowed to write to the bucket by default. Alternatively select individual services. It's recommended to use the default bucket ACL of log-delivery-write."
   default     = true
   type        = "string"
 }
@@ -70,7 +70,7 @@ variable "allow_cloudtrail" {
 }
 
 variable "allow_cloudwatch" {
-  description = "Allow Cloudwatch service to log to bucket."
+  description = "Allow Cloudwatch service to export logs to bucket."
   default     = false
   type        = "string"
 }
@@ -95,12 +95,6 @@ variable "allow_elb" {
 
 variable "allow_redshift" {
   description = "Allow Redshift service to log to bucket."
-  default     = false
-  type        = "string"
-}
-
-variable "allow_s3" {
-  description = "Allow S3 service to log to bucket."
   default     = false
   type        = "string"
 }

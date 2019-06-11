@@ -12,7 +12,7 @@
  * * [RedShift](https://aws.amazon.com/redshift/)
  * * [S3](https://aws.amazon.com/s3/)
  *
- * ## Usage for a single log bucket storing logs from multiple services
+ * ## Usage for a single log bucket storing logs from all services
  *
  *     # Allows all services to log to bucket
  *     module "aws_logs" {
@@ -28,8 +28,31 @@
  *       source         = "trussworks/logs/aws"
  *       s3_bucket_name = "my-company-aws-logs-elb"
  *       region         = "us-west-2"
- *       default_allow = false
- *       allow_elb     = true
+ *       default_allow  = false
+ *       allow_elb      = true
+ *     }
+ *
+ * ## Usage for a single log bucket storing logs from multiple specified services
+ *
+ *     #  Allows only the services specified (alb and elb in this case) to log to the bucket
+ *     module "aws_logs" {
+ *       source         = "trussworks/logs/aws"
+ *       s3_bucket_name = "my-company-aws-logs-elb"
+ *       region         = "us-west-2"
+ *       default_allow  = false
+ *       allow_alb      = true
+ *       allow_elb      = true
+ *     }
+ *
+ * ## Usage for a private bucket with no policies
+ *
+ *     #  Allows no services to log to the bucket
+ *     module "aws_logs" {
+ *       source         = "trussworks/logs/aws"
+ *       s3_bucket_name = "my-company-aws-logs-elb"
+ *       s3_bucket_acl  = "private"
+ *       region         = "us-west-2"
+ *       default_allow  = false
  *     }
  */
 
@@ -47,40 +70,13 @@ data "aws_region" "current" {}
 # The AWS account id
 data "aws_caller_identity" "current" {}
 
-# JSON template defining all the access controls to allow AWS services to write
-# to this bucket
-data "template_file" "aws_logs_policy" {
-  template = "${file("${path.module}/policy.tpl")}"
-
-  vars = {
-    region                  = "${var.region}"
-    bucket                  = "${var.s3_bucket_name}"
-    default_allow           = "${var.default_allow}"
-    allow_cloudtrail        = "${var.allow_cloudtrail}"
-    cloudtrail_logs_prefix  = "${var.cloudtrail_logs_prefix}"
-    allow_cloudwatch        = "${var.allow_cloudwatch}"
-    cloudwatch_logs_prefix  = "${var.cloudwatch_logs_prefix}"
-    allow_config            = "${var.allow_config}"
-    config_logs_prefix      = "${var.config_logs_prefix}"
-    allow_elb               = "${var.allow_elb}"
-    elb_log_account_arn     = "${data.aws_elb_service_account.main.arn}"
-    elb_logs_prefix         = "${var.elb_logs_prefix}"
-    allow_alb               = "${var.allow_alb}"
-    alb_logs_prefix         = "${var.alb_logs_prefix}"
-    allow_redshift          = "${var.allow_redshift}"
-    redshift_log_account_id = "${data.aws_redshift_service_account.main.id}"
-    redshift_logs_prefix    = "${var.redshift_logs_prefix}"
-  }
-}
-
 #
 # S3 Bucket
 #
 
 resource "aws_s3_bucket" "aws_logs" {
   bucket = "${var.s3_bucket_name}"
-
-  acl    = "${var.default_allow || var.allow_s3  ? "log-delivery-write" : "private"}"
+  acl    = "${var.s3_bucket_acl}"
   region = "${var.region}"
 
   lifecycle_rule {
@@ -106,14 +102,170 @@ resource "aws_s3_bucket" "aws_logs" {
   }
 }
 
+data "aws_iam_policy_document" "bucket_policy" {
+  ## Cloudtrail
+  statement {
+    actions = ["s3:GetBucketAcl"]
+    effect  = "${(var.default_allow || var.allow_cloudtrail) ? "Allow" : "Deny"}"
+
+    principals {
+      type        = "Service"
+      identifiers = ["cloudtrail.amazonaws.com"]
+    }
+
+    resources = ["arn:aws:s3:::${var.s3_bucket_name}"]
+    sid       = "cloudtrail-logs-get-bucket-acl"
+  }
+
+  statement {
+    actions = ["s3:PutObject"]
+    effect  = "${(var.default_allow || var.allow_cloudtrail) ? "Allow" : "Deny"}"
+
+    condition {
+      test     = "StringEquals"
+      variable = "s3:x-amz-acl"
+      values   = ["bucket-owner-full-control"]
+    }
+
+    principals {
+      type        = "Service"
+      identifiers = ["cloudtrail.amazonaws.com"]
+    }
+
+    resources = ["arn:aws:s3:::${var.s3_bucket_name}/${var.cloudtrail_logs_prefix}/*"]
+    sid       = "cloudtrail-logs-put-object"
+  }
+
+  ## Cloudwatch
+  statement {
+    actions = ["s3:GetBucketAcl"]
+    effect  = "${(var.default_allow || var.allow_cloudwatch) ? "Allow" : "Deny"}"
+
+    principals {
+      type        = "Service"
+      identifiers = ["logs.${var.region}.amazonaws.com"]
+    }
+
+    resources = ["arn:aws:s3:::${var.s3_bucket_name}"]
+    sid       = "cloudwatch-logs-get-bucket-acl"
+  }
+
+  statement {
+    actions = ["s3:PutObject"]
+    effect  = "${(var.default_allow || var.allow_cloudwatch) ? "Allow" : "Deny"}"
+
+    condition {
+      test     = "StringEquals"
+      variable = "s3:x-amz-acl"
+      values   = ["bucket-owner-full-control"]
+    }
+
+    principals {
+      type        = "Service"
+      identifiers = ["logs.${var.region}.amazonaws.com"]
+    }
+
+    resources = ["arn:aws:s3:::${var.s3_bucket_name}/${var.cloudwatch_logs_prefix}/*"]
+    sid       = "cloudwatch-logs-put-object"
+  }
+
+  ## Config
+  statement {
+    actions = ["s3:GetBucketAcl"]
+    effect  = "${(var.default_allow || var.allow_config) ? "Allow" : "Deny"}"
+
+    principals {
+      type        = "Service"
+      identifiers = ["config.amazonaws.com"]
+    }
+
+    resources = ["arn:aws:s3:::${var.s3_bucket_name}"]
+    sid       = "config-permissions-check"
+  }
+
+  statement {
+    actions = ["s3:PutObject"]
+    effect  = "${(var.default_allow || var.allow_config) ? "Allow" : "Deny"}"
+
+    condition {
+      test     = "StringEquals"
+      variable = "s3:x-amz-acl"
+      values   = ["bucket-owner-full-control"]
+    }
+
+    principals {
+      type        = "Service"
+      identifiers = ["config.amazonaws.com"]
+    }
+
+    resources = ["arn:aws:s3:::${var.s3_bucket_name}/${var.config_logs_prefix}/*"]
+    sid       = "config-bucket-delivery"
+  }
+
+  ## ELB
+  statement {
+    actions = ["s3:PutObject"]
+    effect  = "${(var.default_allow || var.allow_elb) ? "Allow" : "Deny"}"
+
+    principals {
+      type        = "AWS"
+      identifiers = ["${data.aws_elb_service_account.main.arn}"]
+    }
+
+    resources = ["arn:aws:s3:::${var.s3_bucket_name}/${var.elb_logs_prefix}/*"]
+    sid       = "elb-logs-put-object"
+  }
+
+  ## ALB
+  statement {
+    actions = ["s3:PutObject"]
+    effect  = "${(var.default_allow || var.allow_alb) ? "Allow" : "Deny"}"
+
+    principals {
+      type        = "AWS"
+      identifiers = ["${data.aws_elb_service_account.main.arn}"]
+    }
+
+    resources = ["arn:aws:s3:::${var.s3_bucket_name}/${var.alb_logs_prefix}/*"]
+    sid       = "alb-logs-put-object"
+  }
+
+  ## Redshift
+  statement {
+    actions = ["s3:PutObject"]
+    effect  = "${(var.default_allow || var.allow_redshift) ? "Allow" : "Deny"}"
+
+    principals {
+      type        = "AWS"
+      identifiers = ["arn:aws:iam::${data.aws_redshift_service_account.main.id}:user/logs"]
+    }
+
+    resources = ["arn:aws:s3:::${var.s3_bucket_name}/${var.redshift_logs_prefix}/*"]
+    sid       = "redshift-logs-put-object"
+  }
+
+  statement {
+    actions = ["s3:GetBucketAcl"]
+    effect  = "${(var.default_allow || var.allow_redshift) ? "Allow" : "Deny"}"
+
+    principals {
+      type        = "AWS"
+      identifiers = ["arn:aws:iam::${data.aws_redshift_service_account.main.id}:user/logs"]
+    }
+
+    resources = ["arn:aws:s3:::${var.s3_bucket_name}"]
+    sid       = "redshift-logs-get-bucket-acl"
+  }
+}
+
 resource "aws_s3_bucket_policy" "bucket_policy" {
   bucket = "${aws_s3_bucket.aws_logs.id}"
-  count  = "${var.default_allow || !var.allow_s3 ? 1 : 0}"
-
-  policy = "${data.template_file.aws_logs_policy.rendered}"
+  policy = "${data.aws_iam_policy_document.bucket_policy.json}"
 }
 
 resource "aws_s3_bucket_public_access_block" "public_access_block" {
+  depends_on = ["aws_s3_bucket_policy.bucket_policy"]
+
   bucket = "${aws_s3_bucket.aws_logs.id}"
 
   # Block new public ACLs and uploading public objects
