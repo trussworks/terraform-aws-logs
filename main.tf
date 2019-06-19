@@ -58,26 +58,30 @@
 
 # Get the account id of the AWS ELB service account in a given region for the
 # purpose of whitelisting in a S3 bucket policy.
-data "aws_elb_service_account" "main" {}
+data "aws_elb_service_account" "main" {
+}
 
 # Get the account id of the RedShift service account in a given region for the
 # purpose of allowing RedShift to store audit data in S3.
-data "aws_redshift_service_account" "main" {}
+data "aws_redshift_service_account" "main" {
+}
 
 # The AWS region currently being used.
-data "aws_region" "current" {}
+data "aws_region" "current" {
+}
 
 # The AWS account id
-data "aws_caller_identity" "current" {}
+data "aws_caller_identity" "current" {
+}
 
 #
 # S3 Bucket
 #
 
 resource "aws_s3_bucket" "aws_logs" {
-  bucket = "${var.s3_bucket_name}"
-  acl    = "${var.s3_bucket_acl}"
-  region = "${var.region}"
+  bucket = var.s3_bucket_name
+  acl    = var.s3_bucket_acl
+  region = var.region
 
   lifecycle_rule {
     id      = "expire_all_logs"
@@ -85,7 +89,7 @@ resource "aws_s3_bucket" "aws_logs" {
     enabled = true
 
     expiration {
-      days = "${var.s3_log_bucket_retention}"
+      days = var.s3_log_bucket_retention
     }
   }
 
@@ -98,7 +102,7 @@ resource "aws_s3_bucket" "aws_logs" {
   }
 
   tags = {
-    Name = "${var.s3_bucket_name}"
+    Name = var.s3_bucket_name
   }
 }
 
@@ -106,7 +110,7 @@ data "aws_iam_policy_document" "bucket_policy" {
   ## Cloudtrail
   statement {
     actions = ["s3:GetBucketAcl"]
-    effect  = "${(var.default_allow || var.allow_cloudtrail) ? "Allow" : "Deny"}"
+    effect  = var.default_allow || var.allow_cloudtrail ? "Allow" : "Deny"
 
     principals {
       type        = "Service"
@@ -119,7 +123,7 @@ data "aws_iam_policy_document" "bucket_policy" {
 
   statement {
     actions = ["s3:PutObject"]
-    effect  = "${(var.default_allow || var.allow_cloudtrail) ? "Allow" : "Deny"}"
+    effect  = var.default_allow || var.allow_cloudtrail ? "Allow" : "Deny"
 
     condition {
       test     = "StringEquals"
@@ -139,7 +143,7 @@ data "aws_iam_policy_document" "bucket_policy" {
   ## Cloudwatch
   statement {
     actions = ["s3:GetBucketAcl"]
-    effect  = "${(var.default_allow || var.allow_cloudwatch) ? "Allow" : "Deny"}"
+    effect  = var.default_allow || var.allow_cloudwatch ? "Allow" : "Deny"
 
     principals {
       type        = "Service"
@@ -152,7 +156,7 @@ data "aws_iam_policy_document" "bucket_policy" {
 
   statement {
     actions = ["s3:PutObject"]
-    effect  = "${(var.default_allow || var.allow_cloudwatch) ? "Allow" : "Deny"}"
+    effect  = var.default_allow || var.allow_cloudwatch ? "Allow" : "Deny"
 
     condition {
       test     = "StringEquals"
@@ -172,7 +176,7 @@ data "aws_iam_policy_document" "bucket_policy" {
   ## Config
   statement {
     actions = ["s3:GetBucketAcl"]
-    effect  = "${(var.default_allow || var.allow_config) ? "Allow" : "Deny"}"
+    effect  = var.default_allow || var.allow_config ? "Allow" : "Deny"
 
     principals {
       type        = "Service"
@@ -185,7 +189,7 @@ data "aws_iam_policy_document" "bucket_policy" {
 
   statement {
     actions = ["s3:PutObject"]
-    effect  = "${(var.default_allow || var.allow_config) ? "Allow" : "Deny"}"
+    effect  = var.default_allow || var.allow_config ? "Allow" : "Deny"
 
     condition {
       test     = "StringEquals"
@@ -205,11 +209,11 @@ data "aws_iam_policy_document" "bucket_policy" {
   ## ELB
   statement {
     actions = ["s3:PutObject"]
-    effect  = "${(var.default_allow || var.allow_elb) ? "Allow" : "Deny"}"
+    effect  = var.default_allow || var.allow_elb ? "Allow" : "Deny"
 
     principals {
       type        = "AWS"
-      identifiers = ["${data.aws_elb_service_account.main.arn}"]
+      identifiers = [data.aws_elb_service_account.main.arn]
     }
 
     resources = ["arn:aws:s3:::${var.s3_bucket_name}/${var.elb_logs_prefix}/*"]
@@ -219,11 +223,11 @@ data "aws_iam_policy_document" "bucket_policy" {
   ## ALB
   statement {
     actions = ["s3:PutObject"]
-    effect  = "${(var.default_allow || var.allow_alb) ? "Allow" : "Deny"}"
+    effect  = var.default_allow || var.allow_alb ? "Allow" : "Deny"
 
     principals {
       type        = "AWS"
-      identifiers = ["${data.aws_elb_service_account.main.arn}"]
+      identifiers = [data.aws_elb_service_account.main.arn]
     }
 
     resources = ["arn:aws:s3:::${var.s3_bucket_name}/${var.alb_logs_prefix}/*"]
@@ -233,7 +237,7 @@ data "aws_iam_policy_document" "bucket_policy" {
   ## Redshift
   statement {
     actions = ["s3:PutObject"]
-    effect  = "${(var.default_allow || var.allow_redshift) ? "Allow" : "Deny"}"
+    effect  = var.default_allow || var.allow_redshift ? "Allow" : "Deny"
 
     principals {
       type        = "AWS"
@@ -246,7 +250,7 @@ data "aws_iam_policy_document" "bucket_policy" {
 
   statement {
     actions = ["s3:GetBucketAcl"]
-    effect  = "${(var.default_allow || var.allow_redshift) ? "Allow" : "Deny"}"
+    effect  = var.default_allow || var.allow_redshift ? "Allow" : "Deny"
 
     principals {
       type        = "AWS"
@@ -259,14 +263,14 @@ data "aws_iam_policy_document" "bucket_policy" {
 }
 
 resource "aws_s3_bucket_policy" "bucket_policy" {
-  bucket = "${aws_s3_bucket.aws_logs.id}"
-  policy = "${data.aws_iam_policy_document.bucket_policy.json}"
+  bucket = aws_s3_bucket.aws_logs.id
+  policy = data.aws_iam_policy_document.bucket_policy.json
 }
 
 resource "aws_s3_bucket_public_access_block" "public_access_block" {
-  depends_on = ["aws_s3_bucket_policy.bucket_policy"]
+  depends_on = [aws_s3_bucket_policy.bucket_policy]
 
-  bucket = "${aws_s3_bucket.aws_logs.id}"
+  bucket = aws_s3_bucket.aws_logs.id
 
   # Block new public ACLs and uploading public objects
   block_public_acls = true
@@ -280,3 +284,4 @@ resource "aws_s3_bucket_public_access_block" "public_access_block" {
   # Retroactivley block public and cross-account access if bucket has public policies
   restrict_public_buckets = true
 }
+
