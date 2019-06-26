@@ -264,6 +264,8 @@ resource "aws_s3_bucket_policy" "bucket_policy" {
 }
 
 resource "aws_s3_bucket_public_access_block" "public_access_block" {
+  count = "${var.create_public_access_block ? 1 : 0}"
+
   depends_on = ["aws_s3_bucket_policy.bucket_policy"]
 
   bucket = "${aws_s3_bucket.aws_logs.id}"

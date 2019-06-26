@@ -98,3 +98,9 @@ variable "allow_redshift" {
   default     = false
   type        = "string"
 }
+
+variable "create_public_access_block" {
+  description = "Whether to create a public_access_block restricting public access to the bucket."
+  default     = true
+  type        = "string"
+}
