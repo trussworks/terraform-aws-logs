@@ -203,6 +203,7 @@ data "aws_iam_policy_document" "bucket_policy" {
   }
 
   ## ELB
+  # https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/enable-access-logs.html#attach-bucket-policy
   statement {
     actions = ["s3:PutObject"]
     effect  = "${(var.default_allow || var.allow_elb) ? "Allow" : "Deny"}"
@@ -217,6 +218,7 @@ data "aws_iam_policy_document" "bucket_policy" {
   }
 
   ## ALB
+  # https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-access-logs.html#access-logging-bucket-permissions
   statement {
     actions = ["s3:PutObject"]
     effect  = "${(var.default_allow || var.allow_alb) ? "Allow" : "Deny"}"
@@ -228,6 +230,40 @@ data "aws_iam_policy_document" "bucket_policy" {
 
     resources = ["arn:aws:s3:::${var.s3_bucket_name}/${var.alb_logs_prefix}/*"]
     sid       = "alb-logs-put-object"
+  }
+
+  ## NLB
+  # https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-access-logs.html#access-logging-bucket-requirements
+  statement {
+    actions = ["s3:PutObject"]
+    effect  = "${(var.default_allow || var.allow_nlb) ? "Allow" : "Deny"}"
+
+    principals {
+      type        = "Service"
+      identifiers = ["delivery.logs.amazonaws.com"]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "s3:x-amz-acl"
+      values   = ["bucket-owner-full-control"]
+    }
+
+    resources = ["arn:aws:s3:::${var.s3_bucket_name}/${var.nlb_logs_prefix}/*"]
+    sid       = "nlb-logs-put-object"
+  }
+
+  statement {
+    actions = ["s3:GetBucketAcl"]
+    effect  = "${(var.default_allow || var.allow_nlb) ? "Allow" : "Deny"}"
+
+    principals {
+      type        = "Service"
+      identifiers = ["delivery.logs.amazonaws.com"]
+    }
+
+    resources = ["arn:aws:s3:::${var.s3_bucket_name}"]
+    sid       = "nlb-logs-acl-check"
   }
 
   ## Redshift
