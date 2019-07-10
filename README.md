@@ -65,12 +65,14 @@ Logging from the following services is supported for both cases:
 | allow\_cloudwatch | Allow Cloudwatch service to export logs to bucket. | string | `"false"` | no |
 | allow\_config | Allow Config service to log to bucket. | string | `"false"` | no |
 | allow\_elb | Allow ELB service to log to bucket. | string | `"false"` | no |
+| allow\_nlb | Allow NLB service to log to bucket. | string | `"false"` | no |
 | allow\_redshift | Allow Redshift service to log to bucket. | string | `"false"` | no |
 | cloudtrail\_logs\_prefix | S3 prefix for CloudTrail logs. | string | `"cloudtrail"` | no |
 | cloudwatch\_logs\_prefix | S3 prefix for CloudWatch log exports. | string | `"cloudwatch"` | no |
 | config\_logs\_prefix | S3 prefix for AWS Config logs. | string | `"config"` | no |
 | default\_allow | Whether all services included in this module should be allowed to write to the bucket by default. Alternatively select individual services. It's recommended to use the default bucket ACL of log-delivery-write. | string | `"true"` | no |
 | elb\_logs\_prefix | S3 prefix for ELB logs. | string | `"elb"` | no |
+| nlb\_logs\_prefix | S3 prefix for NLB logs. | string | `"nlb"` | no |
 | redshift\_logs\_prefix | S3 prefix for RedShift logs. | string | `"redshift"` | no |
 | region | Region where the AWS S3 bucket will be created. | string | n/a | yes |
 | s3\_bucket\_acl | Set bucket ACL per [AWS S3 Canned ACL](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl) list. | string | `"log-delivery-write"` | no |

@@ -32,6 +32,12 @@ variable "alb_logs_prefix" {
   type        = "string"
 }
 
+variable "nlb_logs_prefix" {
+  description = "S3 prefix for NLB logs."
+  default     = "nlb"
+  type        = "string"
+}
+
 variable "cloudwatch_logs_prefix" {
   description = "S3 prefix for CloudWatch log exports."
   default     = "cloudwatch"
@@ -77,6 +83,12 @@ variable "allow_cloudwatch" {
 
 variable "allow_alb" {
   description = "Allow ALB service to log to bucket."
+  default     = false
+  type        = "string"
+}
+
+variable "allow_nlb" {
+  description = "Allow NLB service to log to bucket."
   default     = false
   type        = "string"
 }
