@@ -70,6 +70,7 @@ Logging from the following services is supported for both cases:
 | cloudtrail\_logs\_prefix | S3 prefix for CloudTrail logs. | string | `"cloudtrail"` | no |
 | cloudwatch\_logs\_prefix | S3 prefix for CloudWatch log exports. | string | `"cloudwatch"` | no |
 | config\_logs\_prefix | S3 prefix for AWS Config logs. | string | `"config"` | no |
+| create\_public\_access\_block | Whether to create a public_access_block restricting public access to the bucket. | string | `"true"` | no |
 | default\_allow | Whether all services included in this module should be allowed to write to the bucket by default. Alternatively select individual services. It's recommended to use the default bucket ACL of log-delivery-write. | string | `"true"` | no |
 | elb\_logs\_prefix | S3 prefix for ELB logs. | string | `"elb"` | no |
 | nlb\_logs\_prefix | S3 prefix for NLB logs. | string | `"nlb"` | no |
