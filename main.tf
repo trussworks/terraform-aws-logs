@@ -133,9 +133,10 @@ data "aws_iam_policy_document" "bucket_policy" {
     }
 
     resources = [
-        "arn:aws:s3:::${var.s3_bucket_name}/${var.cloudtrail_logs_prefix}/AWSLogs/${data.aws_caller_identity.current.account_id}/*",
+      "arn:aws:s3:::${var.s3_bucket_name}/${var.cloudtrail_logs_prefix}/AWSLogs/${data.aws_caller_identity.current.account_id}/*",
     ]
-    sid       = "cloudtrail-logs-put-object"
+
+    sid = "cloudtrail-logs-put-object"
   }
 
   ## CloudWatch
@@ -218,7 +219,8 @@ data "aws_iam_policy_document" "bucket_policy" {
     resources = [
       "arn:aws:s3:::${var.s3_bucket_name}/${var.elb_logs_prefix}/AWSLogs/${data.aws_caller_identity.current.account_id}/*",
     ]
-    sid       = "elb-logs-put-object"
+
+    sid = "elb-logs-put-object"
   }
 
   ## ALB
@@ -235,7 +237,8 @@ data "aws_iam_policy_document" "bucket_policy" {
     resources = [
       "arn:aws:s3:::${var.s3_bucket_name}/${var.alb_logs_prefix}/AWSLogs/${data.aws_caller_identity.current.account_id}/*",
     ]
-    sid       = "alb-logs-put-object"
+
+    sid = "alb-logs-put-object"
   }
 
   ## NLB
@@ -258,7 +261,8 @@ data "aws_iam_policy_document" "bucket_policy" {
     resources = [
       "arn:aws:s3:::${var.s3_bucket_name}/${var.nlb_logs_prefix}/AWSLogs/${data.aws_caller_identity.current.account_id}/*",
     ]
-    sid       = "nlb-logs-put-object"
+
+    sid = "nlb-logs-put-object"
   }
 
   statement {
