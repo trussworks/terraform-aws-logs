@@ -110,6 +110,7 @@ resource "aws_s3_bucket" "aws_logs" {
 
   tags = {
     Name = "${var.s3_bucket_name}"
+    Automation = "Terraform"
   }
 }
 
