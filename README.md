@@ -55,10 +55,22 @@ Logging from the following services is supported for both cases:
       default_allow  = false
     }
 
+## Usage for a single log bucket storing logs from multiple accounts
+
+    module "aws_logs" {
+      source         = "trussworks/logs/aws"
+      s3_bucket_name = "my-company-aws-logs-elb"
+      region         = "us-west-2"
+      default_allow  = false
+      allow_cloudtrail      = true
+      cloudtrail_accounts = ["${data.aws_caller_identity.current.account_id}", "${aws_organizations_account.example.id}"]
+    }
+
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|:----:|:-----:|:-----:|
+| alb\_accounts | List of accounts for ALB logs.  By default limits to the current account. | list | `[]` | no |
 | alb\_logs\_prefix | S3 prefix for ALB logs. | string | `"alb"` | no |
 | allow\_alb | Allow ALB service to log to bucket. | string | `"false"` | no |
 | allow\_cloudtrail | Allow Cloudtrail service to log to bucket. | string | `"false"` | no |
@@ -67,12 +79,16 @@ Logging from the following services is supported for both cases:
 | allow\_elb | Allow ELB service to log to bucket. | string | `"false"` | no |
 | allow\_nlb | Allow NLB service to log to bucket. | string | `"false"` | no |
 | allow\_redshift | Allow Redshift service to log to bucket. | string | `"false"` | no |
+| cloudtrail\_accounts | List of accounts for CloudTrail logs.  By default limits to the current account. | list | `[]` | no |
 | cloudtrail\_logs\_prefix | S3 prefix for CloudTrail logs. | string | `"cloudtrail"` | no |
 | cloudwatch\_logs\_prefix | S3 prefix for CloudWatch log exports. | string | `"cloudwatch"` | no |
+| config\_accounts | List of accounts for Config logs.  By default limits to the current account. | list | `[]` | no |
 | config\_logs\_prefix | S3 prefix for AWS Config logs. | string | `"config"` | no |
 | create\_public\_access\_block | Whether to create a public_access_block restricting public access to the bucket. | string | `"true"` | no |
 | default\_allow | Whether all services included in this module should be allowed to write to the bucket by default. Alternatively select individual services. It's recommended to use the default bucket ACL of log-delivery-write. | string | `"true"` | no |
+| elb\_accounts | List of accounts for ELB logs.  By default limits to the current account. | list | `[]` | no |
 | elb\_logs\_prefix | S3 prefix for ELB logs. | string | `"elb"` | no |
+| nlb\_accounts | List of accounts for NLB logs.  By default limits to the current account. | list | `[]` | no |
 | nlb\_logs\_prefix | S3 prefix for NLB logs. | string | `"nlb"` | no |
 | redshift\_logs\_prefix | S3 prefix for RedShift logs. | string | `"redshift"` | no |
 | region | Region where the AWS S3 bucket will be created. | string | n/a | yes |
