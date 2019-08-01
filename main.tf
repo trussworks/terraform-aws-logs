@@ -103,7 +103,7 @@ resource "aws_s3_bucket" "aws_logs" {
 }
 
 data "aws_iam_policy_document" "bucket_policy" {
-  ## Cloudtrail
+  ## CloudTrail
   statement {
     actions = ["s3:GetBucketAcl"]
     effect  = "${(var.default_allow || var.allow_cloudtrail) ? "Allow" : "Deny"}"
@@ -132,11 +132,14 @@ data "aws_iam_policy_document" "bucket_policy" {
       identifiers = ["cloudtrail.amazonaws.com"]
     }
 
-    resources = ["arn:aws:s3:::${var.s3_bucket_name}/${var.cloudtrail_logs_prefix}/*"]
-    sid       = "cloudtrail-logs-put-object"
+    resources = [
+      "arn:aws:s3:::${var.s3_bucket_name}/${var.cloudtrail_logs_prefix}/AWSLogs/${data.aws_caller_identity.current.account_id}/*",
+    ]
+
+    sid = "cloudtrail-logs-put-object"
   }
 
-  ## Cloudwatch
+  ## CloudWatch
   statement {
     actions = ["s3:GetBucketAcl"]
     effect  = "${(var.default_allow || var.allow_cloudwatch) ? "Allow" : "Deny"}"
@@ -198,7 +201,7 @@ data "aws_iam_policy_document" "bucket_policy" {
       identifiers = ["config.amazonaws.com"]
     }
 
-    resources = ["arn:aws:s3:::${var.s3_bucket_name}/${var.config_logs_prefix}/*"]
+    resources = ["arn:aws:s3:::${var.s3_bucket_name}/${var.config_logs_prefix}/AWSLogs/${data.aws_caller_identity.current.account_id}/Config/*"]
     sid       = "config-bucket-delivery"
   }
 
@@ -213,8 +216,11 @@ data "aws_iam_policy_document" "bucket_policy" {
       identifiers = ["${data.aws_elb_service_account.main.arn}"]
     }
 
-    resources = ["arn:aws:s3:::${var.s3_bucket_name}/${var.elb_logs_prefix}/*"]
-    sid       = "elb-logs-put-object"
+    resources = [
+      "arn:aws:s3:::${var.s3_bucket_name}/${var.elb_logs_prefix}/AWSLogs/${data.aws_caller_identity.current.account_id}/*",
+    ]
+
+    sid = "elb-logs-put-object"
   }
 
   ## ALB
@@ -228,8 +234,11 @@ data "aws_iam_policy_document" "bucket_policy" {
       identifiers = ["${data.aws_elb_service_account.main.arn}"]
     }
 
-    resources = ["arn:aws:s3:::${var.s3_bucket_name}/${var.alb_logs_prefix}/*"]
-    sid       = "alb-logs-put-object"
+    resources = [
+      "arn:aws:s3:::${var.s3_bucket_name}/${var.alb_logs_prefix}/AWSLogs/${data.aws_caller_identity.current.account_id}/*",
+    ]
+
+    sid = "alb-logs-put-object"
   }
 
   ## NLB
@@ -249,8 +258,11 @@ data "aws_iam_policy_document" "bucket_policy" {
       values   = ["bucket-owner-full-control"]
     }
 
-    resources = ["arn:aws:s3:::${var.s3_bucket_name}/${var.nlb_logs_prefix}/*"]
-    sid       = "nlb-logs-put-object"
+    resources = [
+      "arn:aws:s3:::${var.s3_bucket_name}/${var.nlb_logs_prefix}/AWSLogs/${data.aws_caller_identity.current.account_id}/*",
+    ]
+
+    sid = "nlb-logs-put-object"
   }
 
   statement {
