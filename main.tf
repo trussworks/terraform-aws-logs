@@ -54,6 +54,17 @@
  *       region         = "us-west-2"
  *       default_allow  = false
  *     }
+ *
+ * ## Usage for a single log bucket storing logs from multiple accounts
+ *
+ *     module "aws_logs" {
+ *       source         = "trussworks/logs/aws"
+ *       s3_bucket_name = "my-company-aws-logs-elb"
+ *       region         = "us-west-2"
+ *       default_allow  = false
+ *       allow_cloudtrail      = true
+ *       cloudtrail_accounts = ["${data.aws_caller_identity.current.account_id}", "${aws_organizations_account.example.id}"]
+ *     }
  */
 
 # Get the account id of the AWS ELB service account in a given region for the
@@ -98,7 +109,8 @@ resource "aws_s3_bucket" "aws_logs" {
   }
 
   tags = {
-    Name = "${var.s3_bucket_name}"
+    Name       = "${var.s3_bucket_name}"
+    Automation = "Terraform"
   }
 }
 
@@ -118,25 +130,24 @@ data "aws_iam_policy_document" "bucket_policy" {
   }
 
   statement {
-    actions = ["s3:PutObject"]
-    effect  = "${(var.default_allow || var.allow_cloudtrail) ? "Allow" : "Deny"}"
+    sid = "cloudtrail-logs-put-object"
 
-    condition {
-      test     = "StringEquals"
-      variable = "s3:x-amz-acl"
-      values   = ["bucket-owner-full-control"]
-    }
+    actions = ["s3:PutObject"]
+
+    effect = "${(var.default_allow || var.allow_cloudtrail) ? "Allow" : "Deny"}"
 
     principals {
       type        = "Service"
       identifiers = ["cloudtrail.amazonaws.com"]
     }
 
-    resources = [
-      "arn:aws:s3:::${var.s3_bucket_name}/${var.cloudtrail_logs_prefix}/AWSLogs/${data.aws_caller_identity.current.account_id}/*",
-    ]
+    resources = "${length(var.cloudtrail_accounts) > 0 ? formatlist(format("arn:aws:s3:::%s/%s/AWSLogs/%%s/*",var.s3_bucket_name, var.cloudtrail_logs_prefix), var.cloudtrail_accounts) : list(format("arn:aws:s3:::%s/%s/AWSLogs/%s/*", var.s3_bucket_name, var.cloudtrail_logs_prefix, data.aws_caller_identity.current.account_id))}"
 
-    sid = "cloudtrail-logs-put-object"
+    condition {
+      test     = "StringEquals"
+      variable = "s3:x-amz-acl"
+      values   = ["bucket-owner-full-control"]
+    }
   }
 
   ## CloudWatch
@@ -187,8 +198,11 @@ data "aws_iam_policy_document" "bucket_policy" {
   }
 
   statement {
+    sid = "config-bucket-delivery"
+
+    effect = "${(var.default_allow || var.allow_config) ? "Allow" : "Deny"}"
+
     actions = ["s3:PutObject"]
-    effect  = "${(var.default_allow || var.allow_config) ? "Allow" : "Deny"}"
 
     condition {
       test     = "StringEquals"
@@ -201,51 +215,51 @@ data "aws_iam_policy_document" "bucket_policy" {
       identifiers = ["config.amazonaws.com"]
     }
 
-    resources = ["arn:aws:s3:::${var.s3_bucket_name}/${var.config_logs_prefix}/AWSLogs/${data.aws_caller_identity.current.account_id}/Config/*"]
-    sid       = "config-bucket-delivery"
+    resources = "${length(var.config_accounts) > 0 ? formatlist(format("arn:aws:s3:::%s/%s/AWSLogs/%%s/Config/*", var.s3_bucket_name, var.config_logs_prefix), var.config_accounts) : list(format("arn:aws:s3:::%s/%s/AWSLogs/%s/*", var.s3_bucket_name, var.config_logs_prefix, data.aws_caller_identity.current.account_id))}"
   }
 
   ## ELB
   # https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/enable-access-logs.html#attach-bucket-policy
   statement {
+    sid = "elb-logs-put-object"
+
+    effect = "${(var.default_allow || var.allow_elb) ? "Allow" : "Deny"}"
+
     actions = ["s3:PutObject"]
-    effect  = "${(var.default_allow || var.allow_elb) ? "Allow" : "Deny"}"
 
     principals {
       type        = "AWS"
       identifiers = ["${data.aws_elb_service_account.main.arn}"]
     }
 
-    resources = [
-      "arn:aws:s3:::${var.s3_bucket_name}/${var.elb_logs_prefix}/AWSLogs/${data.aws_caller_identity.current.account_id}/*",
-    ]
-
-    sid = "elb-logs-put-object"
+    resources = "${length(var.elb_accounts) > 0 ? formatlist(format("arn:aws:s3:::%s/%s/AWSLogs/%%s/*", var.s3_bucket_name, var.elb_logs_prefix), var.elb_accounts) : list(format("arn:aws:s3:::%s/%s/AWSLogs/%s/*", var.s3_bucket_name, var.elb_logs_prefix, data.aws_caller_identity.current.account_id))}"
   }
 
   ## ALB
   # https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-access-logs.html#access-logging-bucket-permissions
   statement {
+    sid = "alb-logs-put-object"
+
+    effect = "${(var.default_allow || var.allow_alb) ? "Allow" : "Deny"}"
+
     actions = ["s3:PutObject"]
-    effect  = "${(var.default_allow || var.allow_alb) ? "Allow" : "Deny"}"
 
     principals {
       type        = "AWS"
       identifiers = ["${data.aws_elb_service_account.main.arn}"]
     }
 
-    resources = [
-      "arn:aws:s3:::${var.s3_bucket_name}/${var.alb_logs_prefix}/AWSLogs/${data.aws_caller_identity.current.account_id}/*",
-    ]
-
-    sid = "alb-logs-put-object"
+    resources = "${length(var.alb_accounts) > 0 ? formatlist(format("arn:aws:s3:::%s/%s/AWSLogs/%%s/*", var.s3_bucket_name, var.alb_logs_prefix), var.alb_accounts) : list(format("arn:aws:s3:::%s/%s/AWSLogs/%s/*", var.s3_bucket_name, var.alb_logs_prefix, data.aws_caller_identity.current.account_id))}"
   }
 
   ## NLB
   # https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-access-logs.html#access-logging-bucket-requirements
   statement {
+    sid = "nlb-logs-put-object"
+
+    effect = "${(var.default_allow || var.allow_nlb) ? "Allow" : "Deny"}"
+
     actions = ["s3:PutObject"]
-    effect  = "${(var.default_allow || var.allow_nlb) ? "Allow" : "Deny"}"
 
     principals {
       type        = "Service"
@@ -258,11 +272,7 @@ data "aws_iam_policy_document" "bucket_policy" {
       values   = ["bucket-owner-full-control"]
     }
 
-    resources = [
-      "arn:aws:s3:::${var.s3_bucket_name}/${var.nlb_logs_prefix}/AWSLogs/${data.aws_caller_identity.current.account_id}/*",
-    ]
-
-    sid = "nlb-logs-put-object"
+    resources = "${length(var.nlb_accounts) > 0 ? formatlist(format("arn:aws:s3:::%s/%s/AWSLogs/%%s/*", var.s3_bucket_name, var.nlb_logs_prefix), var.nlb_accounts) : list(format("arn:aws:s3:::%s/%s/AWSLogs/%s/*", var.s3_bucket_name, var.nlb_logs_prefix, data.aws_caller_identity.current.account_id))}"
   }
 
   statement {

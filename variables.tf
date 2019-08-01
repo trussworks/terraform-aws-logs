@@ -116,3 +116,33 @@ variable "create_public_access_block" {
   default     = true
   type        = "string"
 }
+
+variable "cloudtrail_accounts" {
+  description = "List of accounts for CloudTrail logs.  By default limits to the current account."
+  default     = []
+  type        = "list"
+}
+
+variable "config_accounts" {
+  description = "List of accounts for Config logs.  By default limits to the current account."
+  default     = []
+  type        = "list"
+}
+
+variable "alb_accounts" {
+  description = "List of accounts for ALB logs.  By default limits to the current account."
+  default     = []
+  type        = "list"
+}
+
+variable "elb_accounts" {
+  description = "List of accounts for ELB logs.  By default limits to the current account."
+  default     = []
+  type        = "list"
+}
+
+variable "nlb_accounts" {
+  description = "List of accounts for NLB logs.  By default limits to the current account."
+  default     = []
+  type        = "list"
+}
