@@ -146,3 +146,9 @@ variable "nlb_accounts" {
   default     = []
   type        = "list"
 }
+
+variable "cloudtrail_sse_options" {
+  description = "CloudTrail Server-Side Encryption (SSE) options"
+  default     = ["AES256", "aws:kms"]
+  type        = "list"
+}

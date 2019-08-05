@@ -81,6 +81,7 @@ Logging from the following services is supported for both cases:
 | allow\_redshift | Allow Redshift service to log to bucket. | string | `"false"` | no |
 | cloudtrail\_accounts | List of accounts for CloudTrail logs.  By default limits to the current account. | list | `[]` | no |
 | cloudtrail\_logs\_prefix | S3 prefix for CloudTrail logs. | string | `"cloudtrail"` | no |
+| cloudtrail\_sse\_options | CloudTrail Server-Side Encryption (SSE) options | list | `[ "AES256", "aws:kms" ]` | no |
 | cloudwatch\_logs\_prefix | S3 prefix for CloudWatch log exports. | string | `"cloudwatch"` | no |
 | config\_accounts | List of accounts for Config logs.  By default limits to the current account. | list | `[]` | no |
 | config\_logs\_prefix | S3 prefix for AWS Config logs. | string | `"config"` | no |
