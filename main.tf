@@ -221,26 +221,27 @@ data "template_file" "bucket_policy" {
     ]
 }
 JSON
+
   vars = {
-    region = "${var.region}"
-    bucket_arn = "${format("arn:aws:s3:::%s", var.s3_bucket_name)}"
-    alb_principal = "${data.aws_elb_service_account.main.arn}"
-    alb_effect = "${(var.default_allow || var.allow_alb) ? "Allow" : "Deny"}"
-    alb_resources = "${length(var.alb_accounts) > 0 ? jsonencode(formatlist(format("arn:aws:s3:::%s/%s/AWSLogs/%%s/*", var.s3_bucket_name, var.alb_logs_prefix), var.alb_accounts)) : jsonencode(format("arn:aws:s3:::%s/%s/AWSLogs/%s/*", var.s3_bucket_name, var.alb_logs_prefix, data.aws_caller_identity.current.account_id))}"
-    cloudwatch_effect = "${(var.default_allow || var.allow_cloudwatch) ? "Allow" : "Deny"}"
+    region               = "${var.region}"
+    bucket_arn           = "${format("arn:aws:s3:::%s", var.s3_bucket_name)}"
+    alb_principal        = "${data.aws_elb_service_account.main.arn}"
+    alb_effect           = "${(var.default_allow || var.allow_alb) ? "Allow" : "Deny"}"
+    alb_resources        = "${length(var.alb_accounts) > 0 ? jsonencode(formatlist(format("arn:aws:s3:::%s/%s/AWSLogs/%%s/*", var.s3_bucket_name, var.alb_logs_prefix), var.alb_accounts)) : jsonencode(format("arn:aws:s3:::%s/%s/AWSLogs/%s/*", var.s3_bucket_name, var.alb_logs_prefix, data.aws_caller_identity.current.account_id))}"
+    cloudwatch_effect    = "${(var.default_allow || var.allow_cloudwatch) ? "Allow" : "Deny"}"
     cloudwatch_resources = "${jsonencode(format("arn:aws:s3:::%s/%s/*", var.s3_bucket_name, var.cloudwatch_logs_prefix))}"
-    cloudtrail_effect = "${(var.default_allow || var.allow_cloudtrail) ? "Allow" : "Deny"}"
+    cloudtrail_effect    = "${(var.default_allow || var.allow_cloudtrail) ? "Allow" : "Deny"}"
     cloudtrail_resources = "${length(var.cloudtrail_accounts) > 0 ? jsonencode(sort(formatlist(format("arn:aws:s3:::%s/%s/AWSLogs/%%s/*", var.s3_bucket_name, var.cloudtrail_logs_prefix), var.cloudtrail_accounts))) : jsonencode(format("arn:aws:s3:::%s/%s/AWSLogs/%s/*", var.s3_bucket_name, var.cloudtrail_logs_prefix, data.aws_caller_identity.current.account_id))}"
-    config_effect = "${(var.default_allow || var.allow_config) ? "Allow" : "Deny"}"
-    config_resources = "${length(var.config_accounts) > 0 ? jsonencode(sort(formatlist(format("arn:aws:s3:::%s/%s/AWSLogs/%%s/Config/*", var.s3_bucket_name, var.config_logs_prefix), var.config_accounts))) : jsonencode(format("arn:aws:s3:::%s/%s/AWSLogs/%s/Config/*", var.s3_bucket_name, var.config_logs_prefix, data.aws_caller_identity.current.account_id))}"
-    elb_effect = "${(var.default_allow || var.allow_elb) ? "Allow" : "Deny"}"
-    elb_principal = "${data.aws_elb_service_account.main.arn}"
-    elb_resources = "${length(var.elb_accounts) > 0 ? jsonencode(sort(formatlist(format("arn:aws:s3:::%s/%s/AWSLogs/%%s/*", var.s3_bucket_name, var.elb_logs_prefix), var.elb_accounts))) : jsonencode(format("arn:aws:s3:::%s/%s/AWSLogs/%s/*", var.s3_bucket_name, var.elb_logs_prefix, data.aws_caller_identity.current.account_id))}"
-    nlb_effect = "${(var.default_allow || var.allow_nlb) ? "Allow" : "Deny"}"
-    nlb_resources = "${length(var.nlb_accounts) > 0 ? jsonencode(sort(formatlist(format("arn:aws:s3:::%s/%s/AWSLogs/%%s/*", var.s3_bucket_name, var.nlb_logs_prefix), var.nlb_accounts))) : jsonencode(format("arn:aws:s3:::%s/%s/AWSLogs/%s/*", var.s3_bucket_name, var.nlb_logs_prefix, data.aws_caller_identity.current.account_id))}"
-    redshift_effect = "${(var.default_allow || var.allow_redshift) ? "Allow" : "Deny"}"
-    redshift_principal = "${format("arn:aws:iam::%s:user/logs", data.aws_redshift_service_account.main.id)}"
-    redshift_resources = "${jsonencode(format("arn:aws:s3:::%s/%s/*", var.s3_bucket_name, var.redshift_logs_prefix))}"
+    config_effect        = "${(var.default_allow || var.allow_config) ? "Allow" : "Deny"}"
+    config_resources     = "${length(var.config_accounts) > 0 ? jsonencode(sort(formatlist(format("arn:aws:s3:::%s/%s/AWSLogs/%%s/Config/*", var.s3_bucket_name, var.config_logs_prefix), var.config_accounts))) : jsonencode(format("arn:aws:s3:::%s/%s/AWSLogs/%s/Config/*", var.s3_bucket_name, var.config_logs_prefix, data.aws_caller_identity.current.account_id))}"
+    elb_effect           = "${(var.default_allow || var.allow_elb) ? "Allow" : "Deny"}"
+    elb_principal        = "${data.aws_elb_service_account.main.arn}"
+    elb_resources        = "${length(var.elb_accounts) > 0 ? jsonencode(sort(formatlist(format("arn:aws:s3:::%s/%s/AWSLogs/%%s/*", var.s3_bucket_name, var.elb_logs_prefix), var.elb_accounts))) : jsonencode(format("arn:aws:s3:::%s/%s/AWSLogs/%s/*", var.s3_bucket_name, var.elb_logs_prefix, data.aws_caller_identity.current.account_id))}"
+    nlb_effect           = "${(var.default_allow || var.allow_nlb) ? "Allow" : "Deny"}"
+    nlb_resources        = "${length(var.nlb_accounts) > 0 ? jsonencode(sort(formatlist(format("arn:aws:s3:::%s/%s/AWSLogs/%%s/*", var.s3_bucket_name, var.nlb_logs_prefix), var.nlb_accounts))) : jsonencode(format("arn:aws:s3:::%s/%s/AWSLogs/%s/*", var.s3_bucket_name, var.nlb_logs_prefix, data.aws_caller_identity.current.account_id))}"
+    redshift_effect      = "${(var.default_allow || var.allow_redshift) ? "Allow" : "Deny"}"
+    redshift_principal   = "${format("arn:aws:iam::%s:user/logs", data.aws_redshift_service_account.main.id)}"
+    redshift_resources   = "${jsonencode(format("arn:aws:s3:::%s/%s/*", var.s3_bucket_name, var.redshift_logs_prefix))}"
   }
 }
 
