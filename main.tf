@@ -85,6 +85,165 @@ data "aws_caller_identity" "current" {}
 # S3 Bucket
 #
 
+data "template_file" "bucket_policy" {
+  template = <<JSON
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "cloudtrail-logs-get-bucket-acl",
+            "Effect": "$${cloudtrail_effect}",
+            "Principal": {
+                "Service": "cloudtrail.amazonaws.com"
+            },
+            "Action": "s3:GetBucketAcl",
+            "Resource": "$${bucket_arn}"
+        },
+        {
+            "Sid": "cloudtrail-logs-put-object",
+            "Effect": "$${cloudtrail_effect}",
+            "Principal": {
+                "Service": "cloudtrail.amazonaws.com"
+            },
+            "Action": "s3:PutObject",
+            "Resource": $${cloudtrail_resources},
+            "Condition": {
+                "StringEquals": {
+                    "s3:x-amz-acl": "bucket-owner-full-control"
+                }
+            }
+        },
+        {
+            "Sid": "cloudwatch-logs-get-bucket-acl",
+            "Effect": "$${cloudwatch_effect}",
+            "Principal": {
+                "Service": "logs.$${region}.amazonaws.com"
+            },
+            "Action": "s3:GetBucketAcl",
+            "Resource": "$${bucket_arn}"
+        },
+        {
+            "Sid": "cloudwatch-logs-put-object",
+            "Effect": "$${cloudwatch_effect}",
+            "Principal": {
+                "Service": "logs.$${region}.amazonaws.com"
+            },
+            "Action": "s3:PutObject",
+            "Resource": $${cloudwatch_resources},
+            "Condition": {
+                "StringEquals": {
+                    "s3:x-amz-acl": "bucket-owner-full-control"
+                }
+            }
+        },
+        {
+            "Sid": "config-permissions-check",
+            "Effect": "$${config_effect}",
+            "Principal": {
+                "Service": "config.amazonaws.com"
+            },
+            "Action": "s3:GetBucketAcl",
+            "Resource": "$${bucket_arn}"
+        },
+        {
+            "Sid": "config-bucket-delivery",
+            "Effect": "$${config_effect}",
+            "Principal": {
+                "Service": "config.amazonaws.com"
+            },
+            "Action": "s3:PutObject",
+            "Resource": $${config_resources},
+            "Condition": {
+                "StringEquals": {
+                    "s3:x-amz-acl": "bucket-owner-full-control"
+                }
+            }
+        },
+        {
+            "Sid": "elb-logs-put-object",
+            "Effect": "$${elb_effect}",
+            "Principal": {
+                "AWS": "$${elb_principal}"
+            },
+            "Action": "s3:PutObject",
+            "Resource":  $${elb_resources}
+        },
+        {
+            "Sid": "alb-logs-put-object",
+            "Effect": "$${alb_effect}",
+            "Principal": {
+                "AWS": "$${alb_principal}"
+            },
+            "Action": "s3:PutObject",
+            "Resource":  $${alb_resources}
+        },
+        {
+            "Sid": "nlb-logs-put-object",
+            "Effect": "$${nlb_effect}",
+            "Principal": {
+                "Service": "delivery.logs.amazonaws.com"
+            },
+            "Action": "s3:PutObject",
+            "Resource": $${nlb_resources},
+            "Condition": {
+                "StringEquals": {
+                    "s3:x-amz-acl": "bucket-owner-full-control"
+                }
+            }
+        },
+        {
+            "Sid": "nlb-logs-acl-check",
+            "Effect": "$${nlb_effect}",
+            "Principal": {
+                "Service": "delivery.logs.amazonaws.com"
+            },
+            "Action": "s3:GetBucketAcl",
+            "Resource": "$${bucket_arn}"
+        },
+        {
+            "Sid": "redshift-logs-put-object",
+            "Effect": "$${redshift_effect}",
+            "Principal": {
+                "AWS": "$${redshift_principal}"
+            },
+            "Action": "s3:PutObject",
+            "Resource": $${redshift_resources}
+        },
+        {
+            "Sid": "redshift-logs-get-bucket-acl",
+            "Effect": "$${redshift_effect}",
+            "Principal": {
+                "AWS": "$${redshift_principal}"
+            },
+            "Action": "s3:GetBucketAcl",
+            "Resource": "$${bucket_arn}"
+        }
+    ]
+}
+JSON
+  vars = {
+    region = "${var.region}"
+    bucket_arn = "${format("arn:aws:s3:::%s", var.s3_bucket_name)}"
+    alb_principal = "${data.aws_elb_service_account.main.arn}"
+    alb_effect = "${(var.default_allow || var.allow_alb) ? "Allow" : "Deny"}"
+    alb_resources = "${length(var.alb_accounts) > 0 ? jsonencode(formatlist(format("arn:aws:s3:::%s/%s/AWSLogs/%%s/*", var.s3_bucket_name, var.alb_logs_prefix), var.alb_accounts)) : jsonencode(format("arn:aws:s3:::%s/%s/AWSLogs/%s/*", var.s3_bucket_name, var.alb_logs_prefix, data.aws_caller_identity.current.account_id))}"
+    cloudwatch_effect = "${(var.default_allow || var.allow_cloudwatch) ? "Allow" : "Deny"}"
+    cloudwatch_resources = "${jsonencode(format("arn:aws:s3:::%s/%s/*", var.s3_bucket_name, var.cloudwatch_logs_prefix))}"
+    cloudtrail_effect = "${(var.default_allow || var.allow_cloudtrail) ? "Allow" : "Deny"}"
+    cloudtrail_resources = "${length(var.cloudtrail_accounts) > 0 ? jsonencode(sort(formatlist(format("arn:aws:s3:::%s/%s/AWSLogs/%%s/*", var.s3_bucket_name, var.cloudtrail_logs_prefix), var.cloudtrail_accounts))) : jsonencode(format("arn:aws:s3:::%s/%s/AWSLogs/%s/*", var.s3_bucket_name, var.cloudtrail_logs_prefix, data.aws_caller_identity.current.account_id))}"
+    config_effect = "${(var.default_allow || var.allow_config) ? "Allow" : "Deny"}"
+    config_resources = "${length(var.config_accounts) > 0 ? jsonencode(sort(formatlist(format("arn:aws:s3:::%s/%s/AWSLogs/%%s/Config/*", var.s3_bucket_name, var.config_logs_prefix), var.config_accounts))) : jsonencode(format("arn:aws:s3:::%s/%s/AWSLogs/%s/Config/*", var.s3_bucket_name, var.config_logs_prefix, data.aws_caller_identity.current.account_id))}"
+    elb_effect = "${(var.default_allow || var.allow_elb) ? "Allow" : "Deny"}"
+    elb_principal = "${data.aws_elb_service_account.main.arn}"
+    elb_resources = "${length(var.elb_accounts) > 0 ? jsonencode(sort(formatlist(format("arn:aws:s3:::%s/%s/AWSLogs/%%s/*", var.s3_bucket_name, var.elb_logs_prefix), var.elb_accounts))) : jsonencode(format("arn:aws:s3:::%s/%s/AWSLogs/%s/*", var.s3_bucket_name, var.elb_logs_prefix, data.aws_caller_identity.current.account_id))}"
+    nlb_effect = "${(var.default_allow || var.allow_nlb) ? "Allow" : "Deny"}"
+    nlb_resources = "${length(var.nlb_accounts) > 0 ? jsonencode(sort(formatlist(format("arn:aws:s3:::%s/%s/AWSLogs/%%s/*", var.s3_bucket_name, var.nlb_logs_prefix), var.nlb_accounts))) : jsonencode(format("arn:aws:s3:::%s/%s/AWSLogs/%s/*", var.s3_bucket_name, var.nlb_logs_prefix, data.aws_caller_identity.current.account_id))}"
+    redshift_effect = "${(var.default_allow || var.allow_redshift) ? "Allow" : "Deny"}"
+    redshift_principal = "${format("arn:aws:iam::%s:user/logs", data.aws_redshift_service_account.main.id)}"
+    redshift_resources = "${jsonencode(format("arn:aws:s3:::%s/%s/*", var.s3_bucket_name, var.redshift_logs_prefix))}"
+  }
+}
+
 resource "aws_s3_bucket" "aws_logs" {
   bucket = "${var.s3_bucket_name}"
   acl    = "${var.s3_bucket_acl}"
@@ -114,211 +273,9 @@ resource "aws_s3_bucket" "aws_logs" {
   }
 }
 
-data "aws_iam_policy_document" "bucket_policy" {
-  ## CloudTrail
-  statement {
-    actions = ["s3:GetBucketAcl"]
-    effect  = "${(var.default_allow || var.allow_cloudtrail) ? "Allow" : "Deny"}"
-
-    principals {
-      type        = "Service"
-      identifiers = ["cloudtrail.amazonaws.com"]
-    }
-
-    resources = ["arn:aws:s3:::${var.s3_bucket_name}"]
-    sid       = "cloudtrail-logs-get-bucket-acl"
-  }
-
-  statement {
-    sid = "cloudtrail-logs-put-object"
-
-    actions = ["s3:PutObject"]
-
-    effect = "${(var.default_allow || var.allow_cloudtrail) ? "Allow" : "Deny"}"
-
-    principals {
-      type        = "Service"
-      identifiers = ["cloudtrail.amazonaws.com"]
-    }
-
-    resources = "${length(var.cloudtrail_accounts) > 0 ? formatlist(format("arn:aws:s3:::%s/%s/AWSLogs/%%s/*",var.s3_bucket_name, var.cloudtrail_logs_prefix), var.cloudtrail_accounts) : list(format("arn:aws:s3:::%s/%s/AWSLogs/%s/*", var.s3_bucket_name, var.cloudtrail_logs_prefix, data.aws_caller_identity.current.account_id))}"
-
-    condition {
-      test     = "StringEquals"
-      variable = "s3:x-amz-acl"
-      values   = ["bucket-owner-full-control"]
-    }
-  }
-
-  ## CloudWatch
-  statement {
-    actions = ["s3:GetBucketAcl"]
-    effect  = "${(var.default_allow || var.allow_cloudwatch) ? "Allow" : "Deny"}"
-
-    principals {
-      type        = "Service"
-      identifiers = ["logs.${var.region}.amazonaws.com"]
-    }
-
-    resources = ["arn:aws:s3:::${var.s3_bucket_name}"]
-    sid       = "cloudwatch-logs-get-bucket-acl"
-  }
-
-  statement {
-    actions = ["s3:PutObject"]
-    effect  = "${(var.default_allow || var.allow_cloudwatch) ? "Allow" : "Deny"}"
-
-    condition {
-      test     = "StringEquals"
-      variable = "s3:x-amz-acl"
-      values   = ["bucket-owner-full-control"]
-    }
-
-    principals {
-      type        = "Service"
-      identifiers = ["logs.${var.region}.amazonaws.com"]
-    }
-
-    resources = ["arn:aws:s3:::${var.s3_bucket_name}/${var.cloudwatch_logs_prefix}/*"]
-    sid       = "cloudwatch-logs-put-object"
-  }
-
-  ## Config
-  statement {
-    actions = ["s3:GetBucketAcl"]
-    effect  = "${(var.default_allow || var.allow_config) ? "Allow" : "Deny"}"
-
-    principals {
-      type        = "Service"
-      identifiers = ["config.amazonaws.com"]
-    }
-
-    resources = ["arn:aws:s3:::${var.s3_bucket_name}"]
-    sid       = "config-permissions-check"
-  }
-
-  statement {
-    sid = "config-bucket-delivery"
-
-    effect = "${(var.default_allow || var.allow_config) ? "Allow" : "Deny"}"
-
-    actions = ["s3:PutObject"]
-
-    condition {
-      test     = "StringEquals"
-      variable = "s3:x-amz-acl"
-      values   = ["bucket-owner-full-control"]
-    }
-
-    principals {
-      type        = "Service"
-      identifiers = ["config.amazonaws.com"]
-    }
-
-    resources = "${length(var.config_accounts) > 0 ? formatlist(format("arn:aws:s3:::%s/%s/AWSLogs/%%s/Config/*", var.s3_bucket_name, var.config_logs_prefix), var.config_accounts) : list(format("arn:aws:s3:::%s/%s/AWSLogs/%s/*", var.s3_bucket_name, var.config_logs_prefix, data.aws_caller_identity.current.account_id))}"
-  }
-
-  ## ELB
-  # https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/enable-access-logs.html#attach-bucket-policy
-  statement {
-    sid = "elb-logs-put-object"
-
-    effect = "${(var.default_allow || var.allow_elb) ? "Allow" : "Deny"}"
-
-    actions = ["s3:PutObject"]
-
-    principals {
-      type        = "AWS"
-      identifiers = ["${data.aws_elb_service_account.main.arn}"]
-    }
-
-    resources = "${length(var.elb_accounts) > 0 ? formatlist(format("arn:aws:s3:::%s/%s/AWSLogs/%%s/*", var.s3_bucket_name, var.elb_logs_prefix), var.elb_accounts) : list(format("arn:aws:s3:::%s/%s/AWSLogs/%s/*", var.s3_bucket_name, var.elb_logs_prefix, data.aws_caller_identity.current.account_id))}"
-  }
-
-  ## ALB
-  # https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-access-logs.html#access-logging-bucket-permissions
-  statement {
-    sid = "alb-logs-put-object"
-
-    effect = "${(var.default_allow || var.allow_alb) ? "Allow" : "Deny"}"
-
-    actions = ["s3:PutObject"]
-
-    principals {
-      type        = "AWS"
-      identifiers = ["${data.aws_elb_service_account.main.arn}"]
-    }
-
-    resources = "${length(var.alb_accounts) > 0 ? formatlist(format("arn:aws:s3:::%s/%s/AWSLogs/%%s/*", var.s3_bucket_name, var.alb_logs_prefix), var.alb_accounts) : list(format("arn:aws:s3:::%s/%s/AWSLogs/%s/*", var.s3_bucket_name, var.alb_logs_prefix, data.aws_caller_identity.current.account_id))}"
-  }
-
-  ## NLB
-  # https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-access-logs.html#access-logging-bucket-requirements
-  statement {
-    sid = "nlb-logs-put-object"
-
-    effect = "${(var.default_allow || var.allow_nlb) ? "Allow" : "Deny"}"
-
-    actions = ["s3:PutObject"]
-
-    principals {
-      type        = "Service"
-      identifiers = ["delivery.logs.amazonaws.com"]
-    }
-
-    condition {
-      test     = "StringEquals"
-      variable = "s3:x-amz-acl"
-      values   = ["bucket-owner-full-control"]
-    }
-
-    resources = "${length(var.nlb_accounts) > 0 ? formatlist(format("arn:aws:s3:::%s/%s/AWSLogs/%%s/*", var.s3_bucket_name, var.nlb_logs_prefix), var.nlb_accounts) : list(format("arn:aws:s3:::%s/%s/AWSLogs/%s/*", var.s3_bucket_name, var.nlb_logs_prefix, data.aws_caller_identity.current.account_id))}"
-  }
-
-  statement {
-    actions = ["s3:GetBucketAcl"]
-    effect  = "${(var.default_allow || var.allow_nlb) ? "Allow" : "Deny"}"
-
-    principals {
-      type        = "Service"
-      identifiers = ["delivery.logs.amazonaws.com"]
-    }
-
-    resources = ["arn:aws:s3:::${var.s3_bucket_name}"]
-    sid       = "nlb-logs-acl-check"
-  }
-
-  ## Redshift
-  statement {
-    actions = ["s3:PutObject"]
-    effect  = "${(var.default_allow || var.allow_redshift) ? "Allow" : "Deny"}"
-
-    principals {
-      type        = "AWS"
-      identifiers = ["arn:aws:iam::${data.aws_redshift_service_account.main.id}:user/logs"]
-    }
-
-    resources = ["arn:aws:s3:::${var.s3_bucket_name}/${var.redshift_logs_prefix}/*"]
-    sid       = "redshift-logs-put-object"
-  }
-
-  statement {
-    actions = ["s3:GetBucketAcl"]
-    effect  = "${(var.default_allow || var.allow_redshift) ? "Allow" : "Deny"}"
-
-    principals {
-      type        = "AWS"
-      identifiers = ["arn:aws:iam::${data.aws_redshift_service_account.main.id}:user/logs"]
-    }
-
-    resources = ["arn:aws:s3:::${var.s3_bucket_name}"]
-    sid       = "redshift-logs-get-bucket-acl"
-  }
-}
-
 resource "aws_s3_bucket_policy" "bucket_policy" {
   bucket = "${aws_s3_bucket.aws_logs.id}"
-  policy = "${data.aws_iam_policy_document.bucket_policy.json}"
+  policy = "${data.template_file.bucket_policy.rendered}"
 }
 
 resource "aws_s3_bucket_public_access_block" "public_access_block" {
