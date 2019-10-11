@@ -26,10 +26,10 @@ variable "elb_logs_prefix" {
   type        = "string"
 }
 
-variable "alb_logs_prefix" {
-  description = "S3 prefix for ALB logs."
-  default     = "alb"
-  type        = "string"
+variable "alb_logs_prefixes" {
+  description = "S3 key prefixes for ALB logs."
+  default     = ["alb"]
+  type        = "list"
 }
 
 variable "nlb_logs_prefix" {
@@ -125,12 +125,6 @@ variable "cloudtrail_accounts" {
 
 variable "config_accounts" {
   description = "List of accounts for Config logs.  By default limits to the current account."
-  default     = []
-  type        = "list"
-}
-
-variable "alb_accounts" {
-  description = "List of accounts for ALB logs.  By default limits to the current account."
   default     = []
   type        = "list"
 }

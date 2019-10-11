@@ -66,12 +66,26 @@ Logging from the following services is supported for both cases:
       cloudtrail_accounts = ["${data.aws_caller_identity.current.account_id}", "${aws_organizations_account.example.id}"]
     }
 
+## Usage for a single log bucket storing logs from multiple application load balancers
+
+    module "aws_logs" {
+      source         = "trussworks/logs/aws"
+      s3_bucket_name = "my-company-aws-logs-alb"
+      region         = "us-west-2"
+      default_allow  = false
+      allow_alb      = true
+      alb_logs_prefixes = formatlist(format("alb/%%s/AWSLogs/%s", data.aws_caller_identity.current.account_id), [
+       "hello-world-prod",
+       "hello-world-staging",
+       "hello-world-experimental",
+      ])
+    }
+
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|:----:|:-----:|:-----:|
-| alb\_accounts | List of accounts for ALB logs.  By default limits to the current account. | list | `[]` | no |
-| alb\_logs\_prefix | S3 prefix for ALB logs. | string | `"alb"` | no |
+| alb\_logs\_prefixes | S3 key prefixes for ALB logs. | list | `[ "alb" ]` | no |
 | allow\_alb | Allow ALB service to log to bucket. | string | `"false"` | no |
 | allow\_cloudtrail | Allow Cloudtrail service to log to bucket. | string | `"false"` | no |
 | allow\_cloudwatch | Allow Cloudwatch service to export logs to bucket. | string | `"false"` | no |

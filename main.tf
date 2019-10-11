@@ -65,6 +65,21 @@
  *       allow_cloudtrail      = true
  *       cloudtrail_accounts = ["${data.aws_caller_identity.current.account_id}", "${aws_organizations_account.example.id}"]
  *     }
+ *
+ * ## Usage for a single log bucket storing logs from multiple application load balancers
+ *
+ *     module "aws_logs" {
+ *       source         = "trussworks/logs/aws"
+ *       s3_bucket_name = "my-company-aws-logs-alb"
+ *       region         = "us-west-2"
+ *       default_allow  = false
+ *       allow_alb      = true
+ *       alb_logs_prefixes = formatlist(format("alb/%%s/AWSLogs/%s", data.aws_caller_identity.current.account_id), [
+ *        "hello-world-prod",
+ *        "hello-world-staging",
+ *        "hello-world-experimental",
+ *       ])
+ *     }
  */
 
 # Get the account id of the AWS ELB service account in a given region for the
@@ -227,7 +242,7 @@ JSON
     bucket_arn           = "${format("arn:aws:s3:::%s", var.s3_bucket_name)}"
     alb_principal        = "${data.aws_elb_service_account.main.arn}"
     alb_effect           = "${(var.default_allow || var.allow_alb) ? "Allow" : "Deny"}"
-    alb_resources        = "${length(var.alb_accounts) > 0 ? jsonencode(formatlist(format("arn:aws:s3:::%s/%s/AWSLogs/%%s/*", var.s3_bucket_name, var.alb_logs_prefix), var.alb_accounts)) : jsonencode(format("arn:aws:s3:::%s/%s/AWSLogs/%s/*", var.s3_bucket_name, var.alb_logs_prefix, data.aws_caller_identity.current.account_id))}"
+    alb_resources        = "${jsonencode(formatlist(format("arn:aws:s3:::%s/%%s/*", var.s3_bucket_name), var.alb_logs_prefixes))}"
     cloudwatch_effect    = "${(var.default_allow || var.allow_cloudwatch) ? "Allow" : "Deny"}"
     cloudwatch_resources = "${jsonencode(format("arn:aws:s3:::%s/%s/*", var.s3_bucket_name, var.cloudwatch_logs_prefix))}"
     cloudtrail_effect    = "${(var.default_allow || var.allow_cloudtrail) ? "Allow" : "Deny"}"
