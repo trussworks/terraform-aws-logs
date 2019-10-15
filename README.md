@@ -129,13 +129,11 @@ Version 3.5.0 removed the `alb_logs_prefix` and `alb_accounts` variables and now
 
 Use the `format` and `formatlist` functions in the caller module to support more complex logging that does limit by account id.  For example:
 
-```
-alb_logs_prefixes = formatlist(format("alb/%%s/AWSLogs/%s", data.aws_caller_identity.current.account_id), [
- "hello-world-prod",
- "hello-world-staging",
- "hello-world-experimental",
-])
-```
+  alb_logs_prefixes = formatlist(format("alb/%%s/AWSLogs/%s", data.aws_caller_identity.current.account_id), [
+   "hello-world-prod",
+   "hello-world-staging",
+   "hello-world-experimental",
+  ])
 
 ### Upgrading from 2.1.X to 3.X.X
 
