@@ -123,6 +123,20 @@ Logging from the following services is supported for both cases:
 
 ## Upgrade Paths
 
+### Upgrading from 3.4.0 to 3.5.x
+
+Version 3.5.0 removed the `alb_logs_prefix` and `alb_accounts` variables and now uses one `alb_logs_prefixes` list as input.  If you had not set the `alb_logs_prefix` or `alb_accounts` variables, then the default behavior does not change.  If you had set `alb_logs_prefix`, then simply pass the original value as a 1 item list to `alb_logs_prefixes` (while watching that path separators are not duplicated).  For example, `alb_logs_prefixes = ["logs/alb"]`.
+
+Use the `format` and `formatlist` functions in the caller module to support more complex logging that does limit by account id.  For example:
+
+```
+alb_logs_prefixes = formatlist(format("alb/%%s/AWSLogs/%s", data.aws_caller_identity.current.account_id), [
+ "hello-world-prod",
+ "hello-world-staging",
+ "hello-world-experimental",
+])
+```
+
 ### Upgrading from 2.1.X to 3.X.X
 
 Before upgrading you will want to make sure you are on the latest version of 2.1.X.
