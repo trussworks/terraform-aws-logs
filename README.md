@@ -66,12 +66,26 @@ Logging from the following services is supported for both cases:
       cloudtrail_accounts = ["${data.aws_caller_identity.current.account_id}", "${aws_organizations_account.example.id}"]
     }
 
+## Usage for a single log bucket storing logs from multiple application load balancers
+
+    module "aws_logs" {
+      source         = "trussworks/logs/aws"
+      s3_bucket_name = "my-company-aws-logs-alb"
+      region         = "us-west-2"
+      default_allow  = false
+      allow_alb      = true
+      alb_logs_prefixes = formatlist(format("alb/%%s/AWSLogs/%s", data.aws_caller_identity.current.account_id), [
+       "hello-world-prod",
+       "hello-world-staging",
+       "hello-world-experimental",
+      ])
+    }
+
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|:----:|:-----:|:-----:|
-| alb\_accounts | List of accounts for ALB logs.  By default limits to the current account. | list | `[]` | no |
-| alb\_logs\_prefix | S3 prefix for ALB logs. | string | `"alb"` | no |
+| alb\_logs\_prefixes | S3 key prefixes for ALB logs. | list | `[ "alb" ]` | no |
 | allow\_alb | Allow ALB service to log to bucket. | string | `"false"` | no |
 | allow\_cloudtrail | Allow Cloudtrail service to log to bucket. | string | `"false"` | no |
 | allow\_cloudwatch | Allow Cloudwatch service to export logs to bucket. | string | `"false"` | no |
@@ -108,6 +122,18 @@ Logging from the following services is supported for both cases:
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 
 ## Upgrade Paths
+
+### Upgrading from 3.4.0 to 3.5.x
+
+Version 3.5.0 removed the `alb_logs_prefix` and `alb_accounts` variables and now uses one `alb_logs_prefixes` list as input.  If you had not set the `alb_logs_prefix` or `alb_accounts` variables, then the default behavior does not change.  If you had set `alb_logs_prefix`, then simply pass the original value as a 1 item list to `alb_logs_prefixes` (while watching that path separators are not duplicated).  For example, `alb_logs_prefixes = ["logs/alb"]`.
+
+Use the `format` and `formatlist` functions in the caller module to support more complex logging that does limit by account id.  For example:
+
+    alb_logs_prefixes = formatlist(format("alb/%%s/AWSLogs/%s", data.aws_caller_identity.current.account_id), [
+      "hello-world-prod",
+      "hello-world-staging",
+      "hello-world-experimental",
+    ])
 
 ### Upgrading from 2.1.X to 3.X.X
 
