@@ -1,4 +1,3 @@
-<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 Supports two main uses cases:
 
 1. Creates and configures a single private S3 bucket for storing logs from various AWS services, which are nested as bucket prefixes. Logs will expire after a default of 90 days, with option to configure retention value.
@@ -81,11 +80,18 @@ Logging from the following services is supported for both cases:
       ])
     }
 
+## Terraform Versions
+
+Terraform 0.12. Pin module version to ~> 4.x Submit pull-requests to master branch.
+
+Terraform 0.11. Pin module version to ~> 3.5.0. Submit pull-requests to terraform011 branch.
+
+<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|:----:|:-----:|:-----:|
-| alb\_logs\_prefixes | S3 key prefixes for ALB logs. | list | `[ "alb" ]` | no |
+| alb\_logs\_prefixes | S3 key prefixes for ALB logs. | list(string) | `[ "alb" ]` | no |
 | allow\_alb | Allow ALB service to log to bucket. | string | `"false"` | no |
 | allow\_cloudtrail | Allow Cloudtrail service to log to bucket. | string | `"false"` | no |
 | allow\_cloudwatch | Allow Cloudwatch service to export logs to bucket. | string | `"false"` | no |
@@ -93,16 +99,16 @@ Logging from the following services is supported for both cases:
 | allow\_elb | Allow ELB service to log to bucket. | string | `"false"` | no |
 | allow\_nlb | Allow NLB service to log to bucket. | string | `"false"` | no |
 | allow\_redshift | Allow Redshift service to log to bucket. | string | `"false"` | no |
-| cloudtrail\_accounts | List of accounts for CloudTrail logs.  By default limits to the current account. | list | `[]` | no |
+| cloudtrail\_accounts | List of accounts for CloudTrail logs.  By default limits to the current account. | list(string) | `[]` | no |
 | cloudtrail\_logs\_prefix | S3 prefix for CloudTrail logs. | string | `"cloudtrail"` | no |
 | cloudwatch\_logs\_prefix | S3 prefix for CloudWatch log exports. | string | `"cloudwatch"` | no |
-| config\_accounts | List of accounts for Config logs.  By default limits to the current account. | list | `[]` | no |
+| config\_accounts | List of accounts for Config logs.  By default limits to the current account. | list(string) | `[]` | no |
 | config\_logs\_prefix | S3 prefix for AWS Config logs. | string | `"config"` | no |
 | create\_public\_access\_block | Whether to create a public_access_block restricting public access to the bucket. | string | `"true"` | no |
 | default\_allow | Whether all services included in this module should be allowed to write to the bucket by default. Alternatively select individual services. It's recommended to use the default bucket ACL of log-delivery-write. | string | `"true"` | no |
-| elb\_accounts | List of accounts for ELB logs.  By default limits to the current account. | list | `[]` | no |
+| elb\_accounts | List of accounts for ELB logs.  By default limits to the current account. | list(string) | `[]` | no |
 | elb\_logs\_prefix | S3 prefix for ELB logs. | string | `"elb"` | no |
-| nlb\_accounts | List of accounts for NLB logs.  By default limits to the current account. | list | `[]` | no |
+| nlb\_accounts | List of accounts for NLB logs.  By default limits to the current account. | list(string) | `[]` | no |
 | nlb\_logs\_prefix | S3 prefix for NLB logs. | string | `"nlb"` | no |
 | redshift\_logs\_prefix | S3 prefix for RedShift logs. | string | `"redshift"` | no |
 | region | Region where the AWS S3 bucket will be created. | string | n/a | yes |
@@ -150,3 +156,22 @@ As for policy creation, all policies are now turned on or off via the `allow_*` 
 the `effect` block in the bucket policy for that resource will be modified to `Allow` whereas by default it will be
 set to `Deny`. Previously this module used a template to add or remove JSON text from the policy before rendering.
 The new module explicitly adds all resource policies as `Deny` and leaves it up to you to enable them.
+
+## Developer Setup
+
+Install dependencies (macOS)
+
+  brew install pre-commit go terraform terraform-docs
+
+### Testing
+
+[Terratest](https://github.com/gruntwork-io/terratest) is being used for
+automated testing with this module. Tests in the `test` folder can be run
+locally by running the following command:
+
+  make test
+
+Or with aws-vault:
+
+  AWS_VAULT_KEYCHAIN_NAME=YOUR-KEYCHAIN-NAME aws-vault exec YOUR-AWS-PROFILE -- make test
+
