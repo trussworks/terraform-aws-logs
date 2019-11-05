@@ -1,4 +1,3 @@
-<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 Supports two main uses cases:
 
 1. Creates and configures a single private S3 bucket for storing logs from various AWS services, which are nested as bucket prefixes. Logs will expire after a default of 90 days, with option to configure retention value.
@@ -66,12 +65,33 @@ Logging from the following services is supported for both cases:
       cloudtrail_accounts = ["${data.aws_caller_identity.current.account_id}", "${aws_organizations_account.example.id}"]
     }
 
+## Usage for a single log bucket storing logs from multiple application load balancers
+
+    module "aws_logs" {
+      source         = "trussworks/logs/aws"
+      s3_bucket_name = "my-company-aws-logs-alb"
+      region         = "us-west-2"
+      default_allow  = false
+      allow_alb      = true
+      alb_logs_prefixes = formatlist(format("alb/%%s/AWSLogs/%s", data.aws_caller_identity.current.account_id), [
+       "hello-world-prod",
+       "hello-world-staging",
+       "hello-world-experimental",
+      ])
+    }
+
+## Terraform Versions
+
+Terraform 0.12. Pin module version to ~> 4.x Submit pull-requests to master branch.
+
+Terraform 0.11. Pin module version to ~> 3.5.0. Submit pull-requests to terraform011 branch.
+
+<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|:----:|:-----:|:-----:|
-| alb\_accounts | List of accounts for ALB logs.  By default limits to the current account. | list | `[]` | no |
-| alb\_logs\_prefix | S3 prefix for ALB logs. | string | `"alb"` | no |
+| alb\_logs\_prefixes | S3 key prefixes for ALB logs. | list(string) | `[ "alb" ]` | no |
 | allow\_alb | Allow ALB service to log to bucket. | string | `"false"` | no |
 | allow\_cloudtrail | Allow Cloudtrail service to log to bucket. | string | `"false"` | no |
 | allow\_cloudwatch | Allow Cloudwatch service to export logs to bucket. | string | `"false"` | no |
@@ -79,16 +99,16 @@ Logging from the following services is supported for both cases:
 | allow\_elb | Allow ELB service to log to bucket. | string | `"false"` | no |
 | allow\_nlb | Allow NLB service to log to bucket. | string | `"false"` | no |
 | allow\_redshift | Allow Redshift service to log to bucket. | string | `"false"` | no |
-| cloudtrail\_accounts | List of accounts for CloudTrail logs.  By default limits to the current account. | list | `[]` | no |
+| cloudtrail\_accounts | List of accounts for CloudTrail logs.  By default limits to the current account. | list(string) | `[]` | no |
 | cloudtrail\_logs\_prefix | S3 prefix for CloudTrail logs. | string | `"cloudtrail"` | no |
 | cloudwatch\_logs\_prefix | S3 prefix for CloudWatch log exports. | string | `"cloudwatch"` | no |
-| config\_accounts | List of accounts for Config logs.  By default limits to the current account. | list | `[]` | no |
+| config\_accounts | List of accounts for Config logs.  By default limits to the current account. | list(string) | `[]` | no |
 | config\_logs\_prefix | S3 prefix for AWS Config logs. | string | `"config"` | no |
 | create\_public\_access\_block | Whether to create a public_access_block restricting public access to the bucket. | string | `"true"` | no |
 | default\_allow | Whether all services included in this module should be allowed to write to the bucket by default. Alternatively select individual services. It's recommended to use the default bucket ACL of log-delivery-write. | string | `"true"` | no |
-| elb\_accounts | List of accounts for ELB logs.  By default limits to the current account. | list | `[]` | no |
+| elb\_accounts | List of accounts for ELB logs.  By default limits to the current account. | list(string) | `[]` | no |
 | elb\_logs\_prefix | S3 prefix for ELB logs. | string | `"elb"` | no |
-| nlb\_accounts | List of accounts for NLB logs.  By default limits to the current account. | list | `[]` | no |
+| nlb\_accounts | List of accounts for NLB logs.  By default limits to the current account. | list(string) | `[]` | no |
 | nlb\_logs\_prefix | S3 prefix for NLB logs. | string | `"nlb"` | no |
 | redshift\_logs\_prefix | S3 prefix for RedShift logs. | string | `"redshift"` | no |
 | region | Region where the AWS S3 bucket will be created. | string | n/a | yes |
@@ -109,6 +129,18 @@ Logging from the following services is supported for both cases:
 
 ## Upgrade Paths
 
+### Upgrading from 3.4.0 to 3.5.x
+
+Version 3.5.0 removed the `alb_logs_prefix` and `alb_accounts` variables and now uses one `alb_logs_prefixes` list as input.  If you had not set the `alb_logs_prefix` or `alb_accounts` variables, then the default behavior does not change.  If you had set `alb_logs_prefix`, then simply pass the original value as a 1 item list to `alb_logs_prefixes` (while watching that path separators are not duplicated).  For example, `alb_logs_prefixes = ["logs/alb"]`.
+
+Use the `format` and `formatlist` functions in the caller module to support more complex logging that does limit by account id.  For example:
+
+    alb_logs_prefixes = formatlist(format("alb/%%s/AWSLogs/%s", data.aws_caller_identity.current.account_id), [
+      "hello-world-prod",
+      "hello-world-staging",
+      "hello-world-experimental",
+    ])
+
 ### Upgrading from 2.1.X to 3.X.X
 
 Before upgrading you will want to make sure you are on the latest version of 2.1.X.
@@ -124,3 +156,22 @@ As for policy creation, all policies are now turned on or off via the `allow_*` 
 the `effect` block in the bucket policy for that resource will be modified to `Allow` whereas by default it will be
 set to `Deny`. Previously this module used a template to add or remove JSON text from the policy before rendering.
 The new module explicitly adds all resource policies as `Deny` and leaves it up to you to enable them.
+
+## Developer Setup
+
+Install dependencies (macOS)
+
+  brew install pre-commit go terraform terraform-docs
+
+### Testing
+
+[Terratest](https://github.com/gruntwork-io/terratest) is being used for
+automated testing with this module. Tests in the `test` folder can be run
+locally by running the following command:
+
+  make test
+
+Or with aws-vault:
+
+  AWS_VAULT_KEYCHAIN_NAME=YOUR-KEYCHAIN-NAME aws-vault exec YOUR-AWS-PROFILE -- make test
+
