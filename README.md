@@ -132,8 +132,9 @@ Terraform 0.11. Pin module version to ~> 3.5.0. Submit pull-requests to terrafor
 ### Upgrading from 4.0.0 to 4.1.x
 
 Version 4.1.0 removed the `aws_s3_bucket_policy` resource and now applies the bucket policy directly to the
-`aws_s3_bucket` resource. Upgrading a bucket to use version 4.1.0 of the module will update the bucket in-place, but
-will destroy and recreate the bucket policy.
+`aws_s3_bucket` resource to address an operation ordering issue when creating a cloudtrail and logs bucket in the same
+`terraform apply`. Upgrading a bucket to use version 4.1.0 of the module will update the bucket in-place, but will
+destroy and recreate the bucket policy.
 
 ### 4.0.0
 
