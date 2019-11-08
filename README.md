@@ -129,6 +129,16 @@ Terraform 0.11. Pin module version to ~> 3.5.0. Submit pull-requests to terrafor
 
 ## Upgrade Paths
 
+### Upgrading from 4.0.0 to 4.1.x
+
+Version 4.1.0 removed the `aws_s3_bucket_policy` resource and now applies the bucket policy directly to the
+`aws_s3_bucket` resource. Upgrading a bucket to use version 4.1.0 of the module will update the bucket in-place, but
+will destroy and recreate the bucket policy.
+
+### 4.0.0
+
+Version 4.0.0 upgraded to Terraform 12 syntax.
+
 ### Upgrading from 3.4.0 to 3.5.x
 
 Version 3.5.0 removed the `alb_logs_prefix` and `alb_accounts` variables and now uses one `alb_logs_prefixes` list as input.  If you had not set the `alb_logs_prefix` or `alb_accounts` variables, then the default behavior does not change.  If you had set `alb_logs_prefix`, then simply pass the original value as a 1 item list to `alb_logs_prefixes` (while watching that path separators are not duplicated).  For example, `alb_logs_prefixes = ["logs/alb"]`.
