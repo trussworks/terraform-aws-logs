@@ -10,14 +10,18 @@ import (
 	"github.com/gruntwork-io/terratest/modules/terraform"
 )
 
-func TestTerraformAwsLogs(t *testing.T) {
+func TestTerraformAwsLogsRedshift(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping test in short mode.")
+	}
+
 	t.Parallel()
 
-	expectedLogsBucket := fmt.Sprintf("terratest-aws-logs-%s", strings.ToLower(random.UniqueId()))
+	expectedLogsBucket := fmt.Sprintf("terratest-aws-logs-redshift-%s", strings.ToLower(random.UniqueId()))
 	awsRegion := "us-west-2"
 
 	terraformOptions := &terraform.Options{
-		TerraformDir: "../examples/simple/",
+		TerraformDir: "../examples/redshift/",
 		Vars: map[string]interface{}{
 			"region":      awsRegion,
 			"logs_bucket": expectedLogsBucket,

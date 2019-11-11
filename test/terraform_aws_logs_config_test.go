@@ -10,14 +10,14 @@ import (
 	"github.com/gruntwork-io/terratest/modules/terraform"
 )
 
-func TestTerraformAwsLogs(t *testing.T) {
+func TestTerraformAwsLogsConfig(t *testing.T) {
 	t.Parallel()
 
-	expectedLogsBucket := fmt.Sprintf("terratest-aws-logs-%s", strings.ToLower(random.UniqueId()))
+	expectedLogsBucket := fmt.Sprintf("terratest-aws-logs-config-%s", strings.ToLower(random.UniqueId()))
 	awsRegion := "us-west-2"
 
 	terraformOptions := &terraform.Options{
-		TerraformDir: "../examples/simple/",
+		TerraformDir: "../examples/config/",
 		Vars: map[string]interface{}{
 			"region":      awsRegion,
 			"logs_bucket": expectedLogsBucket,
