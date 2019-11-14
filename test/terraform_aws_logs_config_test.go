@@ -28,7 +28,8 @@ func TestTerraformAwsLogsConfig(t *testing.T) {
 	}
 
 	defer terraform.Destroy(t, terraformOptions)
-	// Empty logs_bucket before terraform destroy
+	// Empty and delete logs_bucket before terraform destroy
+	defer aws.DeleteS3Bucket(t, awsRegion, expectedLogsBucket)
 	defer aws.EmptyS3Bucket(t, awsRegion, expectedLogsBucket)
 	terraform.InitAndApply(t, terraformOptions)
 }
