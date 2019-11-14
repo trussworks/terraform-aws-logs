@@ -1,4 +1,4 @@
-variable "logs_bucket" {
+variable "test_name" {
   type = "string"
 }
 

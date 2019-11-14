@@ -15,14 +15,14 @@ func TestTerraformAwsLogsCloudtrail(t *testing.T) {
 	// Running this test in parallel with other tests in the module
 	// often causes issues when attempting to empty and delete the bucket.
 
-	expectedLogsBucket := fmt.Sprintf("terratest-aws-logs-cloudtrail-%s", strings.ToLower(random.UniqueId()))
+	testName := fmt.Sprintf("terratest-aws-logs-%s", strings.ToLower(random.UniqueId()))
 	awsRegion := "us-west-2"
 
 	terraformOptions := &terraform.Options{
 		TerraformDir: "../examples/cloudtrail/",
 		Vars: map[string]interface{}{
-			"region":      awsRegion,
-			"logs_bucket": expectedLogsBucket,
+			"region":    awsRegion,
+			"test_name": testName,
 		},
 		EnvVars: map[string]string{
 			"AWS_DEFAULT_REGION": awsRegion,
@@ -30,7 +30,8 @@ func TestTerraformAwsLogsCloudtrail(t *testing.T) {
 	}
 
 	defer terraform.Destroy(t, terraformOptions)
-	// Empty logs_bucket before terraform destroy
-	defer aws.EmptyS3Bucket(t, awsRegion, expectedLogsBucket)
+	// Empty and delete logs_bucket before terraform destroy
+	defer aws.DeleteS3Bucket(t, awsRegion, testName)
+	defer aws.EmptyS3Bucket(t, awsRegion, testName)
 	terraform.InitAndApply(t, terraformOptions)
 }

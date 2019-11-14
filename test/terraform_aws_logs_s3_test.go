@@ -13,14 +13,14 @@ import (
 func TestTerraformAwsLogsS3(t *testing.T) {
 	t.Parallel()
 
-	expectedLogsBucket := fmt.Sprintf("terratest-aws-logs-s3-%s", strings.ToLower(random.UniqueId()))
+	testName := fmt.Sprintf("terratest-aws-logs-%s", strings.ToLower(random.UniqueId()))
 	awsRegion := "us-west-2"
 
 	terraformOptions := &terraform.Options{
 		TerraformDir: "../examples/s3/",
 		Vars: map[string]interface{}{
-			"region":      awsRegion,
-			"logs_bucket": expectedLogsBucket,
+			"region":    awsRegion,
+			"test_name": testName,
 		},
 		EnvVars: map[string]string{
 			"AWS_DEFAULT_REGION": awsRegion,
@@ -29,6 +29,6 @@ func TestTerraformAwsLogsS3(t *testing.T) {
 
 	defer terraform.Destroy(t, terraformOptions)
 	// Empty logs_bucket before terraform destroy
-	defer aws.EmptyS3Bucket(t, awsRegion, expectedLogsBucket)
+	defer aws.EmptyS3Bucket(t, awsRegion, testName)
 	terraform.InitAndApply(t, terraformOptions)
 }

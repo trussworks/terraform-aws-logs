@@ -1,12 +1,12 @@
 module "aws_logs" {
   source         = "../../"
-  s3_bucket_name = var.logs_bucket
+  s3_bucket_name = var.test_name
   region         = var.region
   allow_redshift = "true"
 }
 
 resource "aws_redshift_cluster" "test_redshift" {
-  cluster_identifier  = "tf-redshift-cluster"
+  cluster_identifier  = var.test_name
   node_type           = "dc2.large"
   cluster_type        = "single-node"
   master_username     = "testredshiftuser"

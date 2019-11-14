@@ -13,9 +13,10 @@ import (
 func TestTerraformAwsLogsCombined(t *testing.T) {
 	// Note: do not run this test in t.Parallel() mode.
 
-	expectedLogsBucket := fmt.Sprintf("terratest-aws-logs-combined-%s", strings.ToLower(random.UniqueId()))
-	vpcName := fmt.Sprintf("terratest-vpc-combined-%s", strings.ToLower(random.UniqueId()))
-	awsRegion := "us-west-2"
+	testName := fmt.Sprintf("terratest-aws-logs-%s", strings.ToLower(random.UniqueId()))
+	// AWS only supports one configuration recorder per region.
+	// Each test using aws-config will need to specify a different region.
+	awsRegion := "us-east-2"
 	vpcAzs := aws.GetAvailabilityZones(t, awsRegion)[:3]
 	testRedshift := !testing.Short()
 
@@ -24,8 +25,7 @@ func TestTerraformAwsLogsCombined(t *testing.T) {
 		Vars: map[string]interface{}{
 			"region":        awsRegion,
 			"vpc_azs":       vpcAzs,
-			"logs_bucket":   expectedLogsBucket,
-			"vpc_name":      vpcName,
+			"test_name":     testName,
 			"test_redshift": testRedshift,
 		},
 		EnvVars: map[string]string{
@@ -35,7 +35,7 @@ func TestTerraformAwsLogsCombined(t *testing.T) {
 
 	defer terraform.Destroy(t, terraformOptions)
 	// Empty and delete logs_bucket before terraform destroy
-	defer aws.DeleteS3Bucket(t, awsRegion, expectedLogsBucket)
-	defer aws.EmptyS3Bucket(t, awsRegion, expectedLogsBucket)
+	defer aws.DeleteS3Bucket(t, awsRegion, testName)
+	defer aws.EmptyS3Bucket(t, awsRegion, testName)
 	terraform.InitAndApply(t, terraformOptions)
 }

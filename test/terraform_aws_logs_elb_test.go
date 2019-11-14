@@ -13,18 +13,16 @@ import (
 func TestTerraformAwsLogsElb(t *testing.T) {
 	t.Parallel()
 
-	expectedLogsBucket := fmt.Sprintf("terratest-aws-logs-elb-%s", strings.ToLower(random.UniqueId()))
-	vpcName := fmt.Sprintf("terratest-vpc-elb-%s", strings.ToLower(random.UniqueId()))
+	testName := fmt.Sprintf("terratest-aws-logs-%s", strings.ToLower(random.UniqueId()))
 	awsRegion := "us-west-2"
 	vpcAzs := aws.GetAvailabilityZones(t, awsRegion)[:3]
 
 	terraformOptions := &terraform.Options{
 		TerraformDir: "../examples/elb/",
 		Vars: map[string]interface{}{
-			"region":      awsRegion,
-			"vpc_azs":     vpcAzs,
-			"logs_bucket": expectedLogsBucket,
-			"vpc_name":    vpcName,
+			"region":    awsRegion,
+			"vpc_azs":   vpcAzs,
+			"test_name": testName,
 		},
 		EnvVars: map[string]string{
 			"AWS_DEFAULT_REGION": awsRegion,
@@ -33,6 +31,6 @@ func TestTerraformAwsLogsElb(t *testing.T) {
 
 	defer terraform.Destroy(t, terraformOptions)
 	// Empty logs_bucket before terraform destroy
-	defer aws.EmptyS3Bucket(t, awsRegion, expectedLogsBucket)
+	defer aws.EmptyS3Bucket(t, awsRegion, testName)
 	terraform.InitAndApply(t, terraformOptions)
 }
