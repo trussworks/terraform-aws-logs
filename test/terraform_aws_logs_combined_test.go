@@ -10,19 +10,23 @@ import (
 	"github.com/gruntwork-io/terratest/modules/terraform"
 )
 
-func TestTerraformAwsLogsCloudtrail(t *testing.T) {
+func TestTerraformAwsLogsCombined(t *testing.T) {
 	// Note: do not run this test in t.Parallel() mode.
-	// Running this test in parallel with other tests in the module
-	// often causes issues when attempting to empty and delete the bucket.
 
 	testName := fmt.Sprintf("terratest-aws-logs-%s", strings.ToLower(random.UniqueId()))
-	awsRegion := "us-west-2"
+	// AWS only supports one configuration recorder per region.
+	// Each test using aws-config will need to specify a different region.
+	awsRegion := "us-east-2"
+	vpcAzs := aws.GetAvailabilityZones(t, awsRegion)[:3]
+	testRedshift := !testing.Short()
 
 	terraformOptions := &terraform.Options{
-		TerraformDir: "../examples/cloudtrail/",
+		TerraformDir: "../examples/combined/",
 		Vars: map[string]interface{}{
-			"region":    awsRegion,
-			"test_name": testName,
+			"region":        awsRegion,
+			"vpc_azs":       vpcAzs,
+			"test_name":     testName,
+			"test_redshift": testRedshift,
 		},
 		EnvVars: map[string]string{
 			"AWS_DEFAULT_REGION": awsRegion,

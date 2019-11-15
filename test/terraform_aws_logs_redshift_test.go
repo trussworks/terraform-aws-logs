@@ -10,16 +10,18 @@ import (
 	"github.com/gruntwork-io/terratest/modules/terraform"
 )
 
-func TestTerraformAwsLogsCloudtrail(t *testing.T) {
-	// Note: do not run this test in t.Parallel() mode.
-	// Running this test in parallel with other tests in the module
-	// often causes issues when attempting to empty and delete the bucket.
+func TestTerraformAwsLogsRedshift(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping test in short mode.")
+	}
+
+	t.Parallel()
 
 	testName := fmt.Sprintf("terratest-aws-logs-%s", strings.ToLower(random.UniqueId()))
 	awsRegion := "us-west-2"
 
 	terraformOptions := &terraform.Options{
-		TerraformDir: "../examples/cloudtrail/",
+		TerraformDir: "../examples/redshift/",
 		Vars: map[string]interface{}{
 			"region":    awsRegion,
 			"test_name": testName,
@@ -30,8 +32,7 @@ func TestTerraformAwsLogsCloudtrail(t *testing.T) {
 	}
 
 	defer terraform.Destroy(t, terraformOptions)
-	// Empty and delete logs_bucket before terraform destroy
-	defer aws.DeleteS3Bucket(t, awsRegion, testName)
+	// Empty logs_bucket before terraform destroy
 	defer aws.EmptyS3Bucket(t, awsRegion, testName)
 	terraform.InitAndApply(t, terraformOptions)
 }
