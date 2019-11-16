@@ -10,16 +10,18 @@ import (
 	"github.com/gruntwork-io/terratest/modules/terraform"
 )
 
-func TestTerraformAwsLogs(t *testing.T) {
+func TestTerraformAwsLogsNlb(t *testing.T) {
 	t.Parallel()
 
 	testName := fmt.Sprintf("terratest-aws-logs-%s", strings.ToLower(random.UniqueId()))
 	awsRegion := "us-west-2"
+	vpcAzs := aws.GetAvailabilityZones(t, awsRegion)[:3]
 
 	terraformOptions := &terraform.Options{
-		TerraformDir: "../examples/simple/",
+		TerraformDir: "../examples/nlb/",
 		Vars: map[string]interface{}{
 			"region":    awsRegion,
+			"vpc_azs":   vpcAzs,
 			"test_name": testName,
 		},
 		EnvVars: map[string]string{

@@ -10,14 +10,16 @@ import (
 	"github.com/gruntwork-io/terratest/modules/terraform"
 )
 
-func TestTerraformAwsLogs(t *testing.T) {
+func TestTerraformAwsLogsConfig(t *testing.T) {
 	t.Parallel()
 
 	testName := fmt.Sprintf("terratest-aws-logs-%s", strings.ToLower(random.UniqueId()))
-	awsRegion := "us-west-2"
+	// AWS only supports one configuration recorder per region.
+	// Each test using aws-config will need to specify a different region.
+	awsRegion := "us-east-2"
 
 	terraformOptions := &terraform.Options{
-		TerraformDir: "../examples/simple/",
+		TerraformDir: "../examples/config/",
 		Vars: map[string]interface{}{
 			"region":    awsRegion,
 			"test_name": testName,
@@ -28,7 +30,8 @@ func TestTerraformAwsLogs(t *testing.T) {
 	}
 
 	defer terraform.Destroy(t, terraformOptions)
-	// Empty logs_bucket before terraform destroy
+	// Empty and delete logs_bucket before terraform destroy
+	defer aws.DeleteS3Bucket(t, awsRegion, testName)
 	defer aws.EmptyS3Bucket(t, awsRegion, testName)
 	terraform.InitAndApply(t, terraformOptions)
 }

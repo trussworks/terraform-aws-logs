@@ -361,6 +361,7 @@ resource "aws_s3_bucket" "aws_logs" {
   bucket = var.s3_bucket_name
   acl    = var.s3_bucket_acl
   region = var.region
+  policy = data.template_file.bucket_policy.rendered
 
   lifecycle_rule {
     id      = "expire_all_logs"
@@ -386,15 +387,8 @@ resource "aws_s3_bucket" "aws_logs" {
   }
 }
 
-resource "aws_s3_bucket_policy" "bucket_policy" {
-  bucket = aws_s3_bucket.aws_logs.id
-  policy = data.template_file.bucket_policy.rendered
-}
-
 resource "aws_s3_bucket_public_access_block" "public_access_block" {
   count = var.create_public_access_block ? 1 : 0
-
-  depends_on = [aws_s3_bucket_policy.bucket_policy]
 
   bucket = aws_s3_bucket.aws_logs.id
 

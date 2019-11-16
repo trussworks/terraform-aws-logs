@@ -5,3 +5,7 @@ variable "test_name" {
 variable "region" {
   type = string
 }
+
+variable "vpc_azs" {
+  type = list(string)
+}
