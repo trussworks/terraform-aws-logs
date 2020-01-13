@@ -15,7 +15,7 @@ variable "s3_log_bucket_retention" {
 }
 
 variable "s3_bucket_acl" {
-  description = "Set bucket ACL per [AWS S3 Canned ACL](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl) list."
+  description = "Set bucket ACL per [AWS S3 Canned ACL](<https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl>) list."
   default     = "log-delivery-write"
   type        = string
 }
