@@ -21,8 +21,9 @@ func TestTerraformAwsLogsCloudtrail(t *testing.T) {
 	terraformOptions := &terraform.Options{
 		TerraformDir: "../examples/cloudtrail/",
 		Vars: map[string]interface{}{
-			"region":    awsRegion,
-			"test_name": testName,
+			"region":        awsRegion,
+			"test_name":     testName,
+			"force_destroy": true,
 		},
 		EnvVars: map[string]string{
 			"AWS_DEFAULT_REGION": awsRegion,
@@ -32,6 +33,5 @@ func TestTerraformAwsLogsCloudtrail(t *testing.T) {
 	defer terraform.Destroy(t, terraformOptions)
 	// Empty and delete logs_bucket before terraform destroy
 	defer aws.DeleteS3Bucket(t, awsRegion, testName)
-	defer aws.EmptyS3Bucket(t, awsRegion, testName)
 	terraform.InitAndApply(t, terraformOptions)
 }

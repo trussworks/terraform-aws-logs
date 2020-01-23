@@ -4,6 +4,7 @@ module "aws_logs" {
   region             = var.region
   allow_config       = "true"
   config_logs_prefix = "config"
+  force_destroy      = var.force_destroy
 }
 
 module "config" {

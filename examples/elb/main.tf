@@ -3,6 +3,7 @@ module "aws_logs" {
   s3_bucket_name = var.test_name
   region         = var.region
   allow_elb      = "true"
+  force_destroy  = var.force_destroy
 }
 
 resource "aws_elb" "test_elb" {

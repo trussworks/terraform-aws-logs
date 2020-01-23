@@ -141,3 +141,9 @@ variable "nlb_accounts" {
   type        = list(string)
 }
 
+variable "force_destroy" {
+  description = "A bool that indicates all objects (including any locked objects) should be deleted from the bucket so the bucket can be destroyed without error."
+  default     = false
+  type        = bool
+}
+

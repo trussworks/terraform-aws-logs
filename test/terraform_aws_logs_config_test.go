@@ -21,8 +21,9 @@ func TestTerraformAwsLogsConfig(t *testing.T) {
 	terraformOptions := &terraform.Options{
 		TerraformDir: "../examples/config/",
 		Vars: map[string]interface{}{
-			"region":    awsRegion,
-			"test_name": testName,
+			"region":        awsRegion,
+			"test_name":     testName,
+			"force_destroy": true,
 		},
 		EnvVars: map[string]string{
 			"AWS_DEFAULT_REGION": awsRegion,

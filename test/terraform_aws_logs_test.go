@@ -5,7 +5,6 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/gruntwork-io/terratest/modules/aws"
 	"github.com/gruntwork-io/terratest/modules/random"
 	"github.com/gruntwork-io/terratest/modules/terraform"
 )
@@ -19,8 +18,9 @@ func TestTerraformAwsLogs(t *testing.T) {
 	terraformOptions := &terraform.Options{
 		TerraformDir: "../examples/simple/",
 		Vars: map[string]interface{}{
-			"region":    awsRegion,
-			"test_name": testName,
+			"region":        awsRegion,
+			"test_name":     testName,
+			"force_destroy": true,
 		},
 		EnvVars: map[string]string{
 			"AWS_DEFAULT_REGION": awsRegion,
@@ -28,7 +28,5 @@ func TestTerraformAwsLogs(t *testing.T) {
 	}
 
 	defer terraform.Destroy(t, terraformOptions)
-	// Empty logs_bucket before terraform destroy
-	defer aws.EmptyS3Bucket(t, awsRegion, testName)
 	terraform.InitAndApply(t, terraformOptions)
 }
