@@ -5,7 +5,6 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/gruntwork-io/terratest/modules/aws"
 	"github.com/gruntwork-io/terratest/modules/random"
 	"github.com/gruntwork-io/terratest/modules/terraform"
 )
@@ -31,7 +30,5 @@ func TestTerraformAwsLogsCloudtrail(t *testing.T) {
 	}
 
 	defer terraform.Destroy(t, terraformOptions)
-	// Empty and delete logs_bucket before terraform destroy
-	defer aws.DeleteS3Bucket(t, awsRegion, testName)
 	terraform.InitAndApply(t, terraformOptions)
 }
