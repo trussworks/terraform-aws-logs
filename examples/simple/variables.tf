@@ -5,3 +5,8 @@ variable "test_name" {
 variable "region" {
   type = string
 }
+
+variable "force_destroy" {
+  type = bool
+}
+

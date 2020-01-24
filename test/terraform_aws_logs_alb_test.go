@@ -20,9 +20,10 @@ func TestTerraformAwsLogsAlb(t *testing.T) {
 	terraformOptions := &terraform.Options{
 		TerraformDir: "../examples/alb/",
 		Vars: map[string]interface{}{
-			"region":    awsRegion,
-			"vpc_azs":   vpcAzs,
-			"test_name": testName,
+			"region":        awsRegion,
+			"vpc_azs":       vpcAzs,
+			"test_name":     testName,
+			"force_destroy": true,
 		},
 		EnvVars: map[string]string{
 			"AWS_DEFAULT_REGION": awsRegion,
@@ -30,7 +31,5 @@ func TestTerraformAwsLogsAlb(t *testing.T) {
 	}
 
 	defer terraform.Destroy(t, terraformOptions)
-	// Empty logs_bucket before terraform destroy
-	defer aws.EmptyS3Bucket(t, awsRegion, testName)
 	terraform.InitAndApply(t, terraformOptions)
 }

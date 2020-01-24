@@ -9,3 +9,7 @@ variable "region" {
 variable "vpc_azs" {
   type = list(string)
 }
+
+variable "force_destroy" {
+  type = bool
+}

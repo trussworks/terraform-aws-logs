@@ -358,10 +358,11 @@ JSON
 }
 
 resource "aws_s3_bucket" "aws_logs" {
-  bucket = var.s3_bucket_name
-  acl    = var.s3_bucket_acl
-  region = var.region
-  policy = data.template_file.bucket_policy.rendered
+  bucket        = var.s3_bucket_name
+  acl           = var.s3_bucket_acl
+  region        = var.region
+  policy        = data.template_file.bucket_policy.rendered
+  force_destroy = var.force_destroy
 
   lifecycle_rule {
     id      = "expire_all_logs"

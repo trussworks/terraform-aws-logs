@@ -14,3 +14,7 @@ variable "test_redshift" {
   type    = bool
   default = true
 }
+
+variable "force_destroy" {
+  type = bool
+}
