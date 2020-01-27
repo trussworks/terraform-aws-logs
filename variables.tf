@@ -15,7 +15,7 @@ variable "s3_log_bucket_retention" {
 }
 
 variable "s3_bucket_acl" {
-  description = "Set bucket ACL per [AWS S3 Canned ACL](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl) list."
+  description = "Set bucket ACL per [AWS S3 Canned ACL](<https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl>) list."
   default     = "log-delivery-write"
   type        = string
 }
@@ -139,5 +139,11 @@ variable "nlb_accounts" {
   description = "List of accounts for NLB logs.  By default limits to the current account."
   default     = []
   type        = list(string)
+}
+
+variable "force_destroy" {
+  description = "A bool that indicates all objects (including any locked objects) should be deleted from the bucket so the bucket can be destroyed without error."
+  default     = false
+  type        = bool
 }
 

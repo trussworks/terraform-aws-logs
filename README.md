@@ -104,15 +104,16 @@ Terraform 0.11. Pin module version to ~> 3.5.0. Submit pull-requests to terrafor
 | cloudwatch\_logs\_prefix | S3 prefix for CloudWatch log exports. | string | `"cloudwatch"` | no |
 | config\_accounts | List of accounts for Config logs.  By default limits to the current account. | list(string) | `[]` | no |
 | config\_logs\_prefix | S3 prefix for AWS Config logs. | string | `"config"` | no |
-| create\_public\_access\_block | Whether to create a public_access_block restricting public access to the bucket. | string | `"true"` | no |
+| create\_public\_access\_block | Whether to create a public\_access\_block restricting public access to the bucket. | string | `"true"` | no |
 | default\_allow | Whether all services included in this module should be allowed to write to the bucket by default. Alternatively select individual services. It's recommended to use the default bucket ACL of log-delivery-write. | string | `"true"` | no |
 | elb\_accounts | List of accounts for ELB logs.  By default limits to the current account. | list(string) | `[]` | no |
 | elb\_logs\_prefix | S3 prefix for ELB logs. | string | `"elb"` | no |
+| force\_destroy | A bool that indicates all objects \(including any locked objects\) should be deleted from the bucket so the bucket can be destroyed without error. | bool | `"false"` | no |
 | nlb\_accounts | List of accounts for NLB logs.  By default limits to the current account. | list(string) | `[]` | no |
 | nlb\_logs\_prefix | S3 prefix for NLB logs. | string | `"nlb"` | no |
 | redshift\_logs\_prefix | S3 prefix for RedShift logs. | string | `"redshift"` | no |
 | region | Region where the AWS S3 bucket will be created. | string | n/a | yes |
-| s3\_bucket\_acl | Set bucket ACL per [AWS S3 Canned ACL](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl) list. | string | `"log-delivery-write"` | no |
+| s3\_bucket\_acl | Set bucket ACL per \[AWS S3 Canned ACL\]\(<https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl>\) list. | string | `"log-delivery-write"` | no |
 | s3\_bucket\_name | S3 bucket to store AWS logs in. | string | n/a | yes |
 | s3\_log\_bucket\_retention | Number of days to keep AWS logs around. | string | `"90"` | no |
 
