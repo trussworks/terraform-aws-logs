@@ -32,12 +32,6 @@ variable "alb_logs_prefixes" {
   type        = list(string)
 }
 
-variable "nlb_logs_prefix" {
-  description = "S3 prefix for NLB logs."
-  default     = "nlb"
-  type        = string
-}
-
 variable "cloudwatch_logs_prefix" {
   description = "S3 prefix for CloudWatch log exports."
   default     = "cloudwatch"
@@ -135,15 +129,14 @@ variable "elb_accounts" {
   type        = list(string)
 }
 
-variable "nlb_accounts" {
-  description = "List of accounts for NLB logs.  By default limits to the current account."
-  default     = []
-  type        = list(string)
-}
-
 variable "force_destroy" {
   description = "A bool that indicates all objects (including any locked objects) should be deleted from the bucket so the bucket can be destroyed without error."
   default     = false
   type        = bool
 }
 
+variable "nlb_logs_prefixes" {
+  description = "S3 key prefixes for NLB logs."
+  default     = ["nlb"]
+  type        = "list"
+}
