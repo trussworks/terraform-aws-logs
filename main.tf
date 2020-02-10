@@ -334,7 +334,7 @@ JSON
         data.aws_caller_identity.current.account_id,
       ),
     )
-    nlb_effect      = var.default_allow || var.allow_nlb ? "Allow" : "Deny"
+    nlb_effect = var.default_allow || var.allow_nlb ? "Allow" : "Deny"
     nlb_resources = jsonencode(
       formatlist(
         format("arn:aws:s3:::%s/%%s/*", var.s3_bucket_name),
