@@ -14,7 +14,7 @@
  *
  * ## Terraform Versions
  *
- * Terraform 0.12. Pin module version to ~> 4.X. Submit pull-requests to master branch.
+ * Terraform 0.12. Pin module version to ~> 5.1.0. Submit pull-requests to master branch.
  *
  * Terraform 0.11. Pin module version to ~> 3.5.0. Submit pull-requests to terraform011 branch.
  *
