@@ -1,7 +1,8 @@
+<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 Supports two main uses cases:
 
-1. Creates and configures a single private S3 bucket for storing logs from various AWS services, which are nested as bucket prefixes. Logs will expire after a default of 90 days, with option to configure retention value.
-1. Creates and configures a single private S3 bucket for a single AWS service. Logs will expire after a default of 90 days, with option to configure retention value.
+* Creates and configures a single private S3 bucket for storing logs from various AWS services, which are nested as bucket prefixes. Logs will expire after a default of 90 days, with option to configure retention value.
+* Creates and configures a single private S3 bucket for a single AWS service. Logs will expire after a default of 90 days, with option to configure retention value.
 
 Logging from the following services is supported for both cases:
 
@@ -11,82 +12,87 @@ Logging from the following services is supported for both cases:
 * [RedShift](https://aws.amazon.com/redshift/)
 * [S3](https://aws.amazon.com/s3/)
 
+## Terraform Versions
+
+Terraform 0.12. Pin module version to ~> 5.1.0. Submit pull-requests to master branch.
+
+Terraform 0.11. Pin module version to ~> 3.5.0. Submit pull-requests to terraform011 branch.
+
 ## Usage for a single log bucket storing logs from all services
 
     # Allows all services to log to bucket
-    module "aws_logs" {
+    module "aws\_logs" {
       source         = "trussworks/logs/aws"
-      s3_bucket_name = "my-company-aws-logs"
+      s3\_bucket\_name = "my-company-aws-logs"
       region         = "us-west-2"
     }
 
 ## Usage for a single log bucket storing logs from a single service
 
     #  Allows only the service specified (elb in this case) to log to the bucket
-    module "aws_logs" {
+    module "aws\_logs" {
       source         = "trussworks/logs/aws"
-      s3_bucket_name = "my-company-aws-logs-elb"
+      s3\_bucket\_name = "my-company-aws-logs-elb"
       region         = "us-west-2"
-      default_allow  = false
-      allow_elb      = true
+      default\_allow  = false
+      allow\_elb      = true
     }
 
 ## Usage for a single log bucket storing logs from multiple specified services
 
     #  Allows only the services specified (alb and elb in this case) to log to the bucket
-    module "aws_logs" {
+    module "aws\_logs" {
       source         = "trussworks/logs/aws"
-      s3_bucket_name = "my-company-aws-logs-elb"
+      s3\_bucket\_name = "my-company-aws-logs-elb"
       region         = "us-west-2"
-      default_allow  = false
-      allow_alb      = true
-      allow_elb      = true
+      default\_allow  = false
+      allow\_alb      = true
+      allow\_elb      = true
     }
 
 ## Usage for a private bucket with no policies
 
     #  Allows no services to log to the bucket
-    module "aws_logs" {
+    module "aws\_logs" {
       source         = "trussworks/logs/aws"
-      s3_bucket_name = "my-company-aws-logs-elb"
-      s3_bucket_acl  = "private"
+      s3\_bucket\_name = "my-company-aws-logs-elb"
+      s3\_bucket\_acl  = "private"
       region         = "us-west-2"
-      default_allow  = false
+      default\_allow  = false
     }
 
 ## Usage for a single log bucket storing logs from multiple accounts
 
-    module "aws_logs" {
+    module "aws\_logs" {
       source         = "trussworks/logs/aws"
-      s3_bucket_name = "my-company-aws-logs-elb"
+      s3\_bucket\_name = "my-company-aws-logs-elb"
       region         = "us-west-2"
-      default_allow  = false
-      allow_cloudtrail      = true
-      cloudtrail_accounts = ["${data.aws_caller_identity.current.account_id}", "${aws_organizations_account.example.id}"]
+      default\_allow  = false
+      allow\_cloudtrail      = true
+      cloudtrail\_accounts = ["${data.aws\_caller\_identity.current.account\_id}", "${aws\_organizations\_account.example.id}"]
     }
 
-## Usage for a single log bucket storing logs from multiple application load balancers
+## Usage for a single log bucket storing logs from multiple application load balancers and network load balancers
 
-    module "aws_logs" {
-      source         = "trussworks/logs/aws"
-      s3_bucket_name = "my-company-aws-logs-alb"
-      region         = "us-west-2"
-      default_allow  = false
-      allow_alb      = true
-      alb_logs_prefixes = formatlist(format("alb/%%s/AWSLogs/%s", data.aws_caller_identity.current.account_id), [
-       "hello-world-prod",
-       "hello-world-staging",
-       "hello-world-experimental",
+    module "aws\_logs" {
+      source            = "trussworks/logs/aws"
+      s3\_bucket\_name    = "my-company-aws-logs-alb"
+      region            = "us-west-2"
+      default\_allow     = false
+      allow\_alb         = true
+      allow\_nlb         = true
+      alb\_logs\_prefixes = formatlist(format("alb/%%s/AWSLogs/%s", data.aws\_caller\_identity.current.account\_id), [
+       "alb-hello-world-prod",
+       "alb-hello-world-staging",
+       "alb-hello-world-experimental",
+      ])
+     nlb\_logs\_prefixes = formatlist(format("nlb/%%s/AWSLogs/%s", data.aws\_caller\_identity.current.account\_id), [
+       "nlb-hello-world-prod",
+       "nlb-hello-world-staging",
+       "nlb-hello-world-experimental",
       ])
     }
 
-## Terraform Versions
-
-Terraform 0.12. Pin module version to ~> 4.x Submit pull-requests to master branch.
-
-Terraform 0.11. Pin module version to ~> 3.5.0. Submit pull-requests to terraform011 branch.
-
-<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Providers
 
 | Name | Version |
@@ -98,7 +104,7 @@ Terraform 0.11. Pin module version to ~> 3.5.0. Submit pull-requests to terrafor
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:-----:|
-| alb\_logs\_prefixes | S3 key prefixes for ALB logs. | `list(string)` | <pre>[<br>  "alb"<br>]<br></pre> | no |
+| alb\_logs\_prefixes | S3 key prefixes for ALB logs. | `list(string)` | <pre>[<br>  "alb"<br>]</pre> | no |
 | allow\_alb | Allow ALB service to log to bucket. | `string` | `false` | no |
 | allow\_cloudtrail | Allow Cloudtrail service to log to bucket. | `string` | `false` | no |
 | allow\_cloudwatch | Allow Cloudwatch service to export logs to bucket. | `string` | `false` | no |
@@ -116,8 +122,7 @@ Terraform 0.11. Pin module version to ~> 3.5.0. Submit pull-requests to terrafor
 | elb\_accounts | List of accounts for ELB logs.  By default limits to the current account. | `list(string)` | `[]` | no |
 | elb\_logs\_prefix | S3 prefix for ELB logs. | `string` | `"elb"` | no |
 | force\_destroy | A bool that indicates all objects (including any locked objects) should be deleted from the bucket so the bucket can be destroyed without error. | `bool` | `false` | no |
-| nlb\_accounts | List of accounts for NLB logs.  By default limits to the current account. | `list(string)` | `[]` | no |
-| nlb\_logs\_prefix | S3 prefix for NLB logs. | `string` | `"nlb"` | no |
+| nlb\_logs\_prefixes | S3 key prefixes for NLB logs. | `list(string)` | <pre>[<br>  "nlb"<br>]</pre> | no |
 | redshift\_logs\_prefix | S3 prefix for RedShift logs. | `string` | `"redshift"` | no |
 | region | Region where the AWS S3 bucket will be created. | `string` | n/a | yes |
 | s3\_bucket\_acl | Set bucket ACL per [AWS S3 Canned ACL](<https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl>) list. | `string` | `"log-delivery-write"` | no |
@@ -136,6 +141,18 @@ Terraform 0.11. Pin module version to ~> 3.5.0. Submit pull-requests to terrafor
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 
 ## Upgrade Paths
+
+### Upgrading from 5.0.0 to 5.1.x
+
+Version 5.1.0 removed the `nlb_logs_prefix` and `nlb_accounts` variables and now uses one `nlb_logs_prefixes` list as input.  If you had not set the `nlb_logs_prefix` or `nlb_accounts` variables, then the default behavior does not change.  If you had set `nlb_logs_prefix`, then simply pass the original value as a 1 item list to `nlb_logs_prefixes` (while watching that path separators are not duplicated).  For example, `nlb_logs_prefixes = ["logs/nlb"]`.
+
+Use the `format` and `formatlist` functions in the caller module to support more complex logging that does limit by account id.  For example:
+
+    nlb_logs_prefixes = formatlist(format("nlb/%%s/AWSLogs/%s", data.aws_caller_identity.current.account_id), [
+      "hello-world-prod",
+      "hello-world-staging",
+      "hello-world-experimental",
+    ])
 
 ### Upgrading from 4.0.0 to 4.1.x
 
@@ -193,4 +210,3 @@ locally by running the following command:
 Or with aws-vault:
 
   AWS_VAULT_KEYCHAIN_NAME=YOUR-KEYCHAIN-NAME aws-vault exec YOUR-AWS-PROFILE -- make test
-
