@@ -138,5 +138,5 @@ variable "force_destroy" {
 variable "nlb_logs_prefixes" {
   description = "S3 key prefixes for NLB logs."
   default     = ["nlb"]
-  type        = "list"
+  type        = list(string)
 }
