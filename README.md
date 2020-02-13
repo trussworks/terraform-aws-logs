@@ -229,5 +229,5 @@ make test
 Or with aws-vault:
 
 ```shell
-AWS_VAULT_KEYCHAIN_NAME=YOUR-KEYCHAIN-NAME aws-vault exec YOUR-AWS-PROFILE -- make test
+AWS_VAULT_KEYCHAIN_NAME=login aws-vault exec YOUR-AWS-PROFILE -- make test
 ```
