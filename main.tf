@@ -112,6 +112,10 @@ data "aws_region" "current" {
 data "aws_caller_identity" "current" {
 }
 
+# The AWS partition for differentiating between AWS commercial and GovCloud
+data "aws_partition" "current" {
+}
+
 #
 # S3 Bucket
 #
@@ -256,19 +260,19 @@ JSON
 
   vars = {
     region        = var.region
-    bucket_arn    = format("arn:aws:s3:::%s", var.s3_bucket_name)
+    bucket_arn    = format("arn:${data.aws_partition.current.partition}:s3:::%s", var.s3_bucket_name)
     alb_principal = data.aws_elb_service_account.main.arn
     alb_effect    = var.default_allow || var.allow_alb ? "Allow" : "Deny"
     alb_resources = jsonencode(
       formatlist(
-        format("arn:aws:s3:::%s/%%s/*", var.s3_bucket_name),
+        format("arn:${data.aws_partition.current.partition}:s3:::%s/%%s/*", var.s3_bucket_name),
         var.alb_logs_prefixes,
       ),
     )
     cloudwatch_effect = var.default_allow || var.allow_cloudwatch ? "Allow" : "Deny"
     cloudwatch_resources = jsonencode(
       format(
-        "arn:aws:s3:::%s/%s/*",
+        "arn:${data.aws_partition.current.partition}:s3:::%s/%s/*",
         var.s3_bucket_name,
         var.cloudwatch_logs_prefix,
       ),
@@ -278,7 +282,7 @@ JSON
       sort(
         formatlist(
           format(
-            "arn:aws:s3:::%s/%s/AWSLogs/%%s/*",
+            "arn:${data.aws_partition.current.partition}:s3:::%s/%s/AWSLogs/%%s/*",
             var.s3_bucket_name,
             var.cloudtrail_logs_prefix,
           ),
@@ -287,7 +291,7 @@ JSON
       ),
       ) : jsonencode(
       format(
-        "arn:aws:s3:::%s/%s/AWSLogs/%s/*",
+        "arn:${data.aws_partition.current.partition}:s3:::%s/%s/AWSLogs/%s/*",
         var.s3_bucket_name,
         var.cloudtrail_logs_prefix,
         data.aws_caller_identity.current.account_id,
@@ -298,7 +302,7 @@ JSON
       sort(
         formatlist(
           format(
-            "arn:aws:s3:::%s/%s/AWSLogs/%%s/Config/*",
+            "arn:${data.aws_partition.current.partition}:s3:::%s/%s/AWSLogs/%%s/Config/*",
             var.s3_bucket_name,
             var.config_logs_prefix,
           ),
@@ -307,7 +311,7 @@ JSON
       ),
       ) : jsonencode(
       format(
-        "arn:aws:s3:::%s/%s/AWSLogs/%s/Config/*",
+        "arn:${data.aws_partition.current.partition}:s3:::%s/%s/AWSLogs/%s/Config/*",
         var.s3_bucket_name,
         var.config_logs_prefix,
         data.aws_caller_identity.current.account_id,
@@ -319,7 +323,7 @@ JSON
       sort(
         formatlist(
           format(
-            "arn:aws:s3:::%s/%s/AWSLogs/%%s/*",
+            "arn:${data.aws_partition.current.partition}:s3:::%s/%s/AWSLogs/%%s/*",
             var.s3_bucket_name,
             var.elb_logs_prefix,
           ),
@@ -328,7 +332,7 @@ JSON
       ),
       ) : jsonencode(
       format(
-        "arn:aws:s3:::%s/%s/AWSLogs/%s/*",
+        "arn:${data.aws_partition.current.partition}:s3:::%s/%s/AWSLogs/%s/*",
         var.s3_bucket_name,
         var.elb_logs_prefix,
         data.aws_caller_identity.current.account_id,
@@ -337,18 +341,18 @@ JSON
     nlb_effect = var.default_allow || var.allow_nlb ? "Allow" : "Deny"
     nlb_resources = jsonencode(
       formatlist(
-        format("arn:aws:s3:::%s/%%s/*", var.s3_bucket_name),
+        format("arn:${data.aws_partition.current.partition}:s3:::%s/%%s/*", var.s3_bucket_name),
         var.nlb_logs_prefixes,
       ),
     )
     redshift_effect = var.default_allow || var.allow_redshift ? "Allow" : "Deny"
     redshift_principal = format(
-      "arn:aws:iam::%s:user/logs",
+      "arn:${data.aws_partition.current.partition}:iam::%s:user/logs",
       data.aws_redshift_service_account.main.id,
     )
     redshift_resources = jsonencode(
       format(
-        "arn:aws:s3:::%s/%s/*",
+        "arn:${data.aws_partition.current.partition}:s3:::%s/%s/*",
         var.s3_bucket_name,
         var.redshift_logs_prefix,
       ),
