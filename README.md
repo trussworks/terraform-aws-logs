@@ -1,98 +1,109 @@
-<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 Supports two main uses cases:
 
 * Creates and configures a single private S3 bucket for storing logs from various AWS services, which are nested as bucket prefixes. Logs will expire after a default of 90 days, with option to configure retention value.
 * Creates and configures a single private S3 bucket for a single AWS service. Logs will expire after a default of 90 days, with option to configure retention value.
 
-Logging from the following services is supported for both cases:
+Logging from the following services is supported for both cases as well as in AWS GovCloud:
 
+* [Application Load Balancer(ALB)](https://docs.aws.amazon.com/elasticloadbalancing/latest/application)
+* [Classic Elastic Load Balancer(ELB)](https://docs.aws.amazon.com/elasticloadbalancing/latest/classic)
+* [Network Load Balancer(NLB)](https://docs.aws.amazon.com/elasticloadbalancing/latest/network)
 * [CloudTrail](https://aws.amazon.com/cloudtrail/)
 * [Config](https://aws.amazon.com/config/)
-* [Classic Load Balancer (ELB) and Application Load Balancer (ALB)](https://aws.amazon.com/elasticloadbalancing/)
 * [RedShift](https://aws.amazon.com/redshift/)
 * [S3](https://aws.amazon.com/s3/)
 
 ## Terraform Versions
 
-Terraform 0.12. Pin module version to ~> 5.1.0. Submit pull-requests to master branch.
+Terraform 0.12. Pin module version to ~> 5.1.0 . Submit pull-requests to master branch.
 
-Terraform 0.11. Pin module version to ~> 3.5.0. Submit pull-requests to terraform011 branch.
+Terraform 0.11. Pin module version to ~> 3.5.0 . Submit pull-requests to terraform011 branch.
 
 ## Usage for a single log bucket storing logs from all services
 
-    # Allows all services to log to bucket
-    module "aws\_logs" {
-      source         = "trussworks/logs/aws"
-      s3\_bucket\_name = "my-company-aws-logs"
-      region         = "us-west-2"
-    }
+```hcl
+# Allows all services to log to bucket
+module "aws_logs" {
+  source         = "trussworks/logs/aws"
+  s3_bucket_name = "my-company-aws-logs"
+  region         = "us-west-2"
+}
+```
 
-## Usage for a single log bucket storing logs from a single service
+## Usage for a single log bucket storing logs from a single service (ELB in this case)
 
-    #  Allows only the service specified (elb in this case) to log to the bucket
-    module "aws\_logs" {
-      source         = "trussworks/logs/aws"
-      s3\_bucket\_name = "my-company-aws-logs-elb"
-      region         = "us-west-2"
-      default\_allow  = false
-      allow\_elb      = true
-    }
+```hcl
+module "aws_logs" {
+  source         = "trussworks/logs/aws"
+  s3_bucket_name = "my-company-aws-logs-elb"
+  region         = "us-west-2"
+  default_allow  = false
+  allow_elb      = true
+}
+```
 
-## Usage for a single log bucket storing logs from multiple specified services
+## Usage for a single log bucket storing logs from multiple specified services (ALB and ELB in this case)
 
-    #  Allows only the services specified (alb and elb in this case) to log to the bucket
-    module "aws\_logs" {
-      source         = "trussworks/logs/aws"
-      s3\_bucket\_name = "my-company-aws-logs-elb"
-      region         = "us-west-2"
-      default\_allow  = false
-      allow\_alb      = true
-      allow\_elb      = true
-    }
+```hcl
+module "aws_logs" {
+  source         = "trussworks/logs/aws"
+  s3_bucket_name = "my-company-aws-logs-lb"
+  region         = "us-west-2"
+  default_allow  = false
+  allow_alb      = true
+  allow_elb      = true
+}
+```
 
 ## Usage for a private bucket with no policies
 
-    #  Allows no services to log to the bucket
-    module "aws\_logs" {
-      source         = "trussworks/logs/aws"
-      s3\_bucket\_name = "my-company-aws-logs-elb"
-      s3\_bucket\_acl  = "private"
-      region         = "us-west-2"
-      default\_allow  = false
-    }
+```hcl
+module "aws_logs" {
+  source         = "trussworks/logs/aws"
+  s3_bucket_name = "my-company-aws-logs"
+  s3_bucket_acl  = "private"
+  region         = "us-west-2"
+  default_allow  = false
+}
+```
 
-## Usage for a single log bucket storing logs from multiple accounts
+## Usage for a single log bucket storing CloudTrail logs from multiple accounts
 
-    module "aws\_logs" {
-      source         = "trussworks/logs/aws"
-      s3\_bucket\_name = "my-company-aws-logs-elb"
-      region         = "us-west-2"
-      default\_allow  = false
-      allow\_cloudtrail      = true
-      cloudtrail\_accounts = ["${data.aws\_caller\_identity.current.account\_id}", "${aws\_organizations\_account.example.id}"]
-    }
+```hcl
+module "aws_logs" {
+  source              = "trussworks/logs/aws"
+  s3_bucket_name      = "my-company-aws-logs-cloudtrail"
+  region              = "us-west-2"
+  default_allow       = false
+  allow_cloudtrail    = true
+  cloudtrail_accounts = [data.aws_caller_identity.current.account_id, aws_organizations_account.example.id]
+}
+```
 
-## Usage for a single log bucket storing logs from multiple application load balancers and network load balancers
+## Usage for a single log bucket storing logs from multiple application load balancers (ALB) and network load balancers (NLB)
 
-    module "aws\_logs" {
-      source            = "trussworks/logs/aws"
-      s3\_bucket\_name    = "my-company-aws-logs-alb"
+```hcl
+module "aws_logs" {
+  source            = "trussworks/logs/aws"
+  s3_bucket_name    = "my-company-aws-logs-lb"
       region            = "us-west-2"
-      default\_allow     = false
-      allow\_alb         = true
-      allow\_nlb         = true
-      alb\_logs\_prefixes = formatlist(format("alb/%%s/AWSLogs/%s", data.aws\_caller\_identity.current.account\_id), [
+      default_allow     = false
+      allow_alb         = true
+      allow_nlb         = true
+      alb_logs_prefixes = formatlist(format("alb/%%s/AWSLogs/%s", data.aws_caller_identity.current.account_id), [
        "alb-hello-world-prod",
        "alb-hello-world-staging",
        "alb-hello-world-experimental",
       ])
-     nlb\_logs\_prefixes = formatlist(format("nlb/%%s/AWSLogs/%s", data.aws\_caller\_identity.current.account\_id), [
+      nlb_logs_prefixes = formatlist(format("nlb/%%s/AWSLogs/%s", data.aws_caller_identity.current.account_id), [
        "nlb-hello-world-prod",
        "nlb-hello-world-staging",
        "nlb-hello-world-experimental",
       ])
     }
+```
 
+<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Providers
 
 | Name | Version |
@@ -148,11 +159,13 @@ Version 5.1.0 removed the `nlb_logs_prefix` and `nlb_accounts` variables and now
 
 Use the `format` and `formatlist` functions in the caller module to support more complex logging that does limit by account id.  For example:
 
+```hcl
     nlb_logs_prefixes = formatlist(format("nlb/%%s/AWSLogs/%s", data.aws_caller_identity.current.account_id), [
       "hello-world-prod",
       "hello-world-staging",
       "hello-world-experimental",
     ])
+```
 
 ### Upgrading from 4.0.0 to 4.1.x
 
@@ -171,11 +184,13 @@ Version 3.5.0 removed the `alb_logs_prefix` and `alb_accounts` variables and now
 
 Use the `format` and `formatlist` functions in the caller module to support more complex logging that does limit by account id.  For example:
 
+```hcl
     alb_logs_prefixes = formatlist(format("alb/%%s/AWSLogs/%s", data.aws_caller_identity.current.account_id), [
       "hello-world-prod",
       "hello-world-staging",
       "hello-world-experimental",
     ])
+```
 
 ### Upgrading from 2.1.X to 3.X.X
 
@@ -197,7 +212,9 @@ The new module explicitly adds all resource policies as `Deny` and leaves it up 
 
 Install dependencies (macOS)
 
-  brew install pre-commit go terraform terraform-docs
+```shell
+brew install pre-commit go terraform terraform-docs
+```
 
 ### Testing
 
@@ -205,8 +222,12 @@ Install dependencies (macOS)
 automated testing with this module. Tests in the `test` folder can be run
 locally by running the following command:
 
-  make test
+```shell
+make test
+```
 
 Or with aws-vault:
 
-  AWS_VAULT_KEYCHAIN_NAME=YOUR-KEYCHAIN-NAME aws-vault exec YOUR-AWS-PROFILE -- make test
+```shell
+AWS_VAULT_KEYCHAIN_NAME=login aws-vault exec YOUR-AWS-PROFILE -- make test
+```

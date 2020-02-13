@@ -1,99 +1,3 @@
-/**
- * Supports two main uses cases:
- *
- * * Creates and configures a single private S3 bucket for storing logs from various AWS services, which are nested as bucket prefixes. Logs will expire after a default of 90 days, with option to configure retention value.
- * * Creates and configures a single private S3 bucket for a single AWS service. Logs will expire after a default of 90 days, with option to configure retention value.
- *
- * Logging from the following services is supported for both cases:
- *
- * * [CloudTrail](https://aws.amazon.com/cloudtrail/)
- * * [Config](https://aws.amazon.com/config/)
- * * [Classic Load Balancer (ELB) and Application Load Balancer (ALB)](https://aws.amazon.com/elasticloadbalancing/)
- * * [RedShift](https://aws.amazon.com/redshift/)
- * * [S3](https://aws.amazon.com/s3/)
- *
- * ## Terraform Versions
- *
- * Terraform 0.12. Pin module version to ~> 5.1.0. Submit pull-requests to master branch.
- *
- * Terraform 0.11. Pin module version to ~> 3.5.0. Submit pull-requests to terraform011 branch.
- *
- * ## Usage for a single log bucket storing logs from all services
- *
- *     # Allows all services to log to bucket
- *     module "aws_logs" {
- *       source         = "trussworks/logs/aws"
- *       s3_bucket_name = "my-company-aws-logs"
- *       region         = "us-west-2"
- *     }
- *
- * ## Usage for a single log bucket storing logs from a single service
- *
- *     #  Allows only the service specified (elb in this case) to log to the bucket
- *     module "aws_logs" {
- *       source         = "trussworks/logs/aws"
- *       s3_bucket_name = "my-company-aws-logs-elb"
- *       region         = "us-west-2"
- *       default_allow  = false
- *       allow_elb      = true
- *     }
- *
- * ## Usage for a single log bucket storing logs from multiple specified services
- *
- *     #  Allows only the services specified (alb and elb in this case) to log to the bucket
- *     module "aws_logs" {
- *       source         = "trussworks/logs/aws"
- *       s3_bucket_name = "my-company-aws-logs-elb"
- *       region         = "us-west-2"
- *       default_allow  = false
- *       allow_alb      = true
- *       allow_elb      = true
- *     }
- *
- * ## Usage for a private bucket with no policies
- *
- *     #  Allows no services to log to the bucket
- *     module "aws_logs" {
- *       source         = "trussworks/logs/aws"
- *       s3_bucket_name = "my-company-aws-logs-elb"
- *       s3_bucket_acl  = "private"
- *       region         = "us-west-2"
- *       default_allow  = false
- *     }
- *
- * ## Usage for a single log bucket storing logs from multiple accounts
- *
- *     module "aws_logs" {
- *       source         = "trussworks/logs/aws"
- *       s3_bucket_name = "my-company-aws-logs-elb"
- *       region         = "us-west-2"
- *       default_allow  = false
- *       allow_cloudtrail      = true
- *       cloudtrail_accounts = ["${data.aws_caller_identity.current.account_id}", "${aws_organizations_account.example.id}"]
- *     }
- *
- * ## Usage for a single log bucket storing logs from multiple application load balancers and network load balancers
- *
- *     module "aws_logs" {
- *       source            = "trussworks/logs/aws"
- *       s3_bucket_name    = "my-company-aws-logs-alb"
- *       region            = "us-west-2"
- *       default_allow     = false
- *       allow_alb         = true
- *       allow_nlb         = true
- *       alb_logs_prefixes = formatlist(format("alb/%%s/AWSLogs/%s", data.aws_caller_identity.current.account_id), [
- *        "alb-hello-world-prod",
- *        "alb-hello-world-staging",
- *        "alb-hello-world-experimental",
- *       ])
-  *      nlb_logs_prefixes = formatlist(format("nlb/%%s/AWSLogs/%s", data.aws_caller_identity.current.account_id), [
- *        "nlb-hello-world-prod",
- *        "nlb-hello-world-staging",
- *        "nlb-hello-world-experimental",
- *       ])
- *     }
- */
-
 # Get the account id of the AWS ELB service account in a given region for the
 # purpose of whitelisting in a S3 bucket policy.
 data "aws_elb_service_account" "main" {
@@ -110,6 +14,10 @@ data "aws_region" "current" {
 
 # The AWS account id
 data "aws_caller_identity" "current" {
+}
+
+# The AWS partition for differentiating between AWS commercial and GovCloud
+data "aws_partition" "current" {
 }
 
 #
@@ -256,19 +164,19 @@ JSON
 
   vars = {
     region        = var.region
-    bucket_arn    = format("arn:aws:s3:::%s", var.s3_bucket_name)
+    bucket_arn    = format("arn:${data.aws_partition.current.partition}:s3:::%s", var.s3_bucket_name)
     alb_principal = data.aws_elb_service_account.main.arn
     alb_effect    = var.default_allow || var.allow_alb ? "Allow" : "Deny"
     alb_resources = jsonencode(
       formatlist(
-        format("arn:aws:s3:::%s/%%s/*", var.s3_bucket_name),
+        format("arn:${data.aws_partition.current.partition}:s3:::%s/%%s/*", var.s3_bucket_name),
         var.alb_logs_prefixes,
       ),
     )
     cloudwatch_effect = var.default_allow || var.allow_cloudwatch ? "Allow" : "Deny"
     cloudwatch_resources = jsonencode(
       format(
-        "arn:aws:s3:::%s/%s/*",
+        "arn:${data.aws_partition.current.partition}:s3:::%s/%s/*",
         var.s3_bucket_name,
         var.cloudwatch_logs_prefix,
       ),
@@ -278,7 +186,7 @@ JSON
       sort(
         formatlist(
           format(
-            "arn:aws:s3:::%s/%s/AWSLogs/%%s/*",
+            "arn:${data.aws_partition.current.partition}:s3:::%s/%s/AWSLogs/%%s/*",
             var.s3_bucket_name,
             var.cloudtrail_logs_prefix,
           ),
@@ -287,7 +195,7 @@ JSON
       ),
       ) : jsonencode(
       format(
-        "arn:aws:s3:::%s/%s/AWSLogs/%s/*",
+        "arn:${data.aws_partition.current.partition}:s3:::%s/%s/AWSLogs/%s/*",
         var.s3_bucket_name,
         var.cloudtrail_logs_prefix,
         data.aws_caller_identity.current.account_id,
@@ -298,7 +206,7 @@ JSON
       sort(
         formatlist(
           format(
-            "arn:aws:s3:::%s/%s/AWSLogs/%%s/Config/*",
+            "arn:${data.aws_partition.current.partition}:s3:::%s/%s/AWSLogs/%%s/Config/*",
             var.s3_bucket_name,
             var.config_logs_prefix,
           ),
@@ -307,7 +215,7 @@ JSON
       ),
       ) : jsonencode(
       format(
-        "arn:aws:s3:::%s/%s/AWSLogs/%s/Config/*",
+        "arn:${data.aws_partition.current.partition}:s3:::%s/%s/AWSLogs/%s/Config/*",
         var.s3_bucket_name,
         var.config_logs_prefix,
         data.aws_caller_identity.current.account_id,
@@ -319,7 +227,7 @@ JSON
       sort(
         formatlist(
           format(
-            "arn:aws:s3:::%s/%s/AWSLogs/%%s/*",
+            "arn:${data.aws_partition.current.partition}:s3:::%s/%s/AWSLogs/%%s/*",
             var.s3_bucket_name,
             var.elb_logs_prefix,
           ),
@@ -328,7 +236,7 @@ JSON
       ),
       ) : jsonencode(
       format(
-        "arn:aws:s3:::%s/%s/AWSLogs/%s/*",
+        "arn:${data.aws_partition.current.partition}:s3:::%s/%s/AWSLogs/%s/*",
         var.s3_bucket_name,
         var.elb_logs_prefix,
         data.aws_caller_identity.current.account_id,
@@ -337,18 +245,18 @@ JSON
     nlb_effect = var.default_allow || var.allow_nlb ? "Allow" : "Deny"
     nlb_resources = jsonencode(
       formatlist(
-        format("arn:aws:s3:::%s/%%s/*", var.s3_bucket_name),
+        format("arn:${data.aws_partition.current.partition}:s3:::%s/%%s/*", var.s3_bucket_name),
         var.nlb_logs_prefixes,
       ),
     )
     redshift_effect = var.default_allow || var.allow_redshift ? "Allow" : "Deny"
     redshift_principal = format(
-      "arn:aws:iam::%s:user/logs",
+      "arn:${data.aws_partition.current.partition}:iam::%s:user/logs",
       data.aws_redshift_service_account.main.id,
     )
     redshift_resources = jsonencode(
       format(
-        "arn:aws:s3:::%s/%s/*",
+        "arn:${data.aws_partition.current.partition}:s3:::%s/%s/*",
         var.s3_bucket_name,
         var.redshift_logs_prefix,
       ),
