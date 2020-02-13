@@ -3,7 +3,7 @@ Supports two main uses cases:
 * Creates and configures a single private S3 bucket for storing logs from various AWS services, which are nested as bucket prefixes. Logs will expire after a default of 90 days, with option to configure retention value.
 * Creates and configures a single private S3 bucket for a single AWS service. Logs will expire after a default of 90 days, with option to configure retention value.
 
-Logging from the following services is supported for both cases:
+Logging from the following services is supported for both cases as well as in AWS GovCloud:
 
 * [Application Load Balancer(ALB)](https://docs.aws.amazon.com/elasticloadbalancing/latest/application)
 * [Classic Elastic Load Balancer(ELB)](https://docs.aws.amazon.com/elasticloadbalancing/latest/classic)
@@ -14,13 +14,11 @@ Logging from the following services is supported for both cases:
 * [RedShift](https://aws.amazon.com/redshift/)
 * [S3](https://aws.amazon.com/s3/)
 
-This Module also support running in AWS commercial regions as well as GovCloud.
-
 ## Terraform Versions
 
-Terraform 0.12. Pin module version to ~> 5.1.0. Submit pull-requests to master branch.
+Terraform 0.12. Pin module version to ~> 5.1.0 . Submit pull-requests to master branch.
 
-Terraform 0.11. Pin module version to ~> 3.5.0. Submit pull-requests to terraform011 branch.
+Terraform 0.11. Pin module version to ~> 3.5.0 . Submit pull-requests to terraform011 branch.
 
 ## Usage for a single log bucket storing logs from all services
 
