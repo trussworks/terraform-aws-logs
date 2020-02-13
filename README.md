@@ -10,7 +10,6 @@ Logging from the following services is supported for both cases as well as in AW
 * [Network Load Balancer(NLB)](https://docs.aws.amazon.com/elasticloadbalancing/latest/network)
 * [CloudTrail](https://aws.amazon.com/cloudtrail/)
 * [Config](https://aws.amazon.com/config/)
-* [Classic Load Balancer (ELB) and Application Load Balancer (ALB)](https://aws.amazon.com/elasticloadbalancing/)
 * [RedShift](https://aws.amazon.com/redshift/)
 * [S3](https://aws.amazon.com/s3/)
 
