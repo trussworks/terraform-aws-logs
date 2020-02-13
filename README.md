@@ -213,7 +213,9 @@ The new module explicitly adds all resource policies as `Deny` and leaves it up 
 
 Install dependencies (macOS)
 
-  brew install pre-commit go terraform terraform-docs
+```shell
+brew install pre-commit go terraform terraform-docs
+```
 
 ### Testing
 
@@ -221,8 +223,12 @@ Install dependencies (macOS)
 automated testing with this module. Tests in the `test` folder can be run
 locally by running the following command:
 
-  make test
+```shell
+make test
+```
 
 Or with aws-vault:
 
-  AWS_VAULT_KEYCHAIN_NAME=YOUR-KEYCHAIN-NAME aws-vault exec YOUR-AWS-PROFILE -- make test
+```shell
+AWS_VAULT_KEYCHAIN_NAME=YOUR-KEYCHAIN-NAME aws-vault exec YOUR-AWS-PROFILE -- make test
+```
