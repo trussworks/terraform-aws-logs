@@ -1,5 +1,5 @@
 # Get the account id of the AWS ELB service account in a given region for the
-# purpose of whitelisting in a S3 bucket policy.
+# purpose of whitelisting in an S3 bucket policy.
 data "aws_elb_service_account" "main" {
 }
 
@@ -69,6 +69,29 @@ data "template_file" "bucket_policy" {
             },
             "Action": "s3:PutObject",
             "Resource": $${cloudwatch_resources},
+            "Condition": {
+                "StringEquals": {
+                    "s3:x-amz-acl": "bucket-owner-full-control"
+                }
+            }
+        },
+        {
+            "Sid": "cloudfront-logs-get-bucket-acl",
+            "Effect": "$${cloudfront_effect}",
+            "Principal": {
+                "Service": "delivery.logs.amazonaws.com"
+            },
+            "Action": "s3:GetBucketAcl",
+            "Resource": "$${bucket_arn}"
+        },
+        {
+            "Sid": "cloudfront-logs-put-object",
+            "Effect": "$${cloudfront_effect}",
+            "Principal": {
+                "Service": "delivery.logs.amazonaws.com"
+            },
+            "Action": "s3:PutObject",
+            "Resource": $${cloudfront_resources},
             "Condition": {
                 "StringEquals": {
                     "s3:x-amz-acl": "bucket-owner-full-control"
@@ -201,6 +224,16 @@ JSON
         data.aws_caller_identity.current.account_id,
       ),
     )
+
+    cloudfront_effect = var.default_allow || var.allow_cloudfront ? "Allow" : "Deny"
+    cloudfront_resources = jsonencode(
+      format(
+        "arn:${data.aws_partition.current.partition}:s3:::%s/%s/*",
+        var.s3_bucket_name,
+        var.cloudfront_logs_prefix,
+      ),
+    )
+
     config_effect = var.default_allow || var.allow_config ? "Allow" : "Deny"
     config_resources = length(var.config_accounts) > 0 ? jsonencode(
       sort(

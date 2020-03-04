@@ -44,6 +44,12 @@ variable "cloudtrail_logs_prefix" {
   type        = string
 }
 
+variable "cloudfront_logs_prefix" {
+  description = "S3 prefix for CloudFront logs."
+  default     = "cloudfront"
+  type        = string
+}
+
 variable "redshift_logs_prefix" {
   description = "S3 prefix for RedShift logs."
   default     = "redshift"
@@ -71,6 +77,12 @@ variable "allow_cloudtrail" {
 
 variable "allow_cloudwatch" {
   description = "Allow Cloudwatch service to export logs to bucket."
+  default     = false
+  type        = string
+}
+
+variable "allow_cloudfront" {
+  description = "Allow Cloudfront service to export logs to bucket."
   default     = false
   type        = string
 }
