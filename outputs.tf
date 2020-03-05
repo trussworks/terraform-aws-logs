@@ -19,6 +19,6 @@ output "redshift_logs_path" {
 }
 
 output "cloudfront_logs_path" {
-  description = "S3 path for RedShift logs."
+  description = "S3 path for Cloudfront logs."
   value       = var.cloudfront_logs_prefix
 }
