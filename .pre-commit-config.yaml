@@ -20,7 +20,6 @@ repos:
     rev: v1.27.0
     hooks:
       - id: terraform_docs
-        types: [markdown]
       - id: terraform_fmt
 
   - repo: git://github.com/golangci/golangci-lint
