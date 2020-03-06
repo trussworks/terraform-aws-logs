@@ -117,20 +117,20 @@ module "aws_logs" {
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:-----:|
 | alb\_logs\_prefixes | S3 key prefixes for ALB logs. | `list(string)` | <pre>[<br>  "alb"<br>]<br></pre> | no |
-| allow\_alb | Allow ALB service to log to bucket. | `string` | `false` | no |
-| allow\_cloudtrail | Allow Cloudtrail service to log to bucket. | `string` | `false` | no |
-| allow\_cloudwatch | Allow Cloudwatch service to export logs to bucket. | `string` | `false` | no |
-| allow\_config | Allow Config service to log to bucket. | `string` | `false` | no |
-| allow\_elb | Allow ELB service to log to bucket. | `string` | `false` | no |
-| allow\_nlb | Allow NLB service to log to bucket. | `string` | `false` | no |
-| allow\_redshift | Allow Redshift service to log to bucket. | `string` | `false` | no |
+| allow\_alb | Allow ALB service to log to bucket. | `bool` | `false` | no |
+| allow\_cloudtrail | Allow Cloudtrail service to log to bucket. | `bool` | `false` | no |
+| allow\_cloudwatch | Allow Cloudwatch service to export logs to bucket. | `bool` | `false` | no |
+| allow\_config | Allow Config service to log to bucket. | `bool` | `false` | no |
+| allow\_elb | Allow ELB service to log to bucket. | `bool` | `false` | no |
+| allow\_nlb | Allow NLB service to log to bucket. | `bool` | `false` | no |
+| allow\_redshift | Allow Redshift service to log to bucket. | `bool` | `false` | no |
 | cloudtrail\_accounts | List of accounts for CloudTrail logs.  By default limits to the current account. | `list(string)` | `[]` | no |
 | cloudtrail\_logs\_prefix | S3 prefix for CloudTrail logs. | `string` | `"cloudtrail"` | no |
 | cloudwatch\_logs\_prefix | S3 prefix for CloudWatch log exports. | `string` | `"cloudwatch"` | no |
 | config\_accounts | List of accounts for Config logs.  By default limits to the current account. | `list(string)` | `[]` | no |
 | config\_logs\_prefix | S3 prefix for AWS Config logs. | `string` | `"config"` | no |
-| create\_public\_access\_block | Whether to create a public\_access\_block restricting public access to the bucket. | `string` | `true` | no |
-| default\_allow | Whether all services included in this module should be allowed to write to the bucket by default. Alternatively select individual services. It's recommended to use the default bucket ACL of log-delivery-write. | `string` | `true` | no |
+| create\_public\_access\_block | Whether to create a public\_access\_block restricting public access to the bucket. | `bool` | `true` | no |
+| default\_allow | Whether all services included in this module should be allowed to write to the bucket by default. Alternatively select individual services. It's recommended to use the default bucket ACL of log-delivery-write. | `bool` | `true` | no |
 | elb\_accounts | List of accounts for ELB logs.  By default limits to the current account. | `list(string)` | `[]` | no |
 | elb\_logs\_prefix | S3 prefix for ELB logs. | `string` | `"elb"` | no |
 | force\_destroy | A bool that indicates all objects (including any locked objects) should be deleted from the bucket so the bucket can be destroyed without error. | `bool` | `false` | no |
