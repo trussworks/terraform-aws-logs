@@ -99,6 +99,12 @@ variable "allow_elb" {
   type        = bool
 }
 
+variable "allow_guardduty" {
+  description = "Allow GuardDuty service to log to bucket."
+  default     = false
+  type        = bool
+}
+
 variable "allow_redshift" {
   description = "Allow Redshift service to log to bucket."
   default     = false
@@ -138,5 +144,11 @@ variable "force_destroy" {
 variable "nlb_logs_prefixes" {
   description = "S3 key prefixes for NLB logs."
   default     = ["nlb"]
+  type        = list(string)
+}
+
+variable "guardduty_logs_prefixes" {
+  description = "S3 key prefixes for GuardDuty logs.  Since GuardDuty tests access by using the configured path prefix, you cannot use the full path with account id and region."
+  default     = ["guardduty/AWSLogs"]
   type        = list(string)
 }

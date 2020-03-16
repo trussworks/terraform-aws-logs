@@ -116,12 +116,13 @@ module "aws_logs" {
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:-----:|
-| alb\_logs\_prefixes | S3 key prefixes for ALB logs. | `list(string)` | <pre>[<br>  "alb"<br>]<br></pre> | no |
+| alb\_logs\_prefixes | S3 key prefixes for ALB logs. | `list(string)` | <pre>[<br>  "alb"<br>]</pre> | no |
 | allow\_alb | Allow ALB service to log to bucket. | `bool` | `false` | no |
 | allow\_cloudtrail | Allow Cloudtrail service to log to bucket. | `bool` | `false` | no |
 | allow\_cloudwatch | Allow Cloudwatch service to export logs to bucket. | `bool` | `false` | no |
 | allow\_config | Allow Config service to log to bucket. | `bool` | `false` | no |
 | allow\_elb | Allow ELB service to log to bucket. | `bool` | `false` | no |
+| allow\_guardduty | Allow GuardDuty service to log to bucket. | `bool` | `false` | no |
 | allow\_nlb | Allow NLB service to log to bucket. | `bool` | `false` | no |
 | allow\_redshift | Allow Redshift service to log to bucket. | `bool` | `false` | no |
 | cloudtrail\_accounts | List of accounts for CloudTrail logs.  By default limits to the current account. | `list(string)` | `[]` | no |
@@ -134,7 +135,8 @@ module "aws_logs" {
 | elb\_accounts | List of accounts for ELB logs.  By default limits to the current account. | `list(string)` | `[]` | no |
 | elb\_logs\_prefix | S3 prefix for ELB logs. | `string` | `"elb"` | no |
 | force\_destroy | A bool that indicates all objects (including any locked objects) should be deleted from the bucket so the bucket can be destroyed without error. | `bool` | `false` | no |
-| nlb\_logs\_prefixes | S3 key prefixes for NLB logs. | `list(string)` | <pre>[<br>  "nlb"<br>]<br></pre> | no |
+| guardduty\_logs\_prefixes | S3 key prefixes for GuardDuty logs.  Since GuardDuty tests access by using the configured path prefix, you cannot use the full path with account id and region. | `list(string)` | <pre>[<br>  "guardduty/AWSLogs"<br>]</pre> | no |
+| nlb\_logs\_prefixes | S3 key prefixes for NLB logs. | `list(string)` | <pre>[<br>  "nlb"<br>]</pre> | no |
 | redshift\_logs\_prefix | S3 prefix for RedShift logs. | `string` | `"redshift"` | no |
 | region | Region where the AWS S3 bucket will be created. | `string` | n/a | yes |
 | s3\_bucket\_acl | Set bucket ACL per [AWS S3 Canned ACL](<https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl>) list. | `string` | `"log-delivery-write"` | no |

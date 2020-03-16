@@ -156,6 +156,36 @@ data "template_file" "bucket_policy" {
             },
             "Action": "s3:GetBucketAcl",
             "Resource": "$${bucket_arn}"
+        },
+        {
+            "Sid": "guardduty-logs-get-location",
+            "Effect": "$${guardduty_effect}",
+            "Principal": {
+                "Service": "guardduty.amazonaws.com"
+            },
+            "Action": "s3:GetBucketLocation",
+            "Resource": "$${bucket_arn}"
+        },
+        {
+            "Sid": "guardduty-logs-put-object",
+            "Effect": "$${guardduty_effect}",
+            "Principal": {
+                "Service": "guardduty.amazonaws.com"
+            },
+            "Action": "s3:PutObject",
+            "Resource": $${guardduty_resources}
+        },
+        {
+            "Sid": "logs-deny-http",
+            "Effect": "Deny",
+            "Principal": "*",
+            "Action": "s3:*",
+            "Resource": "$${bucket_arn}/*",
+            "Condition": {
+                "Bool": {
+                    "aws:SecureTransport": "false"
+                }
+            }
         }
     ]
 }
@@ -240,6 +270,13 @@ JSON
         var.s3_bucket_name,
         var.elb_logs_prefix,
         data.aws_caller_identity.current.account_id,
+      ),
+    )
+    guardduty_effect = var.default_allow || var.allow_guardduty ? "Allow" : "Deny"
+    guardduty_resources = jsonencode(
+      formatlist(
+        format("arn:%s:s3:::%s/%%s/*", data.aws_partition.current.partition, var.s3_bucket_name),
+        var.guardduty_logs_prefixes,
       ),
     )
     nlb_effect = var.default_allow || var.allow_nlb ? "Allow" : "Deny"
