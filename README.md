@@ -12,7 +12,6 @@ Logging from the following services is supported for both cases as well as in AW
 * [Config](https://aws.amazon.com/config/)
 * [RedShift](https://aws.amazon.com/redshift/)
 * [S3](https://aws.amazon.com/s3/)
-* [CloudFront](https://aws.amazon.com/cloudfront/)
 
 ## Terraform Versions
 
