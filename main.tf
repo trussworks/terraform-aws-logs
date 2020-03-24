@@ -20,6 +20,11 @@ data "aws_caller_identity" "current" {
 data "aws_partition" "current" {
 }
 
+# Defining the "real" prefix for cloudtrail to get around GovCloud issues.
+locals = {
+  cloudtrail_real_prefix = length(var.cloudtrail_logs_prefix) == 0 ? "" : format("%s/", var.cloudtrail_logs_prefix)
+}
+
 #
 # S3 Bucket
 #
@@ -160,10 +165,6 @@ data "template_file" "bucket_policy" {
     ]
 }
 JSON
-
-  locals = {
-    cloudtrail_real_prefix = length(var.cloudtrail_logs_prefix) == 0 ? "" : format("%s/", var.cloudtrail_logs_prefix)
-  }
 
   vars = {
     region        = var.region
