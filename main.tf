@@ -181,14 +181,15 @@ JSON
         var.cloudwatch_logs_prefix,
       ),
     )
-    cloudtrail_effect = var.default_allow || var.allow_cloudtrail ? "Allow" : "Deny"
+    cloudtrail_effect      = var.default_allow || var.allow_cloudtrail ? "Allow" : "Deny"
+    cloudtrail_real_prefix = length(var.cloudtrail_logs_prefix) == 0 ? "" : format("%s/", var.cloudtrail_logs_prefix)
     cloudtrail_resources = length(var.cloudtrail_accounts) > 0 ? jsonencode(
       sort(
         formatlist(
           format(
-            "arn:${data.aws_partition.current.partition}:s3:::%s/%s/AWSLogs/%%s/*",
+            "arn:${data.aws_partition.current.partition}:s3:::%s/%sAWSLogs/%%s/*",
             var.s3_bucket_name,
-            var.cloudtrail_logs_prefix,
+            var.cloudtrail_real_prefix,
           ),
           var.cloudtrail_accounts,
         ),
@@ -197,7 +198,7 @@ JSON
       format(
         "arn:${data.aws_partition.current.partition}:s3:::%s/%s/AWSLogs/%s/*",
         var.s3_bucket_name,
-        var.cloudtrail_logs_prefix,
+        var.cloudtrail_real_prefix,
         data.aws_caller_identity.current.account_id,
       ),
     )
