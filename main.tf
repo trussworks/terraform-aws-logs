@@ -22,7 +22,7 @@ data "aws_partition" "current" {
 
 # Defining the "real" prefix for cloudtrail to get around GovCloud issues.
 locals {
-  cloudtrail_real_prefix = length(var.cloudtrail_logs_prefix) == 0 ? "" : format("%s/", var.cloudtrail_logs_prefix)
+  cloudtrail_real_prefix = var.cloudtrail_logs_prefix == "" ? "" : format("%s/", var.cloudtrail_logs_prefix)
 }
 
 #
