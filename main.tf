@@ -199,7 +199,7 @@ JSON
       ),
       ) : jsonencode(
       format(
-        "arn:${data.aws_partition.current.partition}:s3:::%s/%s/AWSLogs/%s/*",
+        "arn:${data.aws_partition.current.partition}:s3:::%s/%sAWSLogs/%s/*",
         var.s3_bucket_name,
         local.cloudtrail_real_prefix,
         data.aws_caller_identity.current.account_id,
