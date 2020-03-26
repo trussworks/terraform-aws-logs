@@ -15,7 +15,7 @@ Logging from the following services is supported for both cases as well as in AW
 
 ## Terraform Versions
 
-Terraform 0.12. Pin module version to ~> 5.1.0 . Submit pull-requests to master branch.
+Terraform 0.12. Pin module version to ~> 7.0.0 . Submit pull-requests to master branch.
 
 Terraform 0.11. Pin module version to ~> 3.5.0 . Submit pull-requests to terraform011 branch.
 
@@ -55,18 +55,6 @@ module "aws_logs" {
 }
 ```
 
-## Usage for a private bucket with no policies
-
-```hcl
-module "aws_logs" {
-  source         = "trussworks/logs/aws"
-  s3_bucket_name = "my-company-aws-logs"
-  s3_bucket_acl  = "private"
-  region         = "us-west-2"
-  default_allow  = false
-}
-```
-
 ## Usage for a single log bucket storing CloudTrail logs from multiple accounts
 
 ```hcl
@@ -90,16 +78,16 @@ module "aws_logs" {
       default_allow     = false
       allow_alb         = true
       allow_nlb         = true
-      alb_logs_prefixes = formatlist(format("alb/%%s/AWSLogs/%s", data.aws_caller_identity.current.account_id), [
-       "alb-hello-world-prod",
-       "alb-hello-world-staging",
-       "alb-hello-world-experimental",
-      ])
-      nlb_logs_prefixes = formatlist(format("nlb/%%s/AWSLogs/%s", data.aws_caller_identity.current.account_id), [
-       "nlb-hello-world-prod",
-       "nlb-hello-world-staging",
-       "nlb-hello-world-experimental",
-      ])
+      alb_logs_prefixes = [
+       "nlb/alb-hello-world-prod",
+       "nlb/alb-hello-world-staging",
+       "nlb/alb-hello-world-experimental",
+      ]
+      nlb_logs_prefixes = [
+       "alb/nlb-hello-world-prod",
+       "alb/nlb-hello-world-staging",
+       "alb/nlb-hello-world-experimental",
+      ]
     }
 ```
 
@@ -151,6 +139,24 @@ module "aws_logs" {
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 
 ## Upgrade Paths
+
+### Upgrading from 6.0.0 to 7.x.x
+
+This release simplifies `nlb_logs_prefixes` and `alb_logs_prefixes` to no longer need to pass in generate a formatted list and instead can be referenced as
+
+```hcl
+nlb_logs_prefixes = [
+ "nlb/hello-world-prod",
+ "nlb/hello-world-staging",
+ "nlb/hello-world-experimental",
+]
+```
+
+This release defines more restrictive bucket policies for ALB and NLB logs to include the AWS account id to the allowed path. Terraform plans with this version of the module will look something like
+
+```text
+~ Resource  = "arn:aws:s3:::bucket-a-us-west-2/nlb/*" -> "arn:aws:s3:::bucket-a-us-west-2/nlb/AWSLogs/480766629331/*"
+```
 
 ### Upgrading from 5.0.0 to 5.1.x
 
