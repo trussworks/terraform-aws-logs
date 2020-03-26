@@ -8,11 +8,13 @@ import (
 	"github.com/gruntwork-io/terratest/modules/aws"
 	"github.com/gruntwork-io/terratest/modules/random"
 	"github.com/gruntwork-io/terratest/modules/terraform"
+	test_structure "github.com/gruntwork-io/terratest/modules/test-structure"
 )
 
 func TestTerraformAwsLogsCombined(t *testing.T) {
 	// Note: do not run this test in t.Parallel() mode.
 
+	tempTestFolder := test_structure.CopyTerraformFolderToTemp(t, "../", "examples/combined")
 	testName := fmt.Sprintf("terratest-aws-logs-%s", strings.ToLower(random.UniqueId()))
 	// AWS only supports one configuration recorder per region.
 	// Each test using aws-config will need to specify a different region.
@@ -21,7 +23,7 @@ func TestTerraformAwsLogsCombined(t *testing.T) {
 	testRedshift := !testing.Short()
 
 	terraformOptions := &terraform.Options{
-		TerraformDir: "../examples/combined/",
+		TerraformDir: tempTestFolder,
 		Vars: map[string]interface{}{
 			"region":        awsRegion,
 			"vpc_azs":       vpcAzs,

@@ -1,8 +1,12 @@
 module "aws_logs" {
-  source         = "../../"
+  source = "../../"
+
   s3_bucket_name = var.test_name
   region         = var.region
-  force_destroy  = var.force_destroy
+
+  default_allow = false
+
+  force_destroy = var.force_destroy
 }
 
 resource "aws_s3_bucket" "log_source_bucket" {
@@ -11,6 +15,6 @@ resource "aws_s3_bucket" "log_source_bucket" {
 
   logging {
     target_bucket = module.aws_logs.aws_logs_bucket
-    target_prefix = "log/"
+    target_prefix = var.s3_logs_prefix
   }
 }
