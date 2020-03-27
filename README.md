@@ -79,14 +79,14 @@ module "aws_logs" {
       allow_alb         = true
       allow_nlb         = true
       alb_logs_prefixes = [
-       "nlb/alb-hello-world-prod",
-       "nlb/alb-hello-world-staging",
-       "nlb/alb-hello-world-experimental",
+       "alb/hello-world-prod",
+       "alb/hello-world-staging",
+       "alb/hello-world-experimental",
       ]
       nlb_logs_prefixes = [
-       "alb/nlb-hello-world-prod",
-       "alb/nlb-hello-world-staging",
-       "alb/nlb-hello-world-experimental",
+       "nlb/hello-world-prod",
+       "nlb/hello-world-staging",
+       "nlb/hello-world-experimental",
       ]
     }
 ```
