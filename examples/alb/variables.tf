@@ -14,3 +14,6 @@ variable "force_destroy" {
   type = bool
 }
 
+variable "alb_logs_prefixes" {
+  type = list(string)
+}

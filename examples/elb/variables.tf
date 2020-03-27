@@ -14,3 +14,6 @@ variable "force_destroy" {
   type = bool
 }
 
+variable "elb_logs_prefix" {
+  type = string
+}

@@ -9,3 +9,7 @@ variable "region" {
 variable "force_destroy" {
   type = bool
 }
+
+variable "cloudtrail_logs_prefix" {
+  type = string
+}
