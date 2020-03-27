@@ -142,7 +142,7 @@ module "aws_logs" {
 
 ### Upgrading from 6.0.0 to 7.x.x
 
-This release simplifies `nlb_logs_prefixes` and `alb_logs_prefixes` to no longer need to pass in generate a formatted list and instead can be referenced as
+This release simplifies `nlb_logs_prefixes` and `alb_logs_prefixes` to no longer need to pass in a formatted list and instead can be referenced as
 
 ```hcl
 nlb_logs_prefixes = [
