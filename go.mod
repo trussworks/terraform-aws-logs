@@ -1,5 +1,5 @@
 module github.com/trussworks/terraform-aws-logs
 
-go 1.13
+go 1.14
 
-require github.com/gruntwork-io/terratest v0.24.2
+require github.com/gruntwork-io/terratest v0.26.1

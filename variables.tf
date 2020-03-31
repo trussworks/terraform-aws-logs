@@ -60,55 +60,55 @@ variable "config_logs_prefix" {
 variable "default_allow" {
   description = "Whether all services included in this module should be allowed to write to the bucket by default. Alternatively select individual services. It's recommended to use the default bucket ACL of log-delivery-write."
   default     = true
-  type        = string
+  type        = bool
 }
 
 variable "allow_cloudtrail" {
   description = "Allow Cloudtrail service to log to bucket."
   default     = false
-  type        = string
+  type        = bool
 }
 
 variable "allow_cloudwatch" {
   description = "Allow Cloudwatch service to export logs to bucket."
   default     = false
-  type        = string
+  type        = bool
 }
 
 variable "allow_alb" {
   description = "Allow ALB service to log to bucket."
   default     = false
-  type        = string
+  type        = bool
 }
 
 variable "allow_nlb" {
   description = "Allow NLB service to log to bucket."
   default     = false
-  type        = string
+  type        = bool
 }
 
 variable "allow_config" {
   description = "Allow Config service to log to bucket."
   default     = false
-  type        = string
+  type        = bool
 }
 
 variable "allow_elb" {
   description = "Allow ELB service to log to bucket."
   default     = false
-  type        = string
+  type        = bool
 }
 
 variable "allow_redshift" {
   description = "Allow Redshift service to log to bucket."
   default     = false
-  type        = string
+  type        = bool
 }
 
 variable "create_public_access_block" {
   description = "Whether to create a public_access_block restricting public access to the bucket."
   default     = true
-  type        = string
+  type        = bool
 }
 
 variable "cloudtrail_accounts" {

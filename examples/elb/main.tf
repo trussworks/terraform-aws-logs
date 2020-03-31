@@ -1,9 +1,13 @@
 module "aws_logs" {
-  source         = "../../"
-  s3_bucket_name = var.test_name
-  region         = var.region
-  allow_elb      = "true"
-  force_destroy  = var.force_destroy
+  source = "../../"
+
+  s3_bucket_name  = var.test_name
+  elb_logs_prefix = var.elb_logs_prefix
+  region          = var.region
+  allow_elb       = true
+  default_allow   = false
+
+  force_destroy = var.force_destroy
 }
 
 resource "aws_elb" "test_elb" {
@@ -12,7 +16,7 @@ resource "aws_elb" "test_elb" {
 
   access_logs {
     bucket        = module.aws_logs.aws_logs_bucket
-    bucket_prefix = "elb"
+    bucket_prefix = var.elb_logs_prefix
     enabled       = true
   }
 

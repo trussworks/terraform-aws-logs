@@ -15,7 +15,7 @@ Logging from the following services is supported for both cases as well as in AW
 
 ## Terraform Versions
 
-Terraform 0.12. Pin module version to ~> 5.1.0 . Submit pull-requests to master branch.
+Terraform 0.12. Pin module version to ~> 7.0.0 . Submit pull-requests to master branch.
 
 Terraform 0.11. Pin module version to ~> 3.5.0 . Submit pull-requests to terraform011 branch.
 
@@ -55,18 +55,6 @@ module "aws_logs" {
 }
 ```
 
-## Usage for a private bucket with no policies
-
-```hcl
-module "aws_logs" {
-  source         = "trussworks/logs/aws"
-  s3_bucket_name = "my-company-aws-logs"
-  s3_bucket_acl  = "private"
-  region         = "us-west-2"
-  default_allow  = false
-}
-```
-
 ## Usage for a single log bucket storing CloudTrail logs from multiple accounts
 
 ```hcl
@@ -90,16 +78,16 @@ module "aws_logs" {
       default_allow     = false
       allow_alb         = true
       allow_nlb         = true
-      alb_logs_prefixes = formatlist(format("alb/%%s/AWSLogs/%s", data.aws_caller_identity.current.account_id), [
-       "alb-hello-world-prod",
-       "alb-hello-world-staging",
-       "alb-hello-world-experimental",
-      ])
-      nlb_logs_prefixes = formatlist(format("nlb/%%s/AWSLogs/%s", data.aws_caller_identity.current.account_id), [
-       "nlb-hello-world-prod",
-       "nlb-hello-world-staging",
-       "nlb-hello-world-experimental",
-      ])
+      alb_logs_prefixes = [
+       "alb/hello-world-prod",
+       "alb/hello-world-staging",
+       "alb/hello-world-experimental",
+      ]
+      nlb_logs_prefixes = [
+       "nlb/hello-world-prod",
+       "nlb/hello-world-staging",
+       "nlb/hello-world-experimental",
+      ]
     }
 ```
 
@@ -109,27 +97,26 @@ module "aws_logs" {
 | Name | Version |
 |------|---------|
 | aws | n/a |
-| template | n/a |
 
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:-----:|
 | alb\_logs\_prefixes | S3 key prefixes for ALB logs. | `list(string)` | <pre>[<br>  "alb"<br>]</pre> | no |
-| allow\_alb | Allow ALB service to log to bucket. | `string` | `false` | no |
-| allow\_cloudtrail | Allow Cloudtrail service to log to bucket. | `string` | `false` | no |
-| allow\_cloudwatch | Allow Cloudwatch service to export logs to bucket. | `string` | `false` | no |
-| allow\_config | Allow Config service to log to bucket. | `string` | `false` | no |
-| allow\_elb | Allow ELB service to log to bucket. | `string` | `false` | no |
-| allow\_nlb | Allow NLB service to log to bucket. | `string` | `false` | no |
-| allow\_redshift | Allow Redshift service to log to bucket. | `string` | `false` | no |
+| allow\_alb | Allow ALB service to log to bucket. | `bool` | `false` | no |
+| allow\_cloudtrail | Allow Cloudtrail service to log to bucket. | `bool` | `false` | no |
+| allow\_cloudwatch | Allow Cloudwatch service to export logs to bucket. | `bool` | `false` | no |
+| allow\_config | Allow Config service to log to bucket. | `bool` | `false` | no |
+| allow\_elb | Allow ELB service to log to bucket. | `bool` | `false` | no |
+| allow\_nlb | Allow NLB service to log to bucket. | `bool` | `false` | no |
+| allow\_redshift | Allow Redshift service to log to bucket. | `bool` | `false` | no |
 | cloudtrail\_accounts | List of accounts for CloudTrail logs.  By default limits to the current account. | `list(string)` | `[]` | no |
 | cloudtrail\_logs\_prefix | S3 prefix for CloudTrail logs. | `string` | `"cloudtrail"` | no |
 | cloudwatch\_logs\_prefix | S3 prefix for CloudWatch log exports. | `string` | `"cloudwatch"` | no |
 | config\_accounts | List of accounts for Config logs.  By default limits to the current account. | `list(string)` | `[]` | no |
 | config\_logs\_prefix | S3 prefix for AWS Config logs. | `string` | `"config"` | no |
-| create\_public\_access\_block | Whether to create a public\_access\_block restricting public access to the bucket. | `string` | `true` | no |
-| default\_allow | Whether all services included in this module should be allowed to write to the bucket by default. Alternatively select individual services. It's recommended to use the default bucket ACL of log-delivery-write. | `string` | `true` | no |
+| create\_public\_access\_block | Whether to create a public\_access\_block restricting public access to the bucket. | `bool` | `true` | no |
+| default\_allow | Whether all services included in this module should be allowed to write to the bucket by default. Alternatively select individual services. It's recommended to use the default bucket ACL of log-delivery-write. | `bool` | `true` | no |
 | elb\_accounts | List of accounts for ELB logs.  By default limits to the current account. | `list(string)` | `[]` | no |
 | elb\_logs\_prefix | S3 prefix for ELB logs. | `string` | `"elb"` | no |
 | force\_destroy | A bool that indicates all objects (including any locked objects) should be deleted from the bucket so the bucket can be destroyed without error. | `bool` | `false` | no |
@@ -152,6 +139,24 @@ module "aws_logs" {
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 
 ## Upgrade Paths
+
+### Upgrading from 6.0.0 to 7.x.x
+
+This release simplifies `nlb_logs_prefixes` and `alb_logs_prefixes` to no longer need to pass in a formatted list and instead can be referenced as
+
+```hcl
+nlb_logs_prefixes = [
+ "nlb/hello-world-prod",
+ "nlb/hello-world-staging",
+ "nlb/hello-world-experimental",
+]
+```
+
+This release defines more restrictive bucket policies for ALB and NLB logs to include the AWS account id to the allowed path. Terraform plans with this version of the module will look something like
+
+```text
+~ Resource  = "arn:aws:s3:::bucket-a-us-west-2/nlb/*" -> "arn:aws:s3:::bucket-a-us-west-2/nlb/AWSLogs/480766629331/*"
+```
 
 ### Upgrading from 5.0.0 to 5.1.x
 

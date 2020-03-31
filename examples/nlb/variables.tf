@@ -13,3 +13,7 @@ variable "vpc_azs" {
 variable "force_destroy" {
   type = bool
 }
+
+variable "nlb_logs_prefixes" {
+  type = list(string)
+}
