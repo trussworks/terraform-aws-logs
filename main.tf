@@ -315,15 +315,40 @@ data "aws_iam_policy_document" "main" {
     actions   = ["s3:GetBucketAcl"]
     resources = [local.bucket_arn]
   }
-
 }
 
+data "aws_iam_policy_document" "tls_requests_only" {
+  source_json = data.aws_iam_policy_document.main.json
+
+  #
+  # Enforce TLS requests only to S3
+  #
+
+  statement {
+    sid    = "enforce-tls-requests-only"
+    effect = "Deny"
+    principals {
+      type        = "AWS"
+      identifiers = ["*"]
+    }
+    actions = ["s3:*"]
+    resources = [
+      local.bucket_arn,
+      "${local.bucket_arn}/*"
+    ]
+    condition {
+      test     = "Bool"
+      variable = "aws:SecureTransport"
+      values   = ["false"]
+    }
+  }
+}
 
 resource "aws_s3_bucket" "aws_logs" {
   bucket        = var.s3_bucket_name
   acl           = var.s3_bucket_acl
   region        = var.region
-  policy        = data.aws_iam_policy_document.main.json
+  policy        = var.enforce_tls_requests_only ? data.aws_iam_policy_document.tls_requests_only.json : data.aws_iam_policy_document.main.json
   force_destroy = var.force_destroy
 
   lifecycle_rule {

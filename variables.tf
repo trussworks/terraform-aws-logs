@@ -123,6 +123,12 @@ variable "config_accounts" {
   type        = list(string)
 }
 
+variable "enforce_tls_requests_only" {
+  description = "A bool to enable a policy to ensure only TLS requests to the bucket are permitted"
+  default     = false
+  type        = bool
+}
+
 variable "elb_accounts" {
   description = "List of accounts for ELB logs.  By default limits to the current account."
   default     = []
