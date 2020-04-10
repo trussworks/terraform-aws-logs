@@ -92,6 +92,12 @@ module "aws_logs" {
 ```
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+## Requirements
+
+| Name | Version |
+|------|---------|
+| terraform | >= 0.12 |
+
 ## Providers
 
 | Name | Version |
@@ -101,7 +107,7 @@ module "aws_logs" {
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:-----:|
+|------|-------------|------|---------|:--------:|
 | alb\_logs\_prefixes | S3 key prefixes for ALB logs. | `list(string)` | <pre>[<br>  "alb"<br>]</pre> | no |
 | allow\_alb | Allow ALB service to log to bucket. | `bool` | `false` | no |
 | allow\_cloudtrail | Allow Cloudtrail service to log to bucket. | `bool` | `false` | no |

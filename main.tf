@@ -316,6 +316,28 @@ data "aws_iam_policy_document" "main" {
     resources = [local.bucket_arn]
   }
 
+  #
+  # Enforce TLS requests only
+  #
+
+  statement {
+    sid    = "enforce-tls-requests-only"
+    effect = "Deny"
+    principals {
+      type        = "AWS"
+      identifiers = ["*"]
+    }
+    actions = ["s3:*"]
+    resources = [
+      local.bucket_arn,
+      "${local.bucket_arn}/*"
+    ]
+    condition {
+      test     = "Bool"
+      variable = "aws:SecureTransport"
+      values   = ["false"]
+    }
+  }
 }
 
 
