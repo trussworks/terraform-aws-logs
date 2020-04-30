@@ -7,12 +7,20 @@ jobs:
   terratest:
     docker:
       - image: *circleci_docker_primary
+        environment:
+          - TEST_RESULTS: /tmp/test-results
     steps:
       - checkout
       - restore_cache:
           keys:
             - pre-commit-dot-cache-{{ checksum ".pre-commit-config.yaml" }}
             - go-mod-sources-v1-{{ checksum "go.sum" }}
+      - run:
+          name: Adding go binaries to $PATH
+          command: |
+            echo 'export PATH=${PATH}:~/go/bin' >> $BASH_ENV
+            source $BASH_ENV
+      - run: go get github.com/jstemmer/go-junit-report
       - run:
           name: Assume role, run pre-commit and run terratest
           command: |
@@ -31,6 +39,8 @@ jobs:
           key: go-mod-sources-v1-{{ checksum "go.sum" }}
           paths:
             - "~/go/pkg/mod"
+      - store_test_results:
+          path: /tmp/test-results/gotest
 
 workflows:
   version: 2
