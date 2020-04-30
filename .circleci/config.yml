@@ -39,6 +39,8 @@ jobs:
           key: go-mod-sources-v1-{{ checksum "go.sum" }}
           paths:
             - "~/go/pkg/mod"
+      - store_test_results:
+          path: /tmp/test-results/gotest
 
 workflows:
   version: 2
