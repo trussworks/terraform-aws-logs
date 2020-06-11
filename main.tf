@@ -366,10 +366,12 @@ resource "aws_s3_bucket" "aws_logs" {
     }
   }
 
-  tags = {
-    Name       = var.s3_bucket_name
-    Automation = "Terraform"
-  }
+  tags = merge(
+    var.tags, {
+      Name       = var.s3_bucket_name
+      Automation = "Terraform"
+    }
+  )
 }
 
 resource "aws_s3_bucket_public_access_block" "public_access_block" {

@@ -140,3 +140,9 @@ variable "nlb_logs_prefixes" {
   default     = ["nlb"]
   type        = list(string)
 }
+
+variable tags {
+  type        = map(string)
+  default     = {}
+  description = "A mapping of tags to assign to the logs bucket."
+}
