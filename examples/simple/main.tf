@@ -5,5 +5,5 @@ module "aws_logs" {
   region         = var.region
 
   force_destroy = var.force_destroy
-  tags          = { owner = "user" }
+  tags          = var.tags
 }
