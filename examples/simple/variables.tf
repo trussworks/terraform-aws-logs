@@ -9,3 +9,8 @@ variable "region" {
 variable "force_destroy" {
   type = bool
 }
+
+variable "tags" {
+  type    = map(string)
+  default = {}
+}
