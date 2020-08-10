@@ -85,7 +85,7 @@ locals {
   #
 
   # doesn't support logging to multiple accounts
-  alb_account = var.alb_account != "" ? var.alb_accounts : [data.aws_caller_identity.current.account_id]
+  alb_account = var.alb_account != "" ? var.alb_account : data.aws_caller_identity.current.account_id
 
   # supports logging to multiple prefixes
   alb_effect = var.default_allow || var.allow_alb ? "Allow" : "Deny"
@@ -107,7 +107,7 @@ locals {
   #
 
   # doesn't support logging to multiple accounts
-  nlb_account = var.nlb_account != "" ? var.nlb_account : [data.aws_caller_identity.current.account_id]
+  nlb_account = var.nlb_account != "" ? var.nlb_account : data.aws_caller_identity.current.account_id
 
   # supports logging to multiple prefixes
   nlb_effect = var.default_allow || var.allow_nlb ? "Allow" : "Deny"
