@@ -123,10 +123,22 @@ variable "config_accounts" {
   type        = list(string)
 }
 
+variable "alb_account" {
+  description = "Account for ALB logs.  By default limits to the current account."
+  default     = ""
+  type        = string
+}
+
 variable "elb_accounts" {
   description = "List of accounts for ELB logs.  By default limits to the current account."
   default     = []
   type        = list(string)
+}
+
+variable "nlb_account" {
+  description = "Account for NLB logs.  By default limits to the current account."
+  default     = ""
+  type        = string
 }
 
 variable "force_destroy" {

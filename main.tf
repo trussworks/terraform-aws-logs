@@ -85,6 +85,8 @@ locals {
   #
 
   # doesn't support logging to multiple accounts
+  alb_account = var.alb_account != "" ? var.alb_account : data.aws_caller_identity.current.account_id
+
   # supports logging to multiple prefixes
   alb_effect = var.default_allow || var.allow_alb ? "Allow" : "Deny"
 
@@ -98,13 +100,15 @@ locals {
   alb_logs_path = local.alb_include_root_prefix ? concat(local.alb_logs_path_temp, ["AWSLogs"]) : local.alb_logs_path_temp
 
   # finally, format the full final resources ARN list
-  alb_resources = sort(formatlist("${local.bucket_arn}/%s/${data.aws_caller_identity.current.account_id}/*", local.alb_logs_path))
+  alb_resources = sort(formatlist("${local.bucket_arn}/%s/${local.alb_account}/*", local.alb_logs_path))
 
   #
   # NLB locals
   #
 
   # doesn't support logging to multiple accounts
+  nlb_account = var.nlb_account != "" ? var.nlb_account : data.aws_caller_identity.current.account_id
+
   # supports logging to multiple prefixes
   nlb_effect = var.default_allow || var.allow_nlb ? "Allow" : "Deny"
 
@@ -114,7 +118,7 @@ locals {
 
   nlb_logs_path = local.nlb_include_root_prefix ? concat(local.nlb_logs_path_temp, ["AWSLogs"]) : local.nlb_logs_path_temp
 
-  nlb_resources = sort(formatlist("${local.bucket_arn}/%s/${data.aws_caller_identity.current.account_id}/*", local.nlb_logs_path))
+  nlb_resources = sort(formatlist("${local.bucket_arn}/%s/${local.nlb_account}/*", local.nlb_logs_path))
 
   #
   # Redshift locals

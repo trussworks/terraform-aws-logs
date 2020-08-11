@@ -109,6 +109,7 @@ module "aws_logs" {
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| alb\_account | Account for ALB logs.  By default limits to the current account. | `string` | `""` | no |
 | alb\_logs\_prefixes | S3 key prefixes for ALB logs. | `list(string)` | <pre>[<br>  "alb"<br>]</pre> | no |
 | allow\_alb | Allow ALB service to log to bucket. | `bool` | `false` | no |
 | allow\_cloudtrail | Allow Cloudtrail service to log to bucket. | `bool` | `false` | no |
@@ -127,6 +128,7 @@ module "aws_logs" {
 | elb\_accounts | List of accounts for ELB logs.  By default limits to the current account. | `list(string)` | `[]` | no |
 | elb\_logs\_prefix | S3 prefix for ELB logs. | `string` | `"elb"` | no |
 | force\_destroy | A bool that indicates all objects (including any locked objects) should be deleted from the bucket so the bucket can be destroyed without error. | `bool` | `false` | no |
+| nlb\_account | Account for NLB logs.  By default limits to the current account. | `string` | `""` | no |
 | nlb\_logs\_prefixes | S3 key prefixes for NLB logs. | `list(string)` | <pre>[<br>  "nlb"<br>]</pre> | no |
 | redshift\_logs\_prefix | S3 prefix for RedShift logs. | `string` | `"redshift"` | no |
 | region | Region where the AWS S3 bucket will be created. | `string` | n/a | yes |
