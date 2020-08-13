@@ -9,15 +9,15 @@ import (
 	"github.com/gruntwork-io/terratest/modules/random"
 	"github.com/gruntwork-io/terratest/modules/terraform"
 	test_structure "github.com/gruntwork-io/terratest/modules/test-structure"
-	"github.com/stretchr/testify/require"
+	// "github.com/stretchr/testify/require"
 )
 
-func AssertS3BucketPolicyAllowExternalNLB(t *testing.T, region string, bucketName string, prefix string, externalAccount string) {
-	pattern := fmt.Sprintf(`"Action":"s3:PutObject","Resource":"arn:aws:s3:::%s/%s/AWSLogs/%s/*"`, bucketName, prefix, externalAccount)
-	err := AssertS3BucketPolicyContains(t, region, bucketName, pattern)
-	require.NoError(t, err)
-
-}
+// func AssertS3BucketPolicyAllowExternalNLB(t *testing.T, region string, bucketName string, prefix string, externalAccount string) {
+// 	pattern := fmt.Sprintf(`"Action":"s3:PutObject","Resource":"arn:aws:s3:::%s/%s/AWSLogs/%s/*"`, bucketName, prefix, externalAccount)
+// 	err := AssertS3BucketPolicyContains(t, region, bucketName, pattern)
+// 	require.NoError(t, err)
+//
+// }
 
 func TestTerraformAwsLogsNlb(t *testing.T) {
 	t.Parallel()
