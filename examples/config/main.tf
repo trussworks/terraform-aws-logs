@@ -12,9 +12,10 @@ module "aws_logs" {
 
 module "config" {
   source  = "trussworks/config/aws"
-  version = "~> 2"
+  version = "~> 3"
 
-  config_name        = var.test_name
-  config_logs_bucket = module.aws_logs.aws_logs_bucket
-  config_logs_prefix = var.config_logs_prefix
+  config_name          = var.test_name
+  config_logs_bucket   = module.aws_logs.aws_logs_bucket
+  config_logs_prefix   = var.config_logs_prefix
+  config_sns_topic_arn = "bandana"
 }

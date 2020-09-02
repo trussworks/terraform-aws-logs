@@ -32,7 +32,7 @@ module "aws_cloudtrail" {
 
 module "config" {
   source  = "trussworks/config/aws"
-  version = "~> 2"
+  version = "~> 3"
 
   config_name        = var.test_name
   config_logs_bucket = module.aws_logs.aws_logs_bucket

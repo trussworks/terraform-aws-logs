@@ -15,7 +15,9 @@ Logging from the following services is supported for both cases as well as in AW
 
 ## Terraform Versions
 
-Terraform 0.12. Pin module version to ~> 7.0.0 . Submit pull-requests to master branch.
+Terraform 0.13. Pin module version to ~> 9.0.0 Submit pull-requests to master branch.
+
+Terraform 0.12. Pin module version to ~> 8.0.0 . Submit pull-requests to terraform12 branch.
 
 Terraform 0.11. Pin module version to ~> 3.5.0 . Submit pull-requests to terraform011 branch.
 
@@ -96,14 +98,14 @@ module "aws_logs" {
 
 | Name | Version |
 |------|---------|
-| terraform | ~> 0.12.0 |
-| aws | ~> 2.70 |
+| terraform | ~> 0.13.0 |
+| aws | ~> 3.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| aws | ~> 2.70 |
+| aws | ~> 3.0 |
 
 ## Inputs
 
