@@ -1,5 +1,6 @@
 package test
 
+/*
 import (
 	"fmt"
 	"strings"
@@ -56,3 +57,4 @@ func TestTerraformAwsLogsCloudtrailRootPrefix(t *testing.T) {
 	defer terraform.Destroy(t, terraformOptions)
 	terraform.InitAndApply(t, terraformOptions)
 }
+*/
