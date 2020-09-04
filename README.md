@@ -28,7 +28,6 @@ Terraform 0.11. Pin module version to ~> 3.5.0 . Submit pull-requests to terrafo
 module "aws_logs" {
   source         = "trussworks/logs/aws"
   s3_bucket_name = "my-company-aws-logs"
-  region         = "us-west-2"
 }
 ```
 
@@ -38,7 +37,6 @@ module "aws_logs" {
 module "aws_logs" {
   source         = "trussworks/logs/aws"
   s3_bucket_name = "my-company-aws-logs-elb"
-  region         = "us-west-2"
   default_allow  = false
   allow_elb      = true
 }
@@ -50,7 +48,6 @@ module "aws_logs" {
 module "aws_logs" {
   source         = "trussworks/logs/aws"
   s3_bucket_name = "my-company-aws-logs-lb"
-  region         = "us-west-2"
   default_allow  = false
   allow_alb      = true
   allow_elb      = true
@@ -63,7 +60,6 @@ module "aws_logs" {
 module "aws_logs" {
   source              = "trussworks/logs/aws"
   s3_bucket_name      = "my-company-aws-logs-cloudtrail"
-  region              = "us-west-2"
   default_allow       = false
   allow_cloudtrail    = true
   cloudtrail_accounts = [data.aws_caller_identity.current.account_id, aws_organizations_account.example.id]
@@ -75,8 +71,7 @@ module "aws_logs" {
 ```hcl
 module "aws_logs" {
   source            = "trussworks/logs/aws"
-  s3_bucket_name    = "my-company-aws-logs-lb"
-      region            = "us-west-2"
+  s3_bucket_name    = "my-company-aws-logs-lb"o
       default_allow     = false
       allow_alb         = true
       allow_nlb         = true
@@ -150,6 +145,10 @@ module "aws_logs" {
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 
 ## Upgrade Paths
+
+### Upgrading from 9.0.0 to 10.x.x
+
+Version 10.x.x removes the `region` variable as it will pull from the region that your AWS session is associated with.
 
 ### Upgrading from 6.0.0 to 7.x.x
 
