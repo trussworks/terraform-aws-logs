@@ -16,6 +16,11 @@ data "aws_caller_identity" "current" {
 data "aws_partition" "current" {
 }
 
+# testing  to see if Region variable is needed
+data "aws_region" "current" {
+
+}
+
 locals {
   # S3 bucket ARN
   bucket_arn = "arn:${data.aws_partition.current.partition}:s3:::${var.s3_bucket_name}"
@@ -48,7 +53,7 @@ locals {
   cloudwatch_effect = var.default_allow || var.allow_cloudwatch ? "Allow" : "Deny"
 
   # region specific logs service principal
-  cloudwatch_service = "logs.${var.region}.amazonaws.com"
+  cloudwatch_service = "logs.${data.aws_region.current.name}.amazonaws.com"
 
   cloudwatch_resource = "${local.bucket_arn}/${var.cloudwatch_logs_prefix}/*"
 
