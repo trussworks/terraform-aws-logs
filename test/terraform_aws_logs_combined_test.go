@@ -26,7 +26,6 @@ func TestTerraformAwsLogsCombined(t *testing.T) {
 	terraformOptions := &terraform.Options{
 		TerraformDir: tempTestFolder,
 		Vars: map[string]interface{}{
-			"region":        awsRegion,
 			"vpc_azs":       vpcAzs,
 			"test_name":     testName,
 			"test_redshift": testRedshift,

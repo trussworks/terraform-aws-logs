@@ -41,7 +41,6 @@ func TestTerraformAwsLogsAlb(t *testing.T) {
 	terraformOptions := &terraform.Options{
 		TerraformDir: tempTestFolder,
 		Vars: map[string]interface{}{
-			"region":            awsRegion,
 			"vpc_azs":           vpcAzs,
 			"test_name":         testName,
 			"force_destroy":     true,
@@ -67,7 +66,6 @@ func TestTerraformAwsLogsAlbRootPrefix(t *testing.T) {
 	terraformOptions := &terraform.Options{
 		TerraformDir: tempTestFolder,
 		Vars: map[string]interface{}{
-			"region":            awsRegion,
 			"vpc_azs":           vpcAzs,
 			"test_name":         testName,
 			"force_destroy":     true,
@@ -95,7 +93,6 @@ func TestTerraformAwsLogsAlbAccount(t *testing.T) {
 	terraformOptions := &terraform.Options{
 		TerraformDir: tempTestFolder,
 		Vars: map[string]interface{}{
-			"region":               awsRegion,
 			"vpc_azs":              vpcAzs,
 			"alb_external_account": externalAlbAccount,
 			"test_name":            testName,

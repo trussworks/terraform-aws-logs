@@ -25,7 +25,6 @@ func TestTerraformAwsLogs(t *testing.T) {
 	terraformOptions := &terraform.Options{
 		TerraformDir: tempTestFolder,
 		Vars: map[string]interface{}{
-			"region":        awsRegion,
 			"test_name":     testName,
 			"force_destroy": true,
 		},
@@ -48,7 +47,6 @@ func TestTerraformAwsLogsWithConflictingTags(t *testing.T) {
 	terraformOptions := &terraform.Options{
 		TerraformDir: tempTestFolder,
 		Vars: map[string]interface{}{
-			"region":        awsRegion,
 			"test_name":     testName,
 			"force_destroy": true,
 			"tags": map[string]string{

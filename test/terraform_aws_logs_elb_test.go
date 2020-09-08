@@ -22,7 +22,6 @@ func TestTerraformAwsLogsElb(t *testing.T) {
 	terraformOptions := &terraform.Options{
 		TerraformDir: tempTestFolder,
 		Vars: map[string]interface{}{
-			"region":          awsRegion,
 			"vpc_azs":         vpcAzs,
 			"test_name":       testName,
 			"force_destroy":   true,
@@ -48,7 +47,6 @@ func TestTerraformAwsLogsElbRootPrefix(t *testing.T) {
 	terraformOptions := &terraform.Options{
 		TerraformDir: tempTestFolder,
 		Vars: map[string]interface{}{
-			"region":          awsRegion,
 			"vpc_azs":         vpcAzs,
 			"test_name":       testName,
 			"force_destroy":   true,

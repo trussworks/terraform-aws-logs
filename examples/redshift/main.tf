@@ -3,7 +3,6 @@ module "aws_logs" {
 
   s3_bucket_name       = var.test_name
   redshift_logs_prefix = var.redshift_logs_prefix
-  region               = var.region
   allow_redshift       = true
   default_allow        = false
 

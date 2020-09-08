@@ -3,11 +3,6 @@ variable "s3_bucket_name" {
   type        = string
 }
 
-variable "region" {
-  description = "Region where the AWS S3 bucket will be created."
-  type        = string
-}
-
 variable "s3_log_bucket_retention" {
   description = "Number of days to keep AWS logs around."
   default     = 90

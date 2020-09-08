@@ -22,7 +22,6 @@ func TestTerraformAwsLogsCloudtrail(t *testing.T) {
 	terraformOptions := &terraform.Options{
 		TerraformDir: tempTestFolder,
 		Vars: map[string]interface{}{
-			"region":                 awsRegion,
 			"test_name":              testName,
 			"force_destroy":          true,
 			"cloudtrail_logs_prefix": testName,
@@ -44,7 +43,6 @@ func TestTerraformAwsLogsCloudtrailRootPrefix(t *testing.T) {
 	terraformOptions := &terraform.Options{
 		TerraformDir: tempTestFolder,
 		Vars: map[string]interface{}{
-			"region":                 awsRegion,
 			"test_name":              testName,
 			"force_destroy":          true,
 			"cloudtrail_logs_prefix": "",

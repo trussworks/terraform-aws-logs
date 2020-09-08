@@ -3,7 +3,6 @@ module "aws_logs" {
 
   s3_bucket_name  = var.test_name
   elb_logs_prefix = var.elb_logs_prefix
-  region          = var.region
   allow_elb       = true
   default_allow   = false
 

@@ -28,7 +28,6 @@ Terraform 0.11. Pin module version to ~> 3.5.0 . Submit pull-requests to terrafo
 module "aws_logs" {
   source         = "trussworks/logs/aws"
   s3_bucket_name = "my-company-aws-logs"
-  region         = "us-west-2"
 }
 ```
 
@@ -38,7 +37,6 @@ module "aws_logs" {
 module "aws_logs" {
   source         = "trussworks/logs/aws"
   s3_bucket_name = "my-company-aws-logs-elb"
-  region         = "us-west-2"
   default_allow  = false
   allow_elb      = true
 }
@@ -50,7 +48,6 @@ module "aws_logs" {
 module "aws_logs" {
   source         = "trussworks/logs/aws"
   s3_bucket_name = "my-company-aws-logs-lb"
-  region         = "us-west-2"
   default_allow  = false
   allow_alb      = true
   allow_elb      = true
@@ -63,7 +60,6 @@ module "aws_logs" {
 module "aws_logs" {
   source              = "trussworks/logs/aws"
   s3_bucket_name      = "my-company-aws-logs-cloudtrail"
-  region              = "us-west-2"
   default_allow       = false
   allow_cloudtrail    = true
   cloudtrail_accounts = [data.aws_caller_identity.current.account_id, aws_organizations_account.example.id]
@@ -76,7 +72,6 @@ module "aws_logs" {
 module "aws_logs" {
   source            = "trussworks/logs/aws"
   s3_bucket_name    = "my-company-aws-logs-lb"
-      region            = "us-west-2"
       default_allow     = false
       allow_alb         = true
       allow_nlb         = true
@@ -91,6 +86,21 @@ module "aws_logs" {
        "nlb/hello-world-experimental",
       ]
     }
+```
+
+## Usage for a single log bucket in the region of an aliased provider
+
+```hcl
+module "aws_logs" {
+  source            = "trussworks/logs/aws"
+
+  providers = {
+    aws = aws.us-east-1
+  }
+
+  s3_bucket_name    = "my-company-aws-logs-lb"
+  default_allow     = false
+}
 ```
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
@@ -133,7 +143,6 @@ module "aws_logs" {
 | nlb\_account | Account for NLB logs.  By default limits to the current account. | `string` | `""` | no |
 | nlb\_logs\_prefixes | S3 key prefixes for NLB logs. | `list(string)` | <pre>[<br>  "nlb"<br>]</pre> | no |
 | redshift\_logs\_prefix | S3 prefix for RedShift logs. | `string` | `"redshift"` | no |
-| region | Region where the AWS S3 bucket will be created. | `string` | n/a | yes |
 | s3\_bucket\_acl | Set bucket ACL per [AWS S3 Canned ACL](<https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl>) list. | `string` | `"log-delivery-write"` | no |
 | s3\_bucket\_name | S3 bucket to store AWS logs in. | `string` | n/a | yes |
 | s3\_log\_bucket\_retention | Number of days to keep AWS logs around. | `string` | `90` | no |
@@ -144,6 +153,7 @@ module "aws_logs" {
 | Name | Description |
 |------|-------------|
 | aws\_logs\_bucket | S3 bucket containing AWS logs. |
+| aws\_logs\_bucket\_arn | ARN of S3 bucket containing AWS logs. |
 | configs\_logs\_path | S3 path for Config logs. |
 | elb\_logs\_path | S3 path for ELB logs. |
 | redshift\_logs\_path | S3 path for RedShift logs. |
@@ -151,6 +161,14 @@ module "aws_logs" {
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 
 ## Upgrade Paths
+
+### Upgrading from 9.0.0 to 10.x.x
+
+The `10.0.0` release removes the `region` variable to reflect what was done in the [3.0.0 release](https://github.com/terraform-providers/terraform-provider-aws/blob/master/CHANGELOG.md#300-july-31-2020) of the terraform provider for AWS.
+
+### Upgrading from 8.2.0 to 9.x.x
+
+The `9.0.0` release upgrades the terraform provider for AWS to version [3.0.0](https://github.com/terraform-providers/terraform-provider-aws/blob/master/CHANGELOG.md#300-july-31-2020).
 
 ### Upgrading from 6.0.0 to 7.x.x
 

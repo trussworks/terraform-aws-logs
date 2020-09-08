@@ -12,6 +12,10 @@ data "aws_redshift_service_account" "main" {
 data "aws_caller_identity" "current" {
 }
 
+# The current cregion
+data "aws_region" "current" {
+}
+
 # The AWS partition for differentiating between AWS commercial and GovCloud
 data "aws_partition" "current" {
 }
@@ -48,7 +52,9 @@ locals {
   cloudwatch_effect = var.default_allow || var.allow_cloudwatch ? "Allow" : "Deny"
 
   # region specific logs service principal
-  cloudwatch_service = "logs.${var.region}.amazonaws.com"
+  cloudwatch_service = format(
+    "logs.%s.amazonaws.com", data.aws_region.current.name
+  )
 
   cloudwatch_resource = "${local.bucket_arn}/${var.cloudwatch_logs_prefix}/*"
 
