@@ -71,7 +71,7 @@ module "aws_logs" {
 ```hcl
 module "aws_logs" {
   source            = "trussworks/logs/aws"
-  s3_bucket_name    = "my-company-aws-logs-lb"o
+  s3_bucket_name    = "my-company-aws-logs-lb"
       default_allow     = false
       allow_alb         = true
       allow_nlb         = true
