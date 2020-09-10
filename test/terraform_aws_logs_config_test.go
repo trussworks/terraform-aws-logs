@@ -1,6 +1,5 @@
 package test
 
-/*
 import (
 	"fmt"
 	"strings"
@@ -14,6 +13,8 @@ import (
 func TestTerraformAwsLogsConfig(t *testing.T) {
 	t.Parallel()
 
+	configName := fmt.Sprintf("aws-config-%s", strings.ToLower(random.UniqueId()))
+
 	testName := fmt.Sprintf("terratest-aws-logs-%s", strings.ToLower(random.UniqueId()))
 	tempTestFolder := test_structure.CopyTerraformFolderToTemp(t, "../", "examples/config")
 	// AWS only supports one configuration recorder per region.
@@ -25,6 +26,7 @@ func TestTerraformAwsLogsConfig(t *testing.T) {
 		Vars: map[string]interface{}{
 			"region":             awsRegion,
 			"test_name":          testName,
+			"config_name":        configName,
 			"force_destroy":      true,
 			"config_logs_prefix": testName,
 		},
@@ -40,6 +42,8 @@ func TestTerraformAwsLogsConfig(t *testing.T) {
 func TestTerraformAwsLogsConfigRootPrefix(t *testing.T) {
 	t.Parallel()
 
+	configName := fmt.Sprintf("aws-config-%s", strings.ToLower(random.UniqueId()))
+
 	testName := fmt.Sprintf("terratest-aws-logs-%s", strings.ToLower(random.UniqueId()))
 	tempTestFolder := test_structure.CopyTerraformFolderToTemp(t, "../", "examples/config")
 	// AWS only supports one configuration recorder per region.
@@ -51,6 +55,7 @@ func TestTerraformAwsLogsConfigRootPrefix(t *testing.T) {
 		Vars: map[string]interface{}{
 			"region":             awsRegion,
 			"test_name":          testName,
+			"config_name":        configName,
 			"force_destroy":      true,
 			"config_logs_prefix": "",
 		},
@@ -62,4 +67,3 @@ func TestTerraformAwsLogsConfigRootPrefix(t *testing.T) {
 	defer terraform.Destroy(t, terraformOptions)
 	terraform.InitAndApply(t, terraformOptions)
 }
-*/

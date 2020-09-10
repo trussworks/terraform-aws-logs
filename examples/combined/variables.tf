@@ -2,6 +2,10 @@ variable "test_name" {
   type = string
 }
 
+variable "config_name" {
+  type = string
+}
+
 variable "region" {
   type = string
 }
@@ -17,4 +21,8 @@ variable "test_redshift" {
 
 variable "force_destroy" {
   type = bool
+}
+
+variable "config_logs_bucket" {
+  type = string
 }
