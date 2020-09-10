@@ -20,7 +20,7 @@ func TestTerraformAwsLogsCombined(t *testing.T) {
 	testName := fmt.Sprintf("terratest-aws-logs-%s", strings.ToLower(random.UniqueId()))
 	// AWS only supports one configuration recorder per region.
 	// Each test using aws-config will need to specify a different region.
-	awsRegion := "ca-central-1"
+	awsRegion := "us-east-2"
 	vpcAzs := aws.GetAvailabilityZones(t, awsRegion)[:3]
 	testRedshift := !testing.Short()
 

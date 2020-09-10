@@ -19,7 +19,7 @@ func TestTerraformAwsLogsConfig(t *testing.T) {
 	tempTestFolder := test_structure.CopyTerraformFolderToTemp(t, "../", "examples/config")
 	// AWS only supports one configuration recorder per region.
 	// Each test using aws-config will need to specify a different region.
-	awsRegion := "us-east-1"
+	awsRegion := "us-east-2"
 
 	terraformOptions := &terraform.Options{
 		TerraformDir: tempTestFolder,
@@ -48,7 +48,7 @@ func TestTerraformAwsLogsConfigRootPrefix(t *testing.T) {
 	tempTestFolder := test_structure.CopyTerraformFolderToTemp(t, "../", "examples/config")
 	// AWS only supports one configuration recorder per region.
 	// Each test using aws-config will need to specify a different region.
-	awsRegion := "us-east-2"
+	awsRegion := "us-east-1"
 
 	terraformOptions := &terraform.Options{
 		TerraformDir: tempTestFolder,

@@ -16,7 +16,7 @@ data "aws_caller_identity" "current" {
 data "aws_partition" "current" {
 }
 
-# testing  to see if Region variable is needed
+# The region is pulled from the current AWS session you are in
 data "aws_region" "current" {
 
 }
