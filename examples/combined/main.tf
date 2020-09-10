@@ -2,6 +2,7 @@ module "aws_logs" {
   source = "../../"
 
   s3_bucket_name = var.test_name
+  allow_config   = true
   default_allow  = true
 
   force_destroy = var.force_destroy
@@ -31,7 +32,7 @@ module "aws_cloudtrail" {
 
 module "config" {
   source  = "trussworks/config/aws"
-  version = "~> 3"
+  version = "~> 4"
 
   config_name        = var.test_name
   config_logs_bucket = module.aws_logs.aws_logs_bucket
