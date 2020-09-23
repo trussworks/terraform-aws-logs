@@ -131,7 +131,6 @@ module "aws_logs" {
 | nlb\_account | Account for NLB logs.  By default limits to the current account. | `string` | `""` | no |
 | nlb\_logs\_prefixes | S3 key prefixes for NLB logs. | `list(string)` | <pre>[<br>  "nlb"<br>]</pre> | no |
 | redshift\_logs\_prefix | S3 prefix for RedShift logs. | `string` | `"redshift"` | no |
-| region | Region where the AWS S3 bucket will be created. | `string` | n/a | yes |
 | s3\_bucket\_acl | Set bucket ACL per [AWS S3 Canned ACL](<https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl>) list. | `string` | `"log-delivery-write"` | no |
 | s3\_bucket\_name | S3 bucket to store AWS logs in. | `string` | n/a | yes |
 | s3\_log\_bucket\_retention | Number of days to keep AWS logs around. | `string` | `90` | no |
