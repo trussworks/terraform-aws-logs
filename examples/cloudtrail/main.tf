@@ -11,7 +11,7 @@ module "aws_logs" {
 
 module "aws_cloudtrail" {
   source  = "trussworks/cloudtrail/aws"
-  version = "~> 3"
+  version = "~> 3.0"
 
   s3_bucket_name            = module.aws_logs.aws_logs_bucket
   cloudwatch_log_group_name = var.test_name

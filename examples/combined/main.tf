@@ -22,7 +22,7 @@ resource "aws_lb" "test_alb" {
 
 module "aws_cloudtrail" {
   source  = "trussworks/cloudtrail/aws"
-  version = "~> 3"
+  version = "~> 3.0"
 
   s3_bucket_name            = module.aws_logs.aws_logs_bucket
   s3_key_prefix             = "cloudtrail"
