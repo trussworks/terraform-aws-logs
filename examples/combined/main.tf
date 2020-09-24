@@ -2,7 +2,6 @@ module "aws_logs" {
   source = "../../"
 
   s3_bucket_name = var.test_name
-  region         = var.region
   default_allow  = true
 
   force_destroy = var.force_destroy
@@ -23,7 +22,7 @@ resource "aws_lb" "test_alb" {
 
 module "aws_cloudtrail" {
   source  = "trussworks/cloudtrail/aws"
-  version = "~> 2"
+  version = "~> 3.0"
 
   s3_bucket_name            = module.aws_logs.aws_logs_bucket
   s3_key_prefix             = "cloudtrail"
@@ -32,7 +31,7 @@ module "aws_cloudtrail" {
 
 module "config" {
   source  = "trussworks/config/aws"
-  version = "~> 2"
+  version = "~> 3"
 
   config_name        = var.test_name
   config_logs_bucket = module.aws_logs.aws_logs_bucket

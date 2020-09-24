@@ -2,7 +2,6 @@ module "aws_logs" {
   source = "../../"
 
   s3_bucket_name     = var.test_name
-  region             = var.region
   allow_config       = true
   default_allow      = false
   config_logs_prefix = var.config_logs_prefix

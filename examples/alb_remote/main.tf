@@ -6,7 +6,6 @@ module "aws_logs" {
 
   s3_bucket_name    = var.test_name
   alb_logs_prefixes = var.alb_logs_prefixes
-  region            = var.region
   allow_alb         = true
   default_allow     = false
 

@@ -6,7 +6,6 @@ module "aws_logs" {
 
   s3_bucket_name    = var.test_name
   nlb_logs_prefixes = var.nlb_logs_prefixes
-  region            = var.region
   allow_nlb         = true
   default_allow     = false
 
