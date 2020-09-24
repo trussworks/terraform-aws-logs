@@ -137,7 +137,7 @@ module "aws_logs" {
 
 | Name | Description |
 |------|-------------|
-| aws\_logs\_bucket | S3 bucket containing AWS logs. |
+| aws\_logs\_bucket | ID of the S3 bucket containing AWS logs. |
 | configs\_logs\_path | S3 path for Config logs. |
 | elb\_logs\_path | S3 path for ELB logs. |
 | redshift\_logs\_path | S3 path for RedShift logs. |
