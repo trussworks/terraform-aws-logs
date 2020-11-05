@@ -100,6 +100,12 @@ variable "allow_redshift" {
   type        = bool
 }
 
+variable "allow_guardduty" {
+  description = "Allow GuardDuty service to log to bucket."
+  default     = false
+  type        = bool
+}
+
 variable "create_public_access_block" {
   description = "Whether to create a public_access_block restricting public access to the bucket."
   default     = true
@@ -152,4 +158,10 @@ variable tags {
   type        = map(string)
   default     = {}
   description = "A mapping of tags to assign to the logs bucket. Please note that tags with a conflicting key will not override the original tag."
+}
+
+variable "guardduty_logs_prefixes" {
+  description = "S3 key prefixes for GuardDuty logs."
+  default     = ["guardduty"]
+  type        = list(string)
 }

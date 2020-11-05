@@ -69,6 +69,14 @@ locals {
 
   config_logs_path = var.config_logs_prefix == "" ? "AWSLogs" : "${var.config_logs_prefix}/AWSLogs"
 
+  # Config does a writability check by writing to key "[prefix]/AWSLogs/[accountId]/Config/ConfigWritabilityCheckFile".
+  # When there is an oversize configuration item change notification, Config will write the notification to S3 at the path.
+  # Therefore, you cannot limit the policy to the region.
+  # For example:
+  # config/AWSLogs/[accountId]/Config/global/[year]/[month]/[day]/
+  # OversizedChangeNotification/AWS::IAM::Policy/
+  # [accountId]_Config_global_ChangeNotification_AWS::IAM::Policy_[resourceId]_[timestamp]_[configurationStateId].json.gz
+  # Therefore, do not extend the resource path to include the region as shown in the AWS Console.
   config_resources = sort(formatlist("${local.bucket_arn}/${local.config_logs_path}/%s/Config/*", local.config_accounts))
 
   #
@@ -137,6 +145,33 @@ locals {
   redshift_principal = "arn:${data.aws_partition.current.partition}:iam::${data.aws_redshift_service_account.main.id}:user/logs"
 
   redshift_resource = "${local.bucket_arn}/${var.redshift_logs_prefix}/*"
+
+  #
+  # GuardDuty locals
+  #
+
+  # doesn't support logging to multiple accounts
+  # supports logging to multiple prefixes
+  guardduty_effect = var.default_allow || var.allow_guardduty ? "Allow" : "Deny"
+
+  # if the list of prefixes contains "", set an append_root_prefix flag
+  guardduty_include_root_prefix = contains(var.guardduty_logs_prefixes, "") ? true : false
+
+  # create a list of paths, but remove any prefixes containing "" using compact
+  guardduty_logs_path_temp = formatlist("%s/AWSLogs", compact(var.guardduty_logs_prefixes))
+
+  # now append an "AWSLogs" path to the list if guardduty_include_root_prefix is true
+  guardduty_logs_path = local.guardduty_include_root_prefix ? concat(local.guardduty_logs_path_temp, ["AWSLogs"]) : local.guardduty_logs_path_temp
+
+  # GuardDuty does a writability check using the [prefix]/AWSLogs path,
+  # rather than the full path as shown in the AWS Console.
+  # For example, here is the error you would receive if you used the full path in the bucket policy:
+  # Failed to configure export options because GuardDuty
+  # does not have permission to the KMS key, the S3 bucket, or the specified location in the bucke
+
+  # finally, format the full final resources ARN list
+  guardduty_resources = sort(formatlist("${local.bucket_arn}/%s/*", local.guardduty_logs_path))
+
 }
 
 #
@@ -323,6 +358,37 @@ data "aws_iam_policy_document" "main" {
     }
     actions   = ["s3:GetBucketAcl"]
     resources = [local.bucket_arn]
+  }
+
+  #
+  # GuardDuty bucket policies
+  #
+
+  statement {
+    sid    = "guardduty-logs-get-location"
+    effect = local.guardduty_effect
+    principals {
+      type        = "Service"
+      identifiers = ["guardduty.amazonaws.com"]
+    }
+    actions   = ["s3:GetBucketLocation"]
+    resources = [local.bucket_arn]
+  }
+
+  statement {
+    sid    = "guardduty-logs-put-object"
+    effect = local.guardduty_effect
+    principals {
+      type        = "Service"
+      identifiers = ["guardduty.amazonaws.com"]
+    }
+    actions   = ["s3:PutObject"]
+    resources = local.guardduty_resources
+    condition {
+      test     = "StringEquals"
+      variable = "s3:x-amz-acl"
+      values   = ["bucket-owner-full-control"]
+    }
   }
 
   #
