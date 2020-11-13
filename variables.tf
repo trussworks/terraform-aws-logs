@@ -148,6 +148,12 @@ variable "nlb_logs_prefixes" {
   type        = list(string)
 }
 
+variable "cloudtrail_org_id" {
+  description = "AWS Organization ID for use when CloudTrail organization trail."
+  default     = ""
+  type        = string
+}
+
 variable tags {
   type        = map(string)
   default     = {}
