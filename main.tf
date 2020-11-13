@@ -45,7 +45,7 @@ locals {
   cloudtrail_account_resources = toset(formatlist("${local.bucket_arn}/${local.cloudtrail_logs_path}/%s/*", local.cloudtrail_accounts))
 
   # finally, add the organization id path if one is specified
-  cloudtrail_resources = var.cloudtrail_org_id == "" ? local.cloudtrail_account_resources : setunion(local.cloudtrail_account_resources, ["${local.cloudtrail_logs_path}/${var.cloudtrail_org_id}/*"])
+  cloudtrail_resources = var.cloudtrail_org_id == "" ? local.cloudtrail_account_resources : setunion(local.cloudtrail_account_resources, ["${local.bucket_arn}/${local.cloudtrail_logs_path}/${var.cloudtrail_org_id}/*"])
 
   #
   # Cloudwatch Logs locals
