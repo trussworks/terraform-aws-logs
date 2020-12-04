@@ -117,7 +117,7 @@ module "aws_logs" {
 | allow\_redshift | Allow Redshift service to log to bucket. | `bool` | `false` | no |
 | cloudtrail\_accounts | List of accounts for CloudTrail logs.  By default limits to the current account. | `list(string)` | `[]` | no |
 | cloudtrail\_logs\_prefix | S3 prefix for CloudTrail logs. | `string` | `"cloudtrail"` | no |
-| cloudtrail\_org\_id | AWS Organization ID for use when CloudTrail organization trail. | `string` | `""` | no |
+| cloudtrail\_org\_id | AWS Organization ID for CloudTrail. | `string` | `""` | no |
 | cloudwatch\_logs\_prefix | S3 prefix for CloudWatch log exports. | `string` | `"cloudwatch"` | no |
 | config\_accounts | List of accounts for Config logs.  By default limits to the current account. | `list(string)` | `[]` | no |
 | config\_logs\_prefix | S3 prefix for AWS Config logs. | `string` | `"config"` | no |

@@ -149,7 +149,7 @@ variable "nlb_logs_prefixes" {
 }
 
 variable "cloudtrail_org_id" {
-  description = "AWS Organization ID for use when CloudTrail organization trail."
+  description = "AWS Organization ID for CloudTrail."
   default     = ""
   type        = string
 }
