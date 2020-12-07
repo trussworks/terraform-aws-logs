@@ -154,7 +154,19 @@ variable "cloudtrail_org_id" {
   type        = string
 }
 
-variable tags {
+variable "logging_target_bucket" {
+  description = "S3 Bucket to send S3 logs to. Disables logging if omitted."
+  default     = null
+  type        = string
+}
+
+variable "logging_target_prefix" {
+  description = "Prefix for logs going into the log_s3_bucket."
+  default     = "s3/"
+  type        = string
+}
+
+variable "tags" {
   type        = map(string)
   default     = {}
   description = "A mapping of tags to assign to the logs bucket. Please note that tags with a conflicting key will not override the original tag."
