@@ -248,7 +248,7 @@ Or with aws-vault:
 AWS_VAULT_KEYCHAIN_NAME=login aws-vault exec YOUR-AWS-PROFILE -- make test
 ```
 
-# A Note About Access Logs
+# A Note About NLB Access Logs
 
 NLB Access logs are created only if the load balancer has a client request-based [TLS listener](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-listeners.html). Also, the logs will only contain information about TLS requests. See the AWS [Documentation on Access Logs](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-access-logs.html) for further details.
 
