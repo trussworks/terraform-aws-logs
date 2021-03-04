@@ -171,3 +171,14 @@ variable "tags" {
   default     = {}
   description = "A mapping of tags to assign to the logs bucket. Please note that tags with a conflicting key will not override the original tag."
 }
+variable "sse_algorithm" {
+  description = "The server-side encryption algorithm to use. Valid values are AES256 and aws:kms"
+  type        = string
+  default     = "AES256"
+}
+
+variable "kms_master_key_id" {
+  description = "The AWS KMS master key ID used for the SSE-KMS encryption."
+  type        = string
+  default     = ""
+}
