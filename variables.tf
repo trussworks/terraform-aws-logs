@@ -9,6 +9,12 @@ variable "s3_log_bucket_retention" {
   type        = string
 }
 
+variable "noncurrent_version_retention" {
+  description = "Number of days to retain non-current versions of objects if versioning is enabled."
+  type        = string
+  default     = 30
+}
+
 variable "s3_bucket_acl" {
   description = "Set bucket ACL per [AWS S3 Canned ACL](<https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl>) list."
   default     = "log-delivery-write"
@@ -170,4 +176,10 @@ variable "tags" {
   type        = map(string)
   default     = {}
   description = "A mapping of tags to assign to the logs bucket. Please note that tags with a conflicting key will not override the original tag."
+}
+
+variable "versioning_enable" {
+  description = "A bool that enables versioning for the log bucket."
+  default     = false
+  type        = bool
 }
