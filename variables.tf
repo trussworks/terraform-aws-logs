@@ -178,7 +178,7 @@ variable "tags" {
   description = "A mapping of tags to assign to the logs bucket. Please note that tags with a conflicting key will not override the original tag."
 }
 
-variable "versioning_enable" {
+variable "enable_versioning" {
   description = "A bool that enables versioning for the log bucket."
   default     = false
   type        = bool

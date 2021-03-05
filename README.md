@@ -123,6 +123,7 @@ module "aws_logs" {
 | default\_allow | Whether all services included in this module should be allowed to write to the bucket by default. Alternatively select individual services. It's recommended to use the default bucket ACL of log-delivery-write. | `bool` | `true` | no |
 | elb\_accounts | List of accounts for ELB logs.  By default limits to the current account. | `list(string)` | `[]` | no |
 | elb\_logs\_prefix | S3 prefix for ELB logs. | `string` | `"elb"` | no |
+| enable\_versioning | A bool that enables versioning for the log bucket. | `bool` | `false` | no |
 | force\_destroy | A bool that indicates all objects (including any locked objects) should be deleted from the bucket so the bucket can be destroyed without error. | `bool` | `false` | no |
 | logging\_target\_bucket | S3 Bucket to send S3 logs to. Disables logging if omitted. | `string` | `null` | no |
 | logging\_target\_prefix | Prefix for logs going into the log\_s3\_bucket. | `string` | `"s3/"` | no |
@@ -134,7 +135,6 @@ module "aws_logs" {
 | s3\_bucket\_name | S3 bucket to store AWS logs in. | `string` | n/a | yes |
 | s3\_log\_bucket\_retention | Number of days to keep AWS logs around. | `string` | `90` | no |
 | tags | A mapping of tags to assign to the logs bucket. Please note that tags with a conflicting key will not override the original tag. | `map(string)` | `{}` | no |
-| versioning\_enable | A bool that enables versioning for the log bucket. | `bool` | `false` | no |
 
 ## Outputs
 

@@ -360,7 +360,7 @@ resource "aws_s3_bucket" "aws_logs" {
   force_destroy = var.force_destroy
 
   versioning {
-    enabled = var.versioning_enable
+    enabled = var.enable_versioning
   }
 
   lifecycle_rule {
