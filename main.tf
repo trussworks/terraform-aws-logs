@@ -359,6 +359,10 @@ resource "aws_s3_bucket" "aws_logs" {
   policy        = data.aws_iam_policy_document.main.json
   force_destroy = var.force_destroy
 
+  versioning {
+    enabled = var.enable_versioning
+  }
+
   lifecycle_rule {
     id      = "expire_all_logs"
     prefix  = "/*"
@@ -366,6 +370,10 @@ resource "aws_s3_bucket" "aws_logs" {
 
     expiration {
       days = var.s3_log_bucket_retention
+    }
+
+    noncurrent_version_expiration {
+      days = var.noncurrent_version_retention
     }
   }
 

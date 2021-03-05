@@ -123,11 +123,13 @@ module "aws_logs" {
 | default\_allow | Whether all services included in this module should be allowed to write to the bucket by default. Alternatively select individual services. It's recommended to use the default bucket ACL of log-delivery-write. | `bool` | `true` | no |
 | elb\_accounts | List of accounts for ELB logs.  By default limits to the current account. | `list(string)` | `[]` | no |
 | elb\_logs\_prefix | S3 prefix for ELB logs. | `string` | `"elb"` | no |
+| enable\_versioning | A bool that enables versioning for the log bucket. | `bool` | `false` | no |
 | force\_destroy | A bool that indicates all objects (including any locked objects) should be deleted from the bucket so the bucket can be destroyed without error. | `bool` | `false` | no |
 | logging\_target\_bucket | S3 Bucket to send S3 logs to. Disables logging if omitted. | `string` | `null` | no |
 | logging\_target\_prefix | Prefix for logs going into the log\_s3\_bucket. | `string` | `"s3/"` | no |
 | nlb\_account | Account for NLB logs.  By default limits to the current account. | `string` | `""` | no |
 | nlb\_logs\_prefixes | S3 key prefixes for NLB logs. | `list(string)` | <pre>[<br>  "nlb"<br>]</pre> | no |
+| noncurrent\_version\_retention | Number of days to retain non-current versions of objects if versioning is enabled. | `string` | `30` | no |
 | redshift\_logs\_prefix | S3 prefix for RedShift logs. | `string` | `"redshift"` | no |
 | s3\_bucket\_acl | Set bucket ACL per [AWS S3 Canned ACL](<https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl>) list. | `string` | `"log-delivery-write"` | no |
 | s3\_bucket\_name | S3 bucket to store AWS logs in. | `string` | n/a | yes |
