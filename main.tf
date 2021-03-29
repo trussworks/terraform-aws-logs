@@ -72,6 +72,14 @@ locals {
 
   config_logs_path = var.config_logs_prefix == "" ? "AWSLogs" : "${var.config_logs_prefix}/AWSLogs"
 
+  # Config does a writability check by writing to key "[prefix]/AWSLogs/[accountId]/Config/ConfigWritabilityCheckFile".
+  # When there is an oversize configuration item change notification, Config will write the notification to S3 at the path.
+  # Therefore, you cannot limit the policy to the region.
+  # For example:
+  # [prefix]/AWSLogs/[accountId]/Config/global/[year]/[month]/[day]/
+  # OversizedChangeNotification/AWS::IAM::Policy/
+  # [accountId]_Config_global_ChangeNotification_AWS::IAM::Policy_[resourceId]_[timestamp]_[configurationStateId].json.gz
+  # Therefore, do not extend the resource path to include the region as shown in the AWS Console.
   config_resources = sort(formatlist("${local.bucket_arn}/${local.config_logs_path}/%s/Config/*", local.config_accounts))
 
   #
