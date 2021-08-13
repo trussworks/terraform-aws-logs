@@ -368,7 +368,8 @@ resource "aws_s3_bucket" "aws_logs" {
   force_destroy = var.force_destroy
 
   versioning {
-    enabled = var.enable_versioning
+    enabled    = var.enable_versioning
+    mfa_delete = var.enable_mfa_delete
   }
 
   lifecycle_rule {

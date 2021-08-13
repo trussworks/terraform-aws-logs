@@ -183,3 +183,9 @@ variable "enable_versioning" {
   default     = false
   type        = bool
 }
+
+variable "enable_mfa_delete" {
+  description = "A bool that requires MFA to delete the log bucket."
+  default     = false
+  type        = bool
+}
