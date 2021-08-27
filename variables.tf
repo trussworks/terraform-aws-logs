@@ -173,8 +173,10 @@ variable "logging_target_prefix" {
 }
 
 variable "tags" {
-  type        = map(string)
-  default     = {}
+  type = map(string)
+  default = {
+    Automation = "Terraform"
+  }
   description = "A mapping of tags to assign to the logs bucket. Please note that tags with a conflicting key will not override the original tag."
 }
 
