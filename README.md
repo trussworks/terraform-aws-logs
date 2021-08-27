@@ -15,7 +15,7 @@ Logging from the following services is supported for both cases as well as in AW
 
 ## Terraform Versions
 
-Terraform 0.13. Pin module version to ~> 10.X Submit pull-requests to master branch.
+Terraform 0.13. Pin module version to ~> 10.X Submit pull-requests to main branch.
 
 Terraform 0.12. Pin module version to ~> 8.X . Submit pull-requests to terraform12 branch.
 

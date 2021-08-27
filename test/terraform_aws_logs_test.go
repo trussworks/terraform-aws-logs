@@ -74,7 +74,7 @@ func TestTerraformAwsLogsWithConflictingTags(t *testing.T) {
 	taggingOutput, err := s3Client.GetBucketTagging(params)
 	require.NoError(t, err)
 
-	assert.Greater(t, len(taggingOutput.TagSet), 2)
+	assert.Equal(t, len(taggingOutput.TagSet), 2)
 	for _, tag := range taggingOutput.TagSet {
 		if *tag.Key == "Name" {
 			assert.Equal(t, *tag.Value, testName)
