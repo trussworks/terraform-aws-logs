@@ -57,6 +57,12 @@ variable "config_logs_prefix" {
   type        = string
 }
 
+variable "guardduty_logs_prefix" {
+  description = "S3 prefix for AWS GuardDuty logs."
+  default     = "guardduty"
+  type        = string
+}
+
 # Service Switches
 variable "default_allow" {
   description = "Whether all services included in this module should be allowed to write to the bucket by default. Alternatively select individual services. It's recommended to use the default bucket ACL of log-delivery-write."
@@ -96,6 +102,12 @@ variable "allow_config" {
 
 variable "allow_elb" {
   description = "Allow ELB service to log to bucket."
+  default     = false
+  type        = bool
+}
+
+variable "allow_guardduty" {
+  description = "Allow GuardDuty service to log to bucket."
   default     = false
   type        = bool
 }

@@ -83,6 +83,18 @@ locals {
   config_resources = sort(formatlist("${local.bucket_arn}/${local.config_logs_path}/%s/Config/*", local.config_accounts))
 
   #
+  # GuardDuty locals
+  #
+
+  # doesn't support logging to muliple accounts
+  # doesn't support logging to muliple prefixes
+  guardduty_effect = var.default_allow || var.allow_guardduty ? "Allow" : "Deny"
+
+  guardduty_logs_path = var.guardduty_logs_prefix == "" ? "AWSLogs" : "${var.guardduty_logs_prefix}/AWSLogs"
+
+  guardduty_resources = sort(formatlist("${local.bucket_arn}/%s/*", local.guardduty_logs_path))
+
+  #
   # ELB locals
   #
 
@@ -331,6 +343,48 @@ data "aws_iam_policy_document" "main" {
     principals {
       type        = "AWS"
       identifiers = [local.redshift_principal]
+    }
+    actions   = ["s3:GetBucketAcl"]
+    resources = [local.bucket_arn]
+  }
+
+  #
+  # GuardDuty bucket policies
+  #
+
+  statement {
+    sid    = "guardduty-logs-get-location"
+    effect = local.guardduty_effect
+    principals {
+      type        = "Service"
+      identifiers = ["guardduty.amazonaws.com"]
+    }
+    actions   = ["s3:GetBucketLocation"]
+    resources = [local.bucket_arn]
+  }
+
+  statement {
+    sid    = "guardduty-bucket-delivery"
+    effect = local.guardduty_effect
+    principals {
+      type        = "Service"
+      identifiers = ["guardduty.amazonaws.com"]
+    }
+    actions = ["s3:PutObject"]
+    condition {
+      test     = "StringEquals"
+      variable = "s3:x-amz-acl"
+      values   = ["bucket-owner-full-control"]
+    }
+    resources = local.guardduty_resources
+  }
+
+  statement {
+    sid    = "guardduty-permissions-check"
+    effect = local.guardduty_effect
+    principals {
+      type        = "Service"
+      identifiers = ["guardduty.amazonaws.com"]
     }
     actions   = ["s3:GetBucketAcl"]
     resources = [local.bucket_arn]
