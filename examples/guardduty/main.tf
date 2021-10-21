@@ -13,5 +13,5 @@ module "guardduty" {
   source  = "dod-iac/guardduty/aws"
   version = "~> 1"
 
-  s3_bucket_name = module.logs.aws_logs_bucket
+  s3_bucket_name = module.aws_logs.aws_logs_bucket
 }
