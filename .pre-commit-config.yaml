@@ -26,3 +26,4 @@ repos:
     rev: v1.41.1
     hooks:
       - id: golangci-lint
+        args: [--timeout=3m]
