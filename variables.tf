@@ -189,3 +189,15 @@ variable "enable_mfa_delete" {
   default     = false
   type        = bool
 }
+
+variable "enable_encryption" {
+  description = "A bool that enable enable_encryption for the log bucket."
+  default     = false
+  type        = bool
+}
+
+variable "kms_key_arn" {
+  description = "KMS key to encrypt S3 objects"
+  type        = string
+  default     = ""
+}

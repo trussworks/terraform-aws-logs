@@ -394,10 +394,19 @@ resource "aws_s3_bucket" "aws_logs" {
     }
   }
 
-  server_side_encryption_configuration {
-    rule {
-      apply_server_side_encryption_by_default {
-        sse_algorithm = "AES256"
+  dynamic "server_side_encryption_configuration" {
+
+    for_each = var.enable_encryption ? [1] : [0]
+
+    content {
+      rule {
+        dynamic "apply_server_side_encryption_by_default" {
+          for_each = var.kms_key_arn != "" ? [1] : [0]
+          content {
+            kms_master_key_id = var.kms_key_arn != "" ? var.kms_key_arn : null
+            sse_algorithm     = var.kms_key_arn != "" ? "aws:kms" : "AES256"
+          }
+        }
       }
     }
   }
