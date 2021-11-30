@@ -140,9 +140,11 @@ No modules.
 | <a name="input_default_allow"></a> [default\_allow](#input\_default\_allow) | Whether all services included in this module should be allowed to write to the bucket by default. Alternatively select individual services. It's recommended to use the default bucket ACL of log-delivery-write. | `bool` | `true` | no |
 | <a name="input_elb_accounts"></a> [elb\_accounts](#input\_elb\_accounts) | List of accounts for ELB logs.  By default limits to the current account. | `list(string)` | `[]` | no |
 | <a name="input_elb_logs_prefix"></a> [elb\_logs\_prefix](#input\_elb\_logs\_prefix) | S3 prefix for ELB logs. | `string` | `"elb"` | no |
+| <a name="input_enable_encryption"></a> [enable\_encryption](#input\_enable\_encryption) | A bool that enable enable\_encryption for the log bucket. | `bool` | `false` | no |
 | <a name="input_enable_mfa_delete"></a> [enable\_mfa\_delete](#input\_enable\_mfa\_delete) | A bool that requires MFA to delete the log bucket. | `bool` | `false` | no |
 | <a name="input_enable_versioning"></a> [enable\_versioning](#input\_enable\_versioning) | A bool that enables versioning for the log bucket. | `bool` | `false` | no |
 | <a name="input_force_destroy"></a> [force\_destroy](#input\_force\_destroy) | A bool that indicates all objects (including any locked objects) should be deleted from the bucket so the bucket can be destroyed without error. | `bool` | `false` | no |
+| <a name="input_kms_key_arn"></a> [kms\_key\_arn](#input\_kms\_key\_arn) | KMS key to encrypt S3 objects | `string` | `""` | no |
 | <a name="input_logging_target_bucket"></a> [logging\_target\_bucket](#input\_logging\_target\_bucket) | S3 Bucket to send S3 logs to. Disables logging if omitted. | `string` | `null` | no |
 | <a name="input_logging_target_prefix"></a> [logging\_target\_prefix](#input\_logging\_target\_prefix) | Prefix for logs going into the log\_s3\_bucket. | `string` | `"s3/"` | no |
 | <a name="input_nlb_account"></a> [nlb\_account](#input\_nlb\_account) | Account for NLB logs.  By default limits to the current account. | `string` | `""` | no |
