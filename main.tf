@@ -253,7 +253,7 @@ data "aws_iam_policy_document" "main" {
         variable = "AWS:SourceAccount"
         values   = [statement.value]
       }
-      resources = statement.value
+      resources = [statement.value]
     }
   }
   #
