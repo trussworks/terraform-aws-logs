@@ -118,6 +118,12 @@ variable "cloudtrail_accounts" {
   type        = list(string)
 }
 
+variable "config_source_accounts" {
+  description = "List of source accounts with permission to send logs Config bucket."
+  default     = []
+  type        = list(string)
+}
+
 variable "config_accounts" {
   description = "List of accounts for Config logs.  By default limits to the current account."
   default     = []
