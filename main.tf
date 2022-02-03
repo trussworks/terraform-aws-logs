@@ -16,6 +16,11 @@ data "aws_caller_identity" "current" {
 data "aws_partition" "current" {
 }
 
+# The region is pulled from the current AWS session you are in
+data "aws_region" "current" {
+
+}
+
 locals {
   # S3 bucket ARN
   bucket_arn = "arn:${data.aws_partition.current.partition}:s3:::${var.s3_bucket_name}"
@@ -36,8 +41,11 @@ locals {
   # if var.cloudtrail_logs_prefix is empty then be sure to remove // in the path
   cloudtrail_logs_path = var.cloudtrail_logs_prefix == "" ? "AWSLogs" : "${var.cloudtrail_logs_prefix}/AWSLogs"
 
-  # finally, format the full final resources ARN list
-  cloudtrail_resources = toset(formatlist("${local.bucket_arn}/${local.cloudtrail_logs_path}/%s/*", local.cloudtrail_accounts))
+  # format the full account resources ARN list
+  cloudtrail_account_resources = toset(formatlist("${local.bucket_arn}/${local.cloudtrail_logs_path}/%s/*", local.cloudtrail_accounts))
+
+  # finally, add the organization id path if one is specified
+  cloudtrail_resources = var.cloudtrail_org_id == "" ? local.cloudtrail_account_resources : setunion(local.cloudtrail_account_resources, ["${local.bucket_arn}/${local.cloudtrail_logs_path}/${var.cloudtrail_org_id}/*"])
 
   #
   # Cloudwatch Logs locals
@@ -48,7 +56,7 @@ locals {
   cloudwatch_effect = var.default_allow || var.allow_cloudwatch ? "Allow" : "Deny"
 
   # region specific logs service principal
-  cloudwatch_service = "logs.${var.region}.amazonaws.com"
+  cloudwatch_service = "logs.${data.aws_region.current.name}.amazonaws.com"
 
   cloudwatch_resource = "${local.bucket_arn}/${var.cloudwatch_logs_prefix}/*"
 
@@ -64,6 +72,14 @@ locals {
 
   config_logs_path = var.config_logs_prefix == "" ? "AWSLogs" : "${var.config_logs_prefix}/AWSLogs"
 
+  # Config does a writability check by writing to key "[prefix]/AWSLogs/[accountId]/Config/ConfigWritabilityCheckFile".
+  # When there is an oversize configuration item change notification, Config will write the notification to S3 at the path.
+  # Therefore, you cannot limit the policy to the region.
+  # For example:
+  # [prefix]/AWSLogs/[accountId]/Config/global/[year]/[month]/[day]/
+  # OversizedChangeNotification/AWS::IAM::Policy/
+  # [accountId]_Config_global_ChangeNotification_AWS::IAM::Policy_[resourceId]_[timestamp]_[configurationStateId].json.gz
+  # Therefore, do not extend the resource path to include the region as shown in the AWS Console.
   config_resources = sort(formatlist("${local.bucket_arn}/${local.config_logs_path}/%s/Config/*", local.config_accounts))
 
   #
@@ -85,6 +101,8 @@ locals {
   #
 
   # doesn't support logging to multiple accounts
+  alb_account = var.alb_account != "" ? var.alb_account : data.aws_caller_identity.current.account_id
+
   # supports logging to multiple prefixes
   alb_effect = var.default_allow || var.allow_alb ? "Allow" : "Deny"
 
@@ -98,13 +116,15 @@ locals {
   alb_logs_path = local.alb_include_root_prefix ? concat(local.alb_logs_path_temp, ["AWSLogs"]) : local.alb_logs_path_temp
 
   # finally, format the full final resources ARN list
-  alb_resources = sort(formatlist("${local.bucket_arn}/%s/${data.aws_caller_identity.current.account_id}/*", local.alb_logs_path))
+  alb_resources = sort(formatlist("${local.bucket_arn}/%s/${local.alb_account}/*", local.alb_logs_path))
 
   #
   # NLB locals
   #
 
   # doesn't support logging to multiple accounts
+  nlb_account = var.nlb_account != "" ? var.nlb_account : data.aws_caller_identity.current.account_id
+
   # supports logging to multiple prefixes
   nlb_effect = var.default_allow || var.allow_nlb ? "Allow" : "Deny"
 
@@ -114,7 +134,7 @@ locals {
 
   nlb_logs_path = local.nlb_include_root_prefix ? concat(local.nlb_logs_path_temp, ["AWSLogs"]) : local.nlb_logs_path_temp
 
-  nlb_resources = sort(formatlist("${local.bucket_arn}/%s/${data.aws_caller_identity.current.account_id}/*", local.nlb_logs_path))
+  nlb_resources = sort(formatlist("${local.bucket_arn}/%s/${local.nlb_account}/*", local.nlb_logs_path))
 
   #
   # Redshift locals
@@ -344,9 +364,13 @@ data "aws_iam_policy_document" "main" {
 resource "aws_s3_bucket" "aws_logs" {
   bucket        = var.s3_bucket_name
   acl           = var.s3_bucket_acl
-  region        = var.region
   policy        = data.aws_iam_policy_document.main.json
   force_destroy = var.force_destroy
+
+  versioning {
+    enabled    = var.enable_versioning
+    mfa_delete = var.enable_mfa_delete
+  }
 
   lifecycle_rule {
     id      = "expire_all_logs"
@@ -355,6 +379,18 @@ resource "aws_s3_bucket" "aws_logs" {
 
     expiration {
       days = var.s3_log_bucket_retention
+    }
+
+    noncurrent_version_expiration {
+      days = var.noncurrent_version_retention
+    }
+  }
+
+  dynamic "logging" {
+    for_each = var.logging_target_bucket[*]
+    content {
+      target_bucket = logging.value
+      target_prefix = var.logging_target_prefix
     }
   }
 
@@ -366,10 +402,11 @@ resource "aws_s3_bucket" "aws_logs" {
     }
   }
 
-  tags = {
-    Name       = var.s3_bucket_name
-    Automation = "Terraform"
-  }
+  tags = merge(
+    var.tags, {
+      Name = var.s3_bucket_name
+    }
+  )
 }
 
 resource "aws_s3_bucket_public_access_block" "public_access_block" {

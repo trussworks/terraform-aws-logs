@@ -15,9 +15,9 @@ Logging from the following services is supported for both cases as well as in AW
 
 ## Terraform Versions
 
-Terraform 0.12. Pin module version to ~> 7.0.0 . Submit pull-requests to master branch.
+Terraform 0.13. Pin module version to ~> 10.X Submit pull-requests to main branch.
 
-Terraform 0.11. Pin module version to ~> 3.5.0 . Submit pull-requests to terraform011 branch.
+Terraform 0.12. Pin module version to ~> 8.X . Submit pull-requests to terraform12 branch.
 
 ## Usage for a single log bucket storing logs from all services
 
@@ -26,7 +26,6 @@ Terraform 0.11. Pin module version to ~> 3.5.0 . Submit pull-requests to terrafo
 module "aws_logs" {
   source         = "trussworks/logs/aws"
   s3_bucket_name = "my-company-aws-logs"
-  region         = "us-west-2"
 }
 ```
 
@@ -36,7 +35,6 @@ module "aws_logs" {
 module "aws_logs" {
   source         = "trussworks/logs/aws"
   s3_bucket_name = "my-company-aws-logs-elb"
-  region         = "us-west-2"
   default_allow  = false
   allow_elb      = true
 }
@@ -48,7 +46,6 @@ module "aws_logs" {
 module "aws_logs" {
   source         = "trussworks/logs/aws"
   s3_bucket_name = "my-company-aws-logs-lb"
-  region         = "us-west-2"
   default_allow  = false
   allow_alb      = true
   allow_elb      = true
@@ -61,7 +58,6 @@ module "aws_logs" {
 module "aws_logs" {
   source              = "trussworks/logs/aws"
   s3_bucket_name      = "my-company-aws-logs-cloudtrail"
-  region              = "us-west-2"
   default_allow       = false
   allow_cloudtrail    = true
   cloudtrail_accounts = [data.aws_caller_identity.current.account_id, aws_organizations_account.example.id]
@@ -74,7 +70,6 @@ module "aws_logs" {
 module "aws_logs" {
   source            = "trussworks/logs/aws"
   s3_bucket_name    = "my-company-aws-logs-lb"
-      region            = "us-west-2"
       default_allow     = false
       allow_alb         = true
       allow_nlb         = true
@@ -96,55 +91,84 @@ module "aws_logs" {
 
 | Name | Version |
 |------|---------|
-| terraform | >= 0.12 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.13.0 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 3.0, < 4.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| aws | n/a |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 3.0, < 4.0 |
+
+## Modules
+
+No modules.
+
+## Resources
+
+| Name | Type |
+|------|------|
+| [aws_s3_bucket.aws_logs](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket) | resource |
+| [aws_s3_bucket_public_access_block.public_access_block](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_public_access_block) | resource |
+| [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
+| [aws_elb_service_account.main](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/elb_service_account) | data source |
+| [aws_iam_policy_document.main](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
+| [aws_partition.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/partition) | data source |
+| [aws_redshift_service_account.main](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/redshift_service_account) | data source |
+| [aws_region.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/region) | data source |
 
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| alb\_logs\_prefixes | S3 key prefixes for ALB logs. | `list(string)` | <pre>[<br>  "alb"<br>]</pre> | no |
-| allow\_alb | Allow ALB service to log to bucket. | `bool` | `false` | no |
-| allow\_cloudtrail | Allow Cloudtrail service to log to bucket. | `bool` | `false` | no |
-| allow\_cloudwatch | Allow Cloudwatch service to export logs to bucket. | `bool` | `false` | no |
-| allow\_config | Allow Config service to log to bucket. | `bool` | `false` | no |
-| allow\_elb | Allow ELB service to log to bucket. | `bool` | `false` | no |
-| allow\_nlb | Allow NLB service to log to bucket. | `bool` | `false` | no |
-| allow\_redshift | Allow Redshift service to log to bucket. | `bool` | `false` | no |
-| cloudtrail\_accounts | List of accounts for CloudTrail logs.  By default limits to the current account. | `list(string)` | `[]` | no |
-| cloudtrail\_logs\_prefix | S3 prefix for CloudTrail logs. | `string` | `"cloudtrail"` | no |
-| cloudwatch\_logs\_prefix | S3 prefix for CloudWatch log exports. | `string` | `"cloudwatch"` | no |
-| config\_accounts | List of accounts for Config logs.  By default limits to the current account. | `list(string)` | `[]` | no |
-| config\_logs\_prefix | S3 prefix for AWS Config logs. | `string` | `"config"` | no |
-| create\_public\_access\_block | Whether to create a public\_access\_block restricting public access to the bucket. | `bool` | `true` | no |
-| default\_allow | Whether all services included in this module should be allowed to write to the bucket by default. Alternatively select individual services. It's recommended to use the default bucket ACL of log-delivery-write. | `bool` | `true` | no |
-| elb\_accounts | List of accounts for ELB logs.  By default limits to the current account. | `list(string)` | `[]` | no |
-| elb\_logs\_prefix | S3 prefix for ELB logs. | `string` | `"elb"` | no |
-| force\_destroy | A bool that indicates all objects (including any locked objects) should be deleted from the bucket so the bucket can be destroyed without error. | `bool` | `false` | no |
-| nlb\_logs\_prefixes | S3 key prefixes for NLB logs. | `list(string)` | <pre>[<br>  "nlb"<br>]</pre> | no |
-| redshift\_logs\_prefix | S3 prefix for RedShift logs. | `string` | `"redshift"` | no |
-| region | Region where the AWS S3 bucket will be created. | `string` | n/a | yes |
-| s3\_bucket\_acl | Set bucket ACL per [AWS S3 Canned ACL](<https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl>) list. | `string` | `"log-delivery-write"` | no |
-| s3\_bucket\_name | S3 bucket to store AWS logs in. | `string` | n/a | yes |
-| s3\_log\_bucket\_retention | Number of days to keep AWS logs around. | `string` | `90` | no |
+| <a name="input_alb_account"></a> [alb\_account](#input\_alb\_account) | Account for ALB logs.  By default limits to the current account. | `string` | `""` | no |
+| <a name="input_alb_logs_prefixes"></a> [alb\_logs\_prefixes](#input\_alb\_logs\_prefixes) | S3 key prefixes for ALB logs. | `list(string)` | <pre>[<br>  "alb"<br>]</pre> | no |
+| <a name="input_allow_alb"></a> [allow\_alb](#input\_allow\_alb) | Allow ALB service to log to bucket. | `bool` | `false` | no |
+| <a name="input_allow_cloudtrail"></a> [allow\_cloudtrail](#input\_allow\_cloudtrail) | Allow Cloudtrail service to log to bucket. | `bool` | `false` | no |
+| <a name="input_allow_cloudwatch"></a> [allow\_cloudwatch](#input\_allow\_cloudwatch) | Allow Cloudwatch service to export logs to bucket. | `bool` | `false` | no |
+| <a name="input_allow_config"></a> [allow\_config](#input\_allow\_config) | Allow Config service to log to bucket. | `bool` | `false` | no |
+| <a name="input_allow_elb"></a> [allow\_elb](#input\_allow\_elb) | Allow ELB service to log to bucket. | `bool` | `false` | no |
+| <a name="input_allow_nlb"></a> [allow\_nlb](#input\_allow\_nlb) | Allow NLB service to log to bucket. | `bool` | `false` | no |
+| <a name="input_allow_redshift"></a> [allow\_redshift](#input\_allow\_redshift) | Allow Redshift service to log to bucket. | `bool` | `false` | no |
+| <a name="input_cloudtrail_accounts"></a> [cloudtrail\_accounts](#input\_cloudtrail\_accounts) | List of accounts for CloudTrail logs.  By default limits to the current account. | `list(string)` | `[]` | no |
+| <a name="input_cloudtrail_logs_prefix"></a> [cloudtrail\_logs\_prefix](#input\_cloudtrail\_logs\_prefix) | S3 prefix for CloudTrail logs. | `string` | `"cloudtrail"` | no |
+| <a name="input_cloudtrail_org_id"></a> [cloudtrail\_org\_id](#input\_cloudtrail\_org\_id) | AWS Organization ID for CloudTrail. | `string` | `""` | no |
+| <a name="input_cloudwatch_logs_prefix"></a> [cloudwatch\_logs\_prefix](#input\_cloudwatch\_logs\_prefix) | S3 prefix for CloudWatch log exports. | `string` | `"cloudwatch"` | no |
+| <a name="input_config_accounts"></a> [config\_accounts](#input\_config\_accounts) | List of accounts for Config logs.  By default limits to the current account. | `list(string)` | `[]` | no |
+| <a name="input_config_logs_prefix"></a> [config\_logs\_prefix](#input\_config\_logs\_prefix) | S3 prefix for AWS Config logs. | `string` | `"config"` | no |
+| <a name="input_create_public_access_block"></a> [create\_public\_access\_block](#input\_create\_public\_access\_block) | Whether to create a public\_access\_block restricting public access to the bucket. | `bool` | `true` | no |
+| <a name="input_default_allow"></a> [default\_allow](#input\_default\_allow) | Whether all services included in this module should be allowed to write to the bucket by default. Alternatively select individual services. It's recommended to use the default bucket ACL of log-delivery-write. | `bool` | `true` | no |
+| <a name="input_elb_accounts"></a> [elb\_accounts](#input\_elb\_accounts) | List of accounts for ELB logs.  By default limits to the current account. | `list(string)` | `[]` | no |
+| <a name="input_elb_logs_prefix"></a> [elb\_logs\_prefix](#input\_elb\_logs\_prefix) | S3 prefix for ELB logs. | `string` | `"elb"` | no |
+| <a name="input_enable_mfa_delete"></a> [enable\_mfa\_delete](#input\_enable\_mfa\_delete) | A bool that requires MFA to delete the log bucket. | `bool` | `false` | no |
+| <a name="input_enable_versioning"></a> [enable\_versioning](#input\_enable\_versioning) | A bool that enables versioning for the log bucket. | `bool` | `false` | no |
+| <a name="input_force_destroy"></a> [force\_destroy](#input\_force\_destroy) | A bool that indicates all objects (including any locked objects) should be deleted from the bucket so the bucket can be destroyed without error. | `bool` | `false` | no |
+| <a name="input_logging_target_bucket"></a> [logging\_target\_bucket](#input\_logging\_target\_bucket) | S3 Bucket to send S3 logs to. Disables logging if omitted. | `string` | `null` | no |
+| <a name="input_logging_target_prefix"></a> [logging\_target\_prefix](#input\_logging\_target\_prefix) | Prefix for logs going into the log\_s3\_bucket. | `string` | `"s3/"` | no |
+| <a name="input_nlb_account"></a> [nlb\_account](#input\_nlb\_account) | Account for NLB logs.  By default limits to the current account. | `string` | `""` | no |
+| <a name="input_nlb_logs_prefixes"></a> [nlb\_logs\_prefixes](#input\_nlb\_logs\_prefixes) | S3 key prefixes for NLB logs. | `list(string)` | <pre>[<br>  "nlb"<br>]</pre> | no |
+| <a name="input_noncurrent_version_retention"></a> [noncurrent\_version\_retention](#input\_noncurrent\_version\_retention) | Number of days to retain non-current versions of objects if versioning is enabled. | `string` | `30` | no |
+| <a name="input_redshift_logs_prefix"></a> [redshift\_logs\_prefix](#input\_redshift\_logs\_prefix) | S3 prefix for RedShift logs. | `string` | `"redshift"` | no |
+| <a name="input_s3_bucket_acl"></a> [s3\_bucket\_acl](#input\_s3\_bucket\_acl) | Set bucket ACL per [AWS S3 Canned ACL](<https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl>) list. | `string` | `"log-delivery-write"` | no |
+| <a name="input_s3_bucket_name"></a> [s3\_bucket\_name](#input\_s3\_bucket\_name) | S3 bucket to store AWS logs in. | `string` | n/a | yes |
+| <a name="input_s3_log_bucket_retention"></a> [s3\_log\_bucket\_retention](#input\_s3\_log\_bucket\_retention) | Number of days to keep AWS logs around. | `string` | `90` | no |
+| <a name="input_tags"></a> [tags](#input\_tags) | A mapping of tags to assign to the logs bucket. Please note that tags with a conflicting key will not override the original tag. | `map(string)` | `{}` | no |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
-| aws\_logs\_bucket | S3 bucket containing AWS logs. |
-| configs\_logs\_path | S3 path for Config logs. |
-| elb\_logs\_path | S3 path for ELB logs. |
-| redshift\_logs\_path | S3 path for RedShift logs. |
-
+| <a name="output_aws_logs_bucket"></a> [aws\_logs\_bucket](#output\_aws\_logs\_bucket) | ID of the S3 bucket containing AWS logs. |
+| <a name="output_configs_logs_path"></a> [configs\_logs\_path](#output\_configs\_logs\_path) | S3 path for Config logs. |
+| <a name="output_elb_logs_path"></a> [elb\_logs\_path](#output\_elb\_logs\_path) | S3 path for ELB logs. |
+| <a name="output_redshift_logs_path"></a> [redshift\_logs\_path](#output\_redshift\_logs\_path) | S3 path for RedShift logs. |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 
 ## Upgrade Paths
+
+### Upgrading from 9.0.0 to 10.x.x
+
+Version 10.x.x removes the `region` variable as it will pull from the region that your AWS session is associated with.
 
 ### Upgrading from 6.0.0 to 7.x.x
 
@@ -242,3 +266,9 @@ Or with aws-vault:
 ```shell
 AWS_VAULT_KEYCHAIN_NAME=login aws-vault exec YOUR-AWS-PROFILE -- make test
 ```
+
+# A Note About NLB Access Logs
+
+NLB Access logs are created only if the load balancer has a client request-based [TLS listener](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-listeners.html). Also, the logs will only contain information about TLS requests. See the AWS [Documentation on Access Logs](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-access-logs.html) for further details.
+
+If you're using mTLS to exchange a mutually-trusted Certificate Authority, you may require a TCP listener. While it's true that TLS runs over TCP, for mTLS each new successive connection requires two roundtrips to complete the "full handshake." No NLB access logs will be created in this case.

@@ -3,15 +3,16 @@ variable "s3_bucket_name" {
   type        = string
 }
 
-variable "region" {
-  description = "Region where the AWS S3 bucket will be created."
-  type        = string
-}
-
 variable "s3_log_bucket_retention" {
   description = "Number of days to keep AWS logs around."
   default     = 90
   type        = string
+}
+
+variable "noncurrent_version_retention" {
+  description = "Number of days to retain non-current versions of objects if versioning is enabled."
+  type        = string
+  default     = 30
 }
 
 variable "s3_bucket_acl" {
@@ -123,10 +124,22 @@ variable "config_accounts" {
   type        = list(string)
 }
 
+variable "alb_account" {
+  description = "Account for ALB logs.  By default limits to the current account."
+  default     = ""
+  type        = string
+}
+
 variable "elb_accounts" {
   description = "List of accounts for ELB logs.  By default limits to the current account."
   default     = []
   type        = list(string)
+}
+
+variable "nlb_account" {
+  description = "Account for NLB logs.  By default limits to the current account."
+  default     = ""
+  type        = string
 }
 
 variable "force_destroy" {
@@ -139,4 +152,40 @@ variable "nlb_logs_prefixes" {
   description = "S3 key prefixes for NLB logs."
   default     = ["nlb"]
   type        = list(string)
+}
+
+variable "cloudtrail_org_id" {
+  description = "AWS Organization ID for CloudTrail."
+  default     = ""
+  type        = string
+}
+
+variable "logging_target_bucket" {
+  description = "S3 Bucket to send S3 logs to. Disables logging if omitted."
+  default     = null
+  type        = string
+}
+
+variable "logging_target_prefix" {
+  description = "Prefix for logs going into the log_s3_bucket."
+  default     = "s3/"
+  type        = string
+}
+
+variable "tags" {
+  type        = map(string)
+  default     = {}
+  description = "A mapping of tags to assign to the logs bucket. Please note that tags with a conflicting key will not override the original tag."
+}
+
+variable "enable_versioning" {
+  description = "A bool that enables versioning for the log bucket."
+  default     = false
+  type        = bool
+}
+
+variable "enable_mfa_delete" {
+  description = "A bool that requires MFA to delete the log bucket."
+  default     = false
+  type        = bool
 }

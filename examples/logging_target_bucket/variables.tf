@@ -10,7 +10,6 @@ variable "force_destroy" {
   type = bool
 }
 
-variable "tags" {
-  type    = map(string)
-  default = {}
+variable "s3_logs_prefix" {
+  type = string
 }

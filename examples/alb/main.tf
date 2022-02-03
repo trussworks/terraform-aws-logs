@@ -3,7 +3,6 @@ module "aws_logs" {
 
   s3_bucket_name    = var.test_name
   alb_logs_prefixes = var.alb_logs_prefixes
-  region            = var.region
   allow_alb         = true
   default_allow     = false
 
@@ -27,7 +26,7 @@ resource "aws_lb" "test_lb" {
 
 module "vpc" {
   source         = "terraform-aws-modules/vpc/aws"
-  version        = "~> 2"
+  version        = "~> 2.0"
   name           = var.test_name
   cidr           = "10.0.0.0/16"
   azs            = var.vpc_azs
