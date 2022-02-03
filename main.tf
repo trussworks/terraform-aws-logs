@@ -253,7 +253,7 @@ data "aws_iam_policy_document" "main" {
         variable = "AWS:SourceAccount"
         values   = [statement.value]
       }
-      resources = ["${local.bucket_arn}/${local.config_logs_path}/${statement.vale}/Config/*"]
+      resources = ["${local.bucket_arn}/${local.config_logs_path}/${statement.value}/Config/*"]
     }
   }
   #
