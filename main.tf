@@ -234,7 +234,7 @@ data "aws_iam_policy_document" "main" {
     condition {
       test     = "StringEquals"
       variable = "AWS:SourceAccount"
-      values   = var.config_source_accounts
+      values   = var.config_accounts
     }
   }
 
