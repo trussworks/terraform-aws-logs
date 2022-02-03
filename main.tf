@@ -229,7 +229,7 @@ data "aws_iam_policy_document" "main" {
       type        = "Service"
       identifiers = ["config.amazonaws.com"]
     }
-    actions   = ["s3:GetBucketAcl"]
+    actions   = ["s3:GetBucketAcl", "s3:ListBucket"]
     resources = [local.bucket_arn]
     condition {
       test     = "StringEquals"
@@ -238,22 +238,24 @@ data "aws_iam_policy_document" "main" {
     }
   }
 
-  statement {
-    sid    = "config-bucket-delivery"
-    effect = local.config_effect
-    principals {
-      type        = "Service"
-      identifiers = ["config.amazonaws.com"]
+  dynamic "statement" {
+    for_each = { for k, v in local.config_resources : k => v }
+    content {
+      sid    = "config-bucket-delivery-${statement.key}"
+      effect = local.config_effect
+      principals {
+        type        = "Service"
+        identifiers = ["config.amazonaws.com"]
+      }
+      actions = ["s3:PutObject"]
+      condition {
+        test     = "StringEquals"
+        variable = "AWS:SourceAccount"
+        values   = [statement.value]
+      }
+      resources = statement.value
     }
-    actions = ["s3:PutObject"]
-    condition {
-      test     = "StringEquals"
-      variable = "s3:x-amz-acl"
-      values   = ["bucket-owner-full-control"]
-    }
-    resources = local.config_resources
   }
-
   #
   # ELB bucket policies
   #
