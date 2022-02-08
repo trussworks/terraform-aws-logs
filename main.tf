@@ -247,7 +247,7 @@ data "aws_iam_policy_document" "main" {
         type        = "Service"
         identifiers = ["config.amazonaws.com"]
       }
-      actions = ["s3:PutObject"]
+      actions = ["s3:PutObject", "s3:PutObjectAcl"]
       condition {
         test     = "StringEquals"
         variable = "AWS:SourceAccount"
