@@ -253,6 +253,11 @@ data "aws_iam_policy_document" "main" {
         variable = "AWS:SourceAccount"
         values   = [statement.value]
       }
+      condition {
+        test     = "StringEquals"
+        variable = "s3:x-amz-acl"
+        values   = "bucket-owner-full-control"
+      }
       resources = ["${local.bucket_arn}/${local.config_logs_path}/${statement.value}/Config/*"]
     }
   }
