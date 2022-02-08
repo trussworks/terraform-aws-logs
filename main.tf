@@ -256,7 +256,7 @@ data "aws_iam_policy_document" "main" {
       condition {
         test     = "StringEquals"
         variable = "s3:x-amz-acl"
-        values   = "bucket-owner-full-control"
+        values   = ["bucket-owner-full-control"]
       }
       resources = ["${local.bucket_arn}/${local.config_logs_path}/${statement.value}/Config/*"]
     }
