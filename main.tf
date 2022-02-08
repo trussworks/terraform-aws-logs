@@ -231,11 +231,6 @@ data "aws_iam_policy_document" "main" {
     }
     actions   = ["s3:GetBucketAcl", "s3:ListBucket"]
     resources = [local.bucket_arn]
-    condition {
-      test     = "StringEquals"
-      variable = "AWS:SourceAccount"
-      values   = var.config_accounts
-    }
   }
 
   dynamic "statement" {
