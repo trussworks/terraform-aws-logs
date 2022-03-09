@@ -360,53 +360,71 @@ data "aws_iam_policy_document" "main" {
   }
 }
 
-
 resource "aws_s3_bucket" "aws_logs" {
   bucket        = var.s3_bucket_name
-  acl           = var.s3_bucket_acl
-  policy        = data.aws_iam_policy_document.main.json
   force_destroy = var.force_destroy
-
-  versioning {
-    enabled    = var.enable_versioning
-    mfa_delete = var.enable_mfa_delete
-  }
-
-  lifecycle_rule {
-    id      = "expire_all_logs"
-    prefix  = "/*"
-    enabled = true
-
-    expiration {
-      days = var.s3_log_bucket_retention
-    }
-
-    noncurrent_version_expiration {
-      days = var.noncurrent_version_retention
-    }
-  }
-
-  dynamic "logging" {
-    for_each = var.logging_target_bucket[*]
-    content {
-      target_bucket = logging.value
-      target_prefix = var.logging_target_prefix
-    }
-  }
-
-  server_side_encryption_configuration {
-    rule {
-      apply_server_side_encryption_by_default {
-        sse_algorithm = "AES256"
-      }
-    }
-  }
 
   tags = merge(
     var.tags, {
       Name = var.s3_bucket_name
     }
   )
+}
+
+resource "aws_s3_bucket_lifecycle_configuration" "aws_logs" {
+  bucket   = aws_s3_bucket.aws_logs.id
+
+  rule {
+    id     = "expire_all_logs"
+    status = "Enabled"
+
+    filter {
+      prefix = "/*"
+    }
+
+    expiration {
+      days = var.s3_log_bucket_retention
+    }
+
+    noncurrent_version_expiration {
+      noncurrent_days = var.noncurrent_version_retention
+    }
+  }
+}
+
+resource "aws_s3_bucket_logging" "aws_logs" {
+  count = var.logging_target_bucket != null ? 1 : 0
+
+  bucket        = aws_s3_bucket.aws_logs.id
+  target_bucket = var.logging_target_bucket
+  target_prefix = var.logging_target_prefix
+}
+
+resource "aws_s3_bucket_versioning" "aws_logs" {
+  bucket     = aws_s3_bucket.aws_logs.id
+  versioning_configuration {
+    status     = var.enable_versioning ? "Enabled" : "Suspended"
+    mfa_delete = var.enable_mfa_delete ? "Enabled" : "Disabled"
+  }
+}
+
+resource "aws_s3_bucket_server_side_encryption_configuration" "aws_logs" {
+  bucket = aws_s3_bucket.aws_logs.id
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "AES256"
+    }
+  }
+}
+
+resource aws_s3_bucket_acl "aws_logs" {
+  bucket = aws_s3_bucket.aws_logs.id
+  acl    = var.s3_bucket_acl
+}
+
+resource aws_s3_bucket_policy "aws_logs" {
+  bucket = aws_s3_bucket.aws_logs.id
+  policy = data.aws_iam_policy_document.main.json
 }
 
 resource "aws_s3_bucket_public_access_block" "public_access_block" {
