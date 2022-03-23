@@ -374,7 +374,7 @@ resource "aws_s3_bucket" "aws_logs" {
 }
 
 resource "aws_s3_bucket_acl" "aws_logs" {
-  bucket = aws_s3_bucket.aws_logs
+  bucket = aws_s3_bucket.aws_logs.id
   acl    = var.s3_bucket_acl
 }
 
@@ -382,7 +382,8 @@ resource "aws_s3_bucket_lifecycle_configuration" "aws_logs" {
   bucket = aws_s3_bucket.aws_logs.id
 
   rule {
-    id = "expire_all_logs"
+    id     = "expire_all_logs"
+    status = "Enabled"
 
     filter {
       prefix = "/*"
@@ -393,7 +394,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "aws_logs" {
     }
 
     noncurrent_version_expiration {
-      days = var.noncurrent_version_retention
+      noncurrent_days = var.noncurrent_version_retention
     }
   }
 
@@ -422,8 +423,8 @@ resource "aws_s3_bucket_logging" "aws_logs" {
 resource "aws_s3_bucket_versioning" "aws_logs" {
   bucket = aws_s3_bucket.aws_logs.id
   versioning_configuration {
-    enabled    = var.enable_versioning
-    mfa_delete = var.enable_mfa_delete
+    status     = var.enable_versioning ? "Enabled" : "Disabled"
+    mfa_delete = var.enable_mfa_delete ? "Enabled" : "Disabled"
   }
 }
 
