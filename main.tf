@@ -363,7 +363,6 @@ data "aws_iam_policy_document" "main" {
 
 resource "aws_s3_bucket" "aws_logs" {
   bucket        = var.s3_bucket_name
-  policy        = data.aws_iam_policy_document.main.json
   force_destroy = var.force_destroy
 
   tags = merge(
@@ -371,6 +370,11 @@ resource "aws_s3_bucket" "aws_logs" {
       Name = var.s3_bucket_name
     }
   )
+}
+
+resource "aws_s3_bucket_policy" "aws_logs" {
+  bucket = aws_s3_bucket.aws_logs.id
+  policy = data.aws_iam_policy_document.main.json
 }
 
 resource "aws_s3_bucket_acl" "aws_logs" {
