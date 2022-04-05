@@ -149,7 +149,7 @@ No modules.
 | <a name="input_enable_mfa_delete"></a> [enable\_mfa\_delete](#input\_enable\_mfa\_delete) | A bool that requires MFA to delete the log bucket. | `bool` | `false` | no |
 | <a name="input_enable_versioning"></a> [enable\_versioning](#input\_enable\_versioning) | A bool that enables versioning for the log bucket. | `bool` | `false` | no |
 | <a name="input_force_destroy"></a> [force\_destroy](#input\_force\_destroy) | A bool that indicates all objects (including any locked objects) should be deleted from the bucket so the bucket can be destroyed without error. | `bool` | `false` | no |
-| <a name="input_logging_target_bucket"></a> [logging\_target\_bucket](#input\_logging\_target\_bucket) | S3 Bucket to send S3 logs to. Disables logging if omitted. | `string` | `null` | no |
+| <a name="input_logging_target_bucket"></a> [logging\_target\_bucket](#input\_logging\_target\_bucket) | S3 Bucket to send S3 logs to. Disables logging if omitted. | `string` | `""` | no |
 | <a name="input_logging_target_prefix"></a> [logging\_target\_prefix](#input\_logging\_target\_prefix) | Prefix for logs going into the log\_s3\_bucket. | `string` | `"s3/"` | no |
 | <a name="input_nlb_account"></a> [nlb\_account](#input\_nlb\_account) | Account for NLB logs.  By default limits to the current account. | `string` | `""` | no |
 | <a name="input_nlb_logs_prefixes"></a> [nlb\_logs\_prefixes](#input\_nlb\_logs\_prefixes) | S3 key prefixes for NLB logs. | `list(string)` | <pre>[<br>  "nlb"<br>]</pre> | no |

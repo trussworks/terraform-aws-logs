@@ -162,7 +162,7 @@ variable "cloudtrail_org_id" {
 
 variable "logging_target_bucket" {
   description = "S3 Bucket to send S3 logs to. Disables logging if omitted."
-  default     = null
+  default     = ""
   type        = string
 }
 
