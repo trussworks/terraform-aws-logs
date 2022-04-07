@@ -10,10 +10,16 @@ module "aws_logs" {
 
 resource "aws_s3_bucket" "log_source_bucket" {
   bucket = "${var.test_name}-source"
-  acl    = "private"
+}
 
-  logging {
-    target_bucket = module.aws_logs.aws_logs_bucket
-    target_prefix = var.s3_logs_prefix
-  }
+resource "aws_s3_bucket_acl" "log_source_bucket" {
+  bucket = aws_s3_bucket.log_source_bucket.id
+  acl    = "private"
+}
+
+resource "aws_s3_bucket_logging" "log_source_bucket" {
+  bucket = aws_s3_bucket.log_source_bucket.id
+
+  target_bucket = module.aws_logs.aws_logs_bucket
+  target_prefix = var.s3_logs_prefix
 }

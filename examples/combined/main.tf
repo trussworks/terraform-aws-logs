@@ -99,13 +99,19 @@ resource "aws_redshift_subnet_group" "test_redshift" {
 
 resource "aws_s3_bucket" "log_source_bucket" {
   bucket        = "${var.test_name}-source"
-  acl           = "private"
   force_destroy = var.force_destroy
+}
 
-  logging {
-    target_bucket = module.aws_logs.aws_logs_bucket
-    target_prefix = "log/"
-  }
+resource "aws_s3_bucket_acl" "log_source_bucket" {
+  bucket = aws_s3_bucket.log_source_bucket.id
+  acl    = "private"
+}
+
+resource "aws_s3_bucket_logging" "log_source_bucket" {
+  bucket = aws_s3_bucket.log_source_bucket.id
+
+  target_bucket = module.aws_logs.aws_logs_bucket
+  target_prefix = "log/"
 }
 
 module "vpc" {
