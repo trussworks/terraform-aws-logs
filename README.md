@@ -13,12 +13,6 @@ Logging from the following services is supported for both cases as well as in AW
 * [RedShift](https://aws.amazon.com/redshift/)
 * [S3](https://aws.amazon.com/s3/)
 
-## Terraform Versions
-
-Terraform 0.13. Pin module version to ~> 10.X Submit pull-requests to main branch.
-
-Terraform 0.12. Pin module version to ~> 8.X . Submit pull-requests to terraform12 branch.
-
 ## Usage for a single log bucket storing logs from all services
 
 ```hcl
@@ -171,6 +165,32 @@ No modules.
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 
 ## Upgrade Paths
+
+### Upgrading from 11.x.x to 12.x.x
+
+Version 12.x.x enables the use of version 4 of the AWS provider. Terraform provided [an upgrade path](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/guides/version-4-upgrade) for this. To support the upgrade path, this module now includes the following additional resources:
+
+* `aws_s3_bucket_policy.aws_logs`
+* `aws_s3_bucket_acl.aws_logs`
+* `aws_s3_bucket_lifecycle_configuration.aws_logs`
+* `aws_s3_bucket_server_side_encryption_configuration.aws_logs`
+* `aws_s3_bucket_logging.aws_logs`
+* `aws_s3_bucket_versioning.aws_logs`
+
+As part of this upgrade, you will need to perform the following imports. Replace `example` with the name you're using when calling this module and replace `your-bucket-name-here` with the name of your bucket (as opposed to an S3 bucket ARN). Also note the inclusion of `,private` when importing the new `aws_s3_bucket_acl` Terraform resource.
+
+```sh
+terraform import module.example.aws_s3_bucket_policy.aws_logs your-bucket-name-here
+terraform import module.example.aws_s3_bucket_acl.aws_logs your-bucket-name-here,private
+terraform import module.example.aws_s3_bucket_lifecycle_configuration.aws_logs your-bucket-name-here
+terraform import module.example.aws_s3_bucket_server_side_encryption_configuration.aws_logs your-bucket-name-here
+terraform import module.example.aws_s3_bucket_logging.aws_logs your-bucket-name-here
+terraform import module.example.aws_s3_bucket_versioning.aws_logs your-bucket-name-here
+```
+
+### Upgrading from 10.x.x to 11.x.x
+
+Version 11.x.x removes the use of the `Automation` tag with a value of `"Terraform"`. If you would like to continue using the `Automation` tag, you can define it directly in `var.tags`.
 
 ### Upgrading from 9.0.0 to 10.x.x
 
