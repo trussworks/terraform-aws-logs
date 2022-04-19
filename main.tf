@@ -428,7 +428,7 @@ resource "aws_s3_bucket_versioning" "aws_logs" {
   bucket = aws_s3_bucket.aws_logs.id
   versioning_configuration {
     status     = var.enable_versioning ? "Enabled" : "Disabled"
-    mfa_delete = var.enable_mfa_delete ? "Enabled" : "Disabled"
+    mfa_delete = var.enable_mfa_delete ? "Enabled" : null
   }
 }
 
