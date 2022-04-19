@@ -370,6 +370,13 @@ resource "aws_s3_bucket" "aws_logs" {
       Name = var.s3_bucket_name
     }
   )
+
+  lifecycle {
+    ignore_changes = [
+      lifecycle_rule,
+      server_side_encryption_configuration
+    ]
+  }
 }
 
 resource "aws_s3_bucket_policy" "aws_logs" {
