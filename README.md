@@ -177,15 +177,16 @@ Version 12.x.x enables the use of version 4 of the AWS provider. Terraform provi
 * `aws_s3_bucket_logging.aws_logs`
 * `aws_s3_bucket_versioning.aws_logs`
 
-As part of this upgrade, you will need to perform the following imports. Replace `example` with the name you're using when calling this module and replace `your-bucket-name-here` with the name of your bucket (as opposed to an S3 bucket ARN). Also note the inclusion of `,private` when importing the new `aws_s3_bucket_acl` Terraform resource.
+As part of this upgrade, you will need to perform the following imports. Replace `example` with the name you're using when calling this module and replace `your-bucket-name-here` with the name of your bucket (as opposed to an S3 bucket ARN). Also note the inclusion of `,log-delivery-write` when importing the new `aws_s3_bucket_acl` Terraform resource. If you have not configured a target bucket using the `logging_target_bucket` input variable, then you don't need to import the aws_s3_bucket_logging Terraform resource.
 
 ```sh
 terraform import module.example.aws_s3_bucket_policy.aws_logs your-bucket-name-here
-terraform import module.example.aws_s3_bucket_acl.aws_logs your-bucket-name-here,private
+terraform import module.example.aws_s3_bucket_acl.aws_logs your-bucket-name-here,log-delivery-write
 terraform import module.example.aws_s3_bucket_lifecycle_configuration.aws_logs your-bucket-name-here
 terraform import module.example.aws_s3_bucket_server_side_encryption_configuration.aws_logs your-bucket-name-here
-terraform import module.example.aws_s3_bucket_logging.aws_logs your-bucket-name-here
 terraform import module.example.aws_s3_bucket_versioning.aws_logs your-bucket-name-here
+# Optionally run this command if you have configured the logging_target_bucket input variable.
+terraform import module.example.aws_s3_bucket_logging.aws_logs your-target-bucket-name-here
 ```
 
 ### Upgrading from 10.x.x to 11.x.x
