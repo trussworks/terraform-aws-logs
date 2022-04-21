@@ -178,10 +178,14 @@ variable "tags" {
   description = "A mapping of tags to assign to the logs bucket. Please note that tags with a conflicting key will not override the original tag."
 }
 
-variable "enable_versioning" {
-  description = "A bool that enables versioning for the log bucket."
-  default     = false
-  type        = bool
+variable "versioning_status" {
+  description = "A string that indicates the versioning status for the log bucket."
+  default     = "Disabled"
+  type        = string
+  validation {
+    condition     = contains(["Enabled", "Disabled", "Suspended"], var.versioning_status)
+    error_message = "Valid values for versioning_status are Enabled, Disabled, or Suspended."
+  }
 }
 
 variable "enable_mfa_delete" {
