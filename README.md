@@ -166,9 +166,11 @@ No modules.
 
 ## Upgrade Paths
 
-### Upgrading from 11.x.x to 12.x.x
+### Upgrading from 11.x.x to 13.x.x
 
-Version 12.x.x enables the use of version 4 of the AWS provider. Terraform provided [an upgrade path](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/guides/version-4-upgrade) for this. To support the upgrade path, this module now includes the following additional resources:
+We advise upgrading directly from 11.x.x to 13.x.x for the smoothest upgrade experience.
+
+Version 13.x.x enables the use of version 4 of the AWS provider. Terraform provided [an upgrade path](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/guides/version-4-upgrade) for this. To support the upgrade path, this module now includes the following additional resources:
 
 * `aws_s3_bucket_policy.aws_logs`
 * `aws_s3_bucket_acl.aws_logs`
@@ -177,7 +179,16 @@ Version 12.x.x enables the use of version 4 of the AWS provider. Terraform provi
 * `aws_s3_bucket_logging.aws_logs`
 * `aws_s3_bucket_versioning.aws_logs`
 
-As part of this upgrade, you will need to perform the following imports. Replace `example` with the name you're using when calling this module and replace `your-bucket-name-here` with the name of your bucket (as opposed to an S3 bucket ARN). Also note the inclusion of `,log-delivery-write` when importing the new `aws_s3_bucket_acl` Terraform resource; if you are setting the `s3_bucket_acl` input variable, use that value instead of `log-delivery-write`. If you have not configured a target bucket using the `logging_target_bucket` input variable, then you don't need to import the aws_s3_bucket_logging Terraform resource.
+This module version removes the `enable_versioning` variable (boolean) and replaces it with the `versioning_status` variable (string). There are three possible values for this variable: `Enabled`, `Disabled`, and `Suspended`. If at one point versioning was enabled on your bucket, but has since been turned off, you will need to set `versioning_status` to `Suspended` rather than `Disabled`.
+
+Additionally, this version of the module requires a minimum AWS provider version of 3.75, so that you can remain on the 3.x AWS provider while still gaining the ability to utilize the new S3 resources introduced in the 4.x AWS provider.
+
+There are two general approaches to performing this upgrade:
+
+1. Upgrade the module version and run `terraform plan` followed by `terraform apply`, which will create the new Terraform resources.
+1. Perform `terraform import` commands, which accomplishes the same thing without running `terraform apply`. This is the more cautious route.
+
+If you choose to take the route of running `terraform import`, you will need to perform the following imports. Replace `example` with the name you're using when calling this module and replace `your-bucket-name-here` with the name of your bucket (as opposed to an S3 bucket ARN). Also note the inclusion of `,log-delivery-write` when importing the new `aws_s3_bucket_acl` Terraform resource; if you are setting the `s3_bucket_acl` input variable, use that value instead of `log-delivery-write`. If you have not configured a target bucket using the `logging_target_bucket` input variable, then you don't need to import the aws_s3_bucket_logging Terraform resource.
 
 ```sh
 terraform import module.example.aws_s3_bucket_policy.aws_logs your-bucket-name-here
