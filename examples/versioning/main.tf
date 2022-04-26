@@ -3,7 +3,7 @@ module "aws_logs" {
 
   s3_bucket_name = var.test_name
 
-  enable_versioning = true
+  versioning_status = "Enabled"
 
   force_destroy = var.force_destroy
   tags          = var.tags
