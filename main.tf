@@ -431,7 +431,6 @@ resource "aws_s3_bucket_lifecycle_configuration" "aws_logs" {
       noncurrent_days = var.noncurrent_version_retention
     }
   }
-
 }
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "aws_logs" {
@@ -442,7 +441,6 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "aws_logs" {
       sse_algorithm = "AES256"
     }
   }
-
 }
 
 resource "aws_s3_bucket_logging" "aws_logs" {
