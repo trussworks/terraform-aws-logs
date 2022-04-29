@@ -198,7 +198,7 @@ terraform import module.example.aws_s3_bucket_lifecycle_configuration.aws_logs y
 terraform import module.example.aws_s3_bucket_server_side_encryption_configuration.aws_logs your-bucket-name-here
 terraform import module.example.aws_s3_bucket_versioning.aws_logs your-bucket-name-here
 # Optionally run this command if you have configured the logging_target_bucket input variable.
-terraform import module.example.aws_s3_bucket_logging.aws_logs your-target-bucket-name-here
+terraform import module.example.aws_s3_bucket_logging.aws_logs your-bucket-name-here
 ```
 
 ### Upgrading from 10.x.x to 11.x.x
