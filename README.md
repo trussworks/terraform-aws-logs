@@ -188,7 +188,7 @@ There are two general approaches to performing this upgrade:
 1. Upgrade the module version and run `terraform plan` followed by `terraform apply`, which will create the new Terraform resources.
 1. Perform `terraform import` commands, which accomplishes the same thing without running `terraform apply`. This is the more cautious route.
 
-If you choose to take the route of running `terraform import`, you will need to perform the following imports. Replace `example` with the name you're using when calling this module and replace `your-bucket-name-here` with the name of your bucket (as opposed to an S3 bucket ARN). Also note the inclusion of `,log-delivery-write` when importing the new `aws_s3_bucket_acl` Terraform resource; if you are setting the `s3_bucket_acl` input variable, use that value instead of `log-delivery-write`. If you have not configured a target bucket using the `logging_target_bucket` input variable, then you don't need to import the aws_s3_bucket_logging Terraform resource.
+If you choose to take the route of running `terraform import`, you will need to perform the following imports. Replace `example` with the name you're using when calling this module and replace `your-bucket-name-here` with the name of your bucket (as opposed to an S3 bucket ARN). Also note the inclusion of `,log-delivery-write` when importing the new `aws_s3_bucket_acl` Terraform resource; if you are setting the `s3_bucket_acl` input variable, use that value instead of `log-delivery-write`. If you have not configured a target bucket using the `logging_target_bucket` input variable, then you don't need to import the `aws_s3_bucket_logging` Terraform resource.
 
 ```sh
 terraform import module.example.aws_s3_bucket_policy.aws_logs your-bucket-name-here
