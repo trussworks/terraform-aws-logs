@@ -86,13 +86,13 @@ module "aws_logs" {
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.13.0 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 3.0 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 3.75.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 3.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 3.75.0 |
 
 ## Modules
 
@@ -141,7 +141,6 @@ No modules.
 | <a name="input_elb_accounts"></a> [elb\_accounts](#input\_elb\_accounts) | List of accounts for ELB logs.  By default limits to the current account. | `list(string)` | `[]` | no |
 | <a name="input_elb_logs_prefix"></a> [elb\_logs\_prefix](#input\_elb\_logs\_prefix) | S3 prefix for ELB logs. | `string` | `"elb"` | no |
 | <a name="input_enable_mfa_delete"></a> [enable\_mfa\_delete](#input\_enable\_mfa\_delete) | A bool that requires MFA to delete the log bucket. | `bool` | `false` | no |
-| <a name="input_enable_versioning"></a> [enable\_versioning](#input\_enable\_versioning) | A bool that enables versioning for the log bucket. | `bool` | `false` | no |
 | <a name="input_force_destroy"></a> [force\_destroy](#input\_force\_destroy) | A bool that indicates all objects (including any locked objects) should be deleted from the bucket so the bucket can be destroyed without error. | `bool` | `false` | no |
 | <a name="input_logging_target_bucket"></a> [logging\_target\_bucket](#input\_logging\_target\_bucket) | S3 Bucket to send S3 logs to. Disables logging if omitted. | `string` | `""` | no |
 | <a name="input_logging_target_prefix"></a> [logging\_target\_prefix](#input\_logging\_target\_prefix) | Prefix for logs going into the log\_s3\_bucket. | `string` | `"s3/"` | no |
@@ -153,6 +152,7 @@ No modules.
 | <a name="input_s3_bucket_name"></a> [s3\_bucket\_name](#input\_s3\_bucket\_name) | S3 bucket to store AWS logs in. | `string` | n/a | yes |
 | <a name="input_s3_log_bucket_retention"></a> [s3\_log\_bucket\_retention](#input\_s3\_log\_bucket\_retention) | Number of days to keep AWS logs around. | `string` | `90` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | A mapping of tags to assign to the logs bucket. Please note that tags with a conflicting key will not override the original tag. | `map(string)` | `{}` | no |
+| <a name="input_versioning_status"></a> [versioning\_status](#input\_versioning\_status) | A string that indicates the versioning status for the log bucket. | `string` | `"Disabled"` | no |
 
 ## Outputs
 
@@ -166,9 +166,11 @@ No modules.
 
 ## Upgrade Paths
 
-### Upgrading from 11.x.x to 12.x.x
+### Upgrading from 11.x.x to 13.x.x
 
-Version 12.x.x enables the use of version 4 of the AWS provider. Terraform provided [an upgrade path](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/guides/version-4-upgrade) for this. To support the upgrade path, this module now includes the following additional resources:
+We advise upgrading directly from 11.x.x to 13.x.x for the smoothest upgrade experience.
+
+Version 13.x.x enables the use of version 4 of the AWS provider. Terraform provided [an upgrade path](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/guides/version-4-upgrade) for this. To support the upgrade path, this module now includes the following additional resources:
 
 * `aws_s3_bucket_policy.aws_logs`
 * `aws_s3_bucket_acl.aws_logs`
@@ -177,7 +179,16 @@ Version 12.x.x enables the use of version 4 of the AWS provider. Terraform provi
 * `aws_s3_bucket_logging.aws_logs`
 * `aws_s3_bucket_versioning.aws_logs`
 
-As part of this upgrade, you will need to perform the following imports. Replace `example` with the name you're using when calling this module and replace `your-bucket-name-here` with the name of your bucket (as opposed to an S3 bucket ARN). Also note the inclusion of `,log-delivery-write` when importing the new `aws_s3_bucket_acl` Terraform resource; if you are setting the `s3_bucket_acl` input variable, use that value instead of `log-delivery-write`. If you have not configured a target bucket using the `logging_target_bucket` input variable, then you don't need to import the aws_s3_bucket_logging Terraform resource.
+This module version removes the `enable_versioning` variable (boolean) and replaces it with the `versioning_status` variable (string). There are three possible values for this variable: `Enabled`, `Disabled`, and `Suspended`. If at one point versioning was enabled on your bucket, but has since been turned off, you will need to set `versioning_status` to `Suspended` rather than `Disabled`.
+
+Additionally, this version of the module requires a minimum AWS provider version of 3.75, so that you can remain on the 3.x AWS provider while still gaining the ability to utilize the new S3 resources introduced in the 4.x AWS provider.
+
+There are two general approaches to performing this upgrade:
+
+1. Upgrade the module version and run `terraform plan` followed by `terraform apply`, which will create the new Terraform resources.
+1. Perform `terraform import` commands, which accomplishes the same thing without running `terraform apply`. This is the more cautious route.
+
+If you choose to take the route of running `terraform import`, you will need to perform the following imports. Replace `example` with the name you're using when calling this module and replace `your-bucket-name-here` with the name of your bucket (as opposed to an S3 bucket ARN). Also note the inclusion of `,log-delivery-write` when importing the new `aws_s3_bucket_acl` Terraform resource; if you are setting the `s3_bucket_acl` input variable, use that value instead of `log-delivery-write`. If you have not configured a target bucket using the `logging_target_bucket` input variable, then you don't need to import the `aws_s3_bucket_logging` Terraform resource.
 
 ```sh
 terraform import module.example.aws_s3_bucket_policy.aws_logs your-bucket-name-here
@@ -187,7 +198,7 @@ terraform import module.example.aws_s3_bucket_lifecycle_configuration.aws_logs y
 terraform import module.example.aws_s3_bucket_server_side_encryption_configuration.aws_logs your-bucket-name-here
 terraform import module.example.aws_s3_bucket_versioning.aws_logs your-bucket-name-here
 # Optionally run this command if you have configured the logging_target_bucket input variable.
-terraform import module.example.aws_s3_bucket_logging.aws_logs your-target-bucket-name-here
+terraform import module.example.aws_s3_bucket_logging.aws_logs your-bucket-name-here
 ```
 
 ### Upgrading from 10.x.x to 11.x.x
