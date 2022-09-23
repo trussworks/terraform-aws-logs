@@ -6,7 +6,7 @@ jobs:
         username: $DOCKER_USERNAME
       environment:
       - TEST_RESULTS: /tmp/test-results
-      image: trussworks/circleci:4842166032528adaf4e38225ef0964fe7158b4db
+      image: trussworks/circleci:b0e222f15769ec9d0bb8e4c637fab0d01c8636b0
     steps:
     - checkout
     - restore_cache:
