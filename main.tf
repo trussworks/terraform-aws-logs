@@ -417,7 +417,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "aws_logs" {
 
   rule {
     id     = "expire_all_logs"
-    status = "Enabled"
+    status = var.retention_status
 
     filter {
       prefix = "/*"

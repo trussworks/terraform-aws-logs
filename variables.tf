@@ -188,6 +188,16 @@ variable "versioning_status" {
   }
 }
 
+variable "retention_status" {
+  description = "A string that indicates the retention status for the log bucket."
+  default     = "Enabled"
+  type        = string
+  validation {
+    condition     = contains(["Enabled", "Disabled"], var.retention_status)
+    error_message = "Valid values for versioning_status are Enabled, Disabled."
+  }
+}
+
 variable "enable_mfa_delete" {
   description = "A bool that requires MFA to delete the log bucket."
   default     = false
