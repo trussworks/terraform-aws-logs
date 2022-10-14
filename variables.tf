@@ -194,7 +194,7 @@ variable "retention_status" {
   type        = string
   validation {
     condition     = contains(["Enabled", "Disabled"], var.retention_status)
-    error_message = "Valid values for versioning_status are Enabled, Disabled."
+    error_message = "Valid values for retention_status are Enabled, Disabled."
   }
 }
 
