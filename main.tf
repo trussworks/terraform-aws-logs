@@ -419,9 +419,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "aws_logs" {
     id     = "expire_all_logs"
     status = var.s3_log_bucket_lifecycle_rule
 
-    filter {
-      prefix = "/*"
-    }
+    filter {}
 
     expiration {
       days = var.s3_log_bucket_retention
