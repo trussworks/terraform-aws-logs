@@ -148,9 +148,9 @@ No modules.
 | <a name="input_nlb_logs_prefixes"></a> [nlb\_logs\_prefixes](#input\_nlb\_logs\_prefixes) | S3 key prefixes for NLB logs. | `list(string)` | <pre>[<br>  "nlb"<br>]</pre> | no |
 | <a name="input_noncurrent_version_retention"></a> [noncurrent\_version\_retention](#input\_noncurrent\_version\_retention) | Number of days to retain non-current versions of objects if versioning is enabled. | `string` | `30` | no |
 | <a name="input_redshift_logs_prefix"></a> [redshift\_logs\_prefix](#input\_redshift\_logs\_prefix) | S3 prefix for RedShift logs. | `string` | `"redshift"` | no |
-| <a name="input_s3_log_bucket_lifecycle_rule"></a> [s3\_log\_bucket\_lifecycle\_rule](#input\_s3\_log\_bucket\_lifecycle\_rule) | A string that indicates whether the lifecycle rule for the log bucket is enabled. | `string` | `"Enabled"` | no |
 | <a name="input_s3_bucket_acl"></a> [s3\_bucket\_acl](#input\_s3\_bucket\_acl) | Set bucket ACL per [AWS S3 Canned ACL](<https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl>) list. | `string` | `"log-delivery-write"` | no |
 | <a name="input_s3_bucket_name"></a> [s3\_bucket\_name](#input\_s3\_bucket\_name) | S3 bucket to store AWS logs in. | `string` | n/a | yes |
+| <a name="input_s3_log_bucket_lifecycle_rule"></a> [s3\_log\_bucket\_lifecycle\_rule](#input\_s3\_log\_bucket\_lifecycle\_rule) | Whether the lifecycle rule for the log bucket is enabled. | `bool` | `true` | no |
 | <a name="input_s3_log_bucket_retention"></a> [s3\_log\_bucket\_retention](#input\_s3\_log\_bucket\_retention) | Number of days to keep AWS logs around. | `string` | `90` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | A mapping of tags to assign to the logs bucket. Please note that tags with a conflicting key will not override the original tag. | `map(string)` | `{}` | no |
 | <a name="input_versioning_status"></a> [versioning\_status](#input\_versioning\_status) | A string that indicates the versioning status for the log bucket. | `string` | `"Disabled"` | no |

@@ -189,13 +189,9 @@ variable "versioning_status" {
 }
 
 variable "s3_log_bucket_lifecycle_rule" {
-  description = "A string that indicates whether the lifecycle rule for the log bucket is enabled."
-  default     = "Enabled"
-  type        = string
-  validation {
-    condition     = contains(["Enabled", "Disabled"], var.retention_status)
-    error_message = "Valid values for s3_log_bucket_lifecycle_rule are Enabled, Disabled."
-  }
+  description = "Whether the lifecycle rule for the log bucket is enabled."
+  default     = true
+  type        = bool
 }
 
 variable "enable_mfa_delete" {
