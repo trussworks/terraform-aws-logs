@@ -417,7 +417,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "aws_logs" {
 
   rule {
     id     = "expire_all_logs"
-    status = var.s3_log_bucket_lifecycle_rule ? "Enabled" : "Disabled"
+    status = var.enable_s3_log_bucket_lifecycle_rule ? "Enabled" : "Disabled"
 
     filter {}
 

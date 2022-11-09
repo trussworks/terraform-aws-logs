@@ -188,7 +188,7 @@ variable "versioning_status" {
   }
 }
 
-variable "s3_log_bucket_lifecycle_rule" {
+variable "enable_s3_log_bucket_lifecycle_rule" {
   description = "Whether the lifecycle rule for the log bucket is enabled."
   default     = true
   type        = bool

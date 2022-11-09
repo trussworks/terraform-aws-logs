@@ -141,6 +141,7 @@ No modules.
 | <a name="input_elb_accounts"></a> [elb\_accounts](#input\_elb\_accounts) | List of accounts for ELB logs.  By default limits to the current account. | `list(string)` | `[]` | no |
 | <a name="input_elb_logs_prefix"></a> [elb\_logs\_prefix](#input\_elb\_logs\_prefix) | S3 prefix for ELB logs. | `string` | `"elb"` | no |
 | <a name="input_enable_mfa_delete"></a> [enable\_mfa\_delete](#input\_enable\_mfa\_delete) | A bool that requires MFA to delete the log bucket. | `bool` | `false` | no |
+| <a name="input_enable_s3_log_bucket_lifecycle_rule"></a> [enable\_s3\_log\_bucket\_lifecycle\_rule](#input\_enable\_s3\_log\_bucket\_lifecycle\_rule) | Whether the lifecycle rule for the log bucket is enabled. | `bool` | `true` | no |
 | <a name="input_force_destroy"></a> [force\_destroy](#input\_force\_destroy) | A bool that indicates all objects (including any locked objects) should be deleted from the bucket so the bucket can be destroyed without error. | `bool` | `false` | no |
 | <a name="input_logging_target_bucket"></a> [logging\_target\_bucket](#input\_logging\_target\_bucket) | S3 Bucket to send S3 logs to. Disables logging if omitted. | `string` | `""` | no |
 | <a name="input_logging_target_prefix"></a> [logging\_target\_prefix](#input\_logging\_target\_prefix) | Prefix for logs going into the log\_s3\_bucket. | `string` | `"s3/"` | no |
@@ -150,7 +151,6 @@ No modules.
 | <a name="input_redshift_logs_prefix"></a> [redshift\_logs\_prefix](#input\_redshift\_logs\_prefix) | S3 prefix for RedShift logs. | `string` | `"redshift"` | no |
 | <a name="input_s3_bucket_acl"></a> [s3\_bucket\_acl](#input\_s3\_bucket\_acl) | Set bucket ACL per [AWS S3 Canned ACL](<https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl>) list. | `string` | `"log-delivery-write"` | no |
 | <a name="input_s3_bucket_name"></a> [s3\_bucket\_name](#input\_s3\_bucket\_name) | S3 bucket to store AWS logs in. | `string` | n/a | yes |
-| <a name="input_s3_log_bucket_lifecycle_rule"></a> [s3\_log\_bucket\_lifecycle\_rule](#input\_s3\_log\_bucket\_lifecycle\_rule) | Whether the lifecycle rule for the log bucket is enabled. | `bool` | `true` | no |
 | <a name="input_s3_log_bucket_retention"></a> [s3\_log\_bucket\_retention](#input\_s3\_log\_bucket\_retention) | Number of days to keep AWS logs around. | `string` | `90` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | A mapping of tags to assign to the logs bucket. Please note that tags with a conflicting key will not override the original tag. | `map(string)` | `{}` | no |
 | <a name="input_versioning_status"></a> [versioning\_status](#input\_versioning\_status) | A string that indicates the versioning status for the log bucket. | `string` | `"Disabled"` | no |
