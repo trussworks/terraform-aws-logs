@@ -188,6 +188,12 @@ variable "versioning_status" {
   }
 }
 
+variable "enable_s3_log_bucket_lifecycle_rule" {
+  description = "Whether the lifecycle rule for the log bucket is enabled."
+  default     = true
+  type        = bool
+}
+
 variable "enable_mfa_delete" {
   description = "A bool that requires MFA to delete the log bucket."
   default     = false

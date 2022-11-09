@@ -141,6 +141,7 @@ No modules.
 | <a name="input_elb_accounts"></a> [elb\_accounts](#input\_elb\_accounts) | List of accounts for ELB logs.  By default limits to the current account. | `list(string)` | `[]` | no |
 | <a name="input_elb_logs_prefix"></a> [elb\_logs\_prefix](#input\_elb\_logs\_prefix) | S3 prefix for ELB logs. | `string` | `"elb"` | no |
 | <a name="input_enable_mfa_delete"></a> [enable\_mfa\_delete](#input\_enable\_mfa\_delete) | A bool that requires MFA to delete the log bucket. | `bool` | `false` | no |
+| <a name="input_enable_s3_log_bucket_lifecycle_rule"></a> [enable\_s3\_log\_bucket\_lifecycle\_rule](#input\_enable\_s3\_log\_bucket\_lifecycle\_rule) | Whether the lifecycle rule for the log bucket is enabled. | `bool` | `true` | no |
 | <a name="input_force_destroy"></a> [force\_destroy](#input\_force\_destroy) | A bool that indicates all objects (including any locked objects) should be deleted from the bucket so the bucket can be destroyed without error. | `bool` | `false` | no |
 | <a name="input_logging_target_bucket"></a> [logging\_target\_bucket](#input\_logging\_target\_bucket) | S3 Bucket to send S3 logs to. Disables logging if omitted. | `string` | `""` | no |
 | <a name="input_logging_target_prefix"></a> [logging\_target\_prefix](#input\_logging\_target\_prefix) | Prefix for logs going into the log\_s3\_bucket. | `string` | `"s3/"` | no |
