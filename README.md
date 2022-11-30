@@ -163,6 +163,7 @@ No modules.
 | <a name="output_configs_logs_path"></a> [configs\_logs\_path](#output\_configs\_logs\_path) | S3 path for Config logs. |
 | <a name="output_elb_logs_path"></a> [elb\_logs\_path](#output\_elb\_logs\_path) | S3 path for ELB logs. |
 | <a name="output_redshift_logs_path"></a> [redshift\_logs\_path](#output\_redshift\_logs\_path) | S3 path for RedShift logs. |
+| <a name="output_s3_bucket_policy"></a> [s3\_bucket\_policy](#output\_s3\_bucket\_policy) | S3 bucket policy |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 
 ## Upgrade Paths

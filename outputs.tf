@@ -18,3 +18,7 @@ output "redshift_logs_path" {
   value       = var.redshift_logs_prefix
 }
 
+output "s3_bucket_policy" {
+  description = "S3 bucket policy"
+  value = data.aws_iam_policy_document.main
+}
