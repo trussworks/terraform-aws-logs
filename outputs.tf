@@ -20,5 +20,5 @@ output "redshift_logs_path" {
 
 output "s3_bucket_policy" {
   description = "S3 bucket policy"
-  value = data.aws_iam_policy_document.main
+  value       = data.aws_iam_policy_document.main
 }
