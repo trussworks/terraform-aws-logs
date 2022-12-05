@@ -3,8 +3,8 @@ module github.com/trussworks/terraform-aws-logs
 go 1.19
 
 require (
-	github.com/aws/aws-sdk-go v1.44.139
-	github.com/gruntwork-io/terratest v0.41.0
+	github.com/aws/aws-sdk-go v1.44.153
+	github.com/gruntwork-io/terratest v0.41.4
 	github.com/stretchr/testify v1.8.1
 )
 
