@@ -17,4 +17,3 @@ output "redshift_logs_path" {
   description = "S3 path for RedShift logs."
   value       = var.redshift_logs_prefix
 }
-
