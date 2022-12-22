@@ -1,22 +1,11 @@
 {
   "extends": [
-    "config:base",
-    ":disableDependencyDashboard"
+    "config:base"
   ],
   "labels": [
     "dependencies"
   ],
   "packageRules": [
-    {
-      "automerge": true,
-      "description": "Automerge all updates except major versions",
-      "matchUpdateTypes": [
-        "patch",
-        "pin",
-        "digest",
-        "minor"
-      ]
-    },
     {
       "description": "Tag the waddlers Github Team for major updates",
       "matchUpdateTypes": [
@@ -30,24 +19,14 @@
       "automerge": true,
       "description": "Group minor and patch updates into a single PR",
       "groupName": "dependencies",
-      "managers": [
-        "terraform",
-        "gomod",
-        "pre-commit",
-        "circleci",
-        "dockerfile",
-        "github-actions"
-      ],
       "matchUpdateTypes": [
         "minor",
-        "patch"
+        "patch",
+        "pin",
+        "digest"
       ]
     }
   ],
-  "postUpdateOptions": [
-    "gomodTidy"
-  ],
-  "prConcurrentLimit": 2,
   "schedule": [
     "every weekend"
   ],
