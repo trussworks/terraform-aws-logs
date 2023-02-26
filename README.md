@@ -81,3 +81,87 @@ module "aws_logs" {
 ```
 
 <!-- BEGIN_TF_DOCS -->
+## Requirements
+
+| Name | Version |
+|------|---------|
+| terraform | >= 0.13.0 |
+| aws | >= 3.75.0 |
+
+## Providers
+
+| Name | Version |
+|------|---------|
+| aws | >= 3.75.0 |
+
+## Modules
+
+No modules.
+
+## Resources
+
+| Name | Type |
+|------|------|
+| [aws_s3_bucket.aws_logs](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket) | resource |
+| [aws_s3_bucket_acl.aws_logs](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_acl) | resource |
+| [aws_s3_bucket_lifecycle_configuration.aws_logs](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_lifecycle_configuration) | resource |
+| [aws_s3_bucket_logging.aws_logs](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_logging) | resource |
+| [aws_s3_bucket_policy.aws_logs](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_policy) | resource |
+| [aws_s3_bucket_public_access_block.public_access_block](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_public_access_block) | resource |
+| [aws_s3_bucket_server_side_encryption_configuration.aws_logs](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_server_side_encryption_configuration) | resource |
+| [aws_s3_bucket_versioning.aws_logs](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_versioning) | resource |
+| [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
+| [aws_elb_service_account.main](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/elb_service_account) | data source |
+| [aws_iam_policy_document.main](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
+| [aws_partition.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/partition) | data source |
+| [aws_redshift_service_account.main](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/redshift_service_account) | data source |
+| [aws_region.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/region) | data source |
+
+## Inputs
+
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| alb\_account | Account for ALB logs.  By default limits to the current account. | `string` | `""` | no |
+| alb\_logs\_prefixes | S3 key prefixes for ALB logs. | `list(string)` | ```[ "alb" ]``` | no |
+| allow\_alb | Allow ALB service to log to bucket. | `bool` | `false` | no |
+| allow\_cloudtrail | Allow Cloudtrail service to log to bucket. | `bool` | `false` | no |
+| allow\_cloudwatch | Allow Cloudwatch service to export logs to bucket. | `bool` | `false` | no |
+| allow\_config | Allow Config service to log to bucket. | `bool` | `false` | no |
+| allow\_elb | Allow ELB service to log to bucket. | `bool` | `false` | no |
+| allow\_nlb | Allow NLB service to log to bucket. | `bool` | `false` | no |
+| allow\_redshift | Allow Redshift service to log to bucket. | `bool` | `false` | no |
+| cloudtrail\_accounts | List of accounts for CloudTrail logs.  By default limits to the current account. | `list(string)` | `[]` | no |
+| cloudtrail\_logs\_prefix | S3 prefix for CloudTrail logs. | `string` | `"cloudtrail"` | no |
+| cloudtrail\_org\_id | AWS Organization ID for CloudTrail. | `string` | `""` | no |
+| cloudwatch\_logs\_prefix | S3 prefix for CloudWatch log exports. | `string` | `"cloudwatch"` | no |
+| config\_accounts | List of accounts for Config logs.  By default limits to the current account. | `list(string)` | `[]` | no |
+| config\_logs\_prefix | S3 prefix for AWS Config logs. | `string` | `"config"` | no |
+| create\_public\_access\_block | Whether to create a public\_access\_block restricting public access to the bucket. | `bool` | `true` | no |
+| default\_allow | Whether all services included in this module should be allowed to write to the bucket by default. Alternatively select individual services. It's recommended to use the default bucket ACL of log-delivery-write. | `bool` | `true` | no |
+| elb\_accounts | List of accounts for ELB logs.  By default limits to the current account. | `list(string)` | `[]` | no |
+| elb\_logs\_prefix | S3 prefix for ELB logs. | `string` | `"elb"` | no |
+| enable\_mfa\_delete | A bool that requires MFA to delete the log bucket. | `bool` | `false` | no |
+| enable\_s3\_log\_bucket\_lifecycle\_rule | Whether the lifecycle rule for the log bucket is enabled. | `bool` | `true` | no |
+| force\_destroy | A bool that indicates all objects (including any locked objects) should be deleted from the bucket so the bucket can be destroyed without error. | `bool` | `false` | no |
+| logging\_target\_bucket | S3 Bucket to send S3 logs to. Disables logging if omitted. | `string` | `""` | no |
+| logging\_target\_prefix | Prefix for logs going into the log\_s3\_bucket. | `string` | `"s3/"` | no |
+| nlb\_account | Account for NLB logs.  By default limits to the current account. | `string` | `""` | no |
+| nlb\_logs\_prefixes | S3 key prefixes for NLB logs. | `list(string)` | ```[ "nlb" ]``` | no |
+| noncurrent\_version\_retention | Number of days to retain non-current versions of objects if versioning is enabled. | `string` | `30` | no |
+| redshift\_logs\_prefix | S3 prefix for RedShift logs. | `string` | `"redshift"` | no |
+| s3\_bucket\_acl | Set bucket ACL per [AWS S3 Canned ACL](<https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl>) list. | `string` | `"log-delivery-write"` | no |
+| s3\_bucket\_name | S3 bucket to store AWS logs in. | `string` | n/a | yes |
+| s3\_log\_bucket\_retention | Number of days to keep AWS logs around. | `string` | `90` | no |
+| tags | A mapping of tags to assign to the logs bucket. Please note that tags with a conflicting key will not override the original tag. | `map(string)` | `{}` | no |
+| versioning\_status | A string that indicates the versioning status for the log bucket. | `string` | `"Disabled"` | no |
+
+## Outputs
+
+| Name | Description |
+|------|-------------|
+| aws\_logs\_bucket | ID of the S3 bucket containing AWS logs. |
+| configs\_logs\_path | S3 path for Config logs. |
+| elb\_logs\_path | S3 path for ELB logs. |
+| redshift\_logs\_path | S3 path for RedShift logs. |
+| s3\_bucket\_policy | S3 bucket policy |
+<!-- END_TF_DOCS -->
