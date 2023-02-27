@@ -1,4 +1,4 @@
-name: validate
+name: validate-tf
 
 on:
   push:
@@ -9,5 +9,5 @@ on:
       - main
 
 jobs:
-  validate:
-    uses: trussworks/shared-actions/.github/workflows/validate.yml@main
+  validate-tf:
+    uses: trussworks/shared-actions/.github/workflows/validate-tf.yml@main
