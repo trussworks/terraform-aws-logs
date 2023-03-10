@@ -160,6 +160,7 @@ No modules.
 | Name | Description |
 |------|-------------|
 | aws\_logs\_bucket | ID of the S3 bucket containing AWS logs. |
+| bucket\_arn | ARN of the S3 logs bucket |
 | configs\_logs\_path | S3 path for Config logs. |
 | elb\_logs\_path | S3 path for ELB logs. |
 | redshift\_logs\_path | S3 path for RedShift logs. |
