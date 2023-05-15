@@ -199,3 +199,15 @@ variable "enable_mfa_delete" {
   default     = false
   type        = bool
 }
+
+variable "control_object_ownership" {
+  description = "Whether to manage S3 Bucket Ownership Controls on this bucket."
+  type        = bool
+  default     = false
+}
+
+variable "object_ownership" {
+  description = "Object ownership. Valid values: BucketOwnerEnforced, BucketOwnerPreferred or ObjectWriter."
+  type        = string
+  default     = "BucketOwnerEnforced"
+}

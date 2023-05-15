@@ -392,8 +392,26 @@ resource "aws_s3_bucket_policy" "aws_logs" {
 }
 
 resource "aws_s3_bucket_acl" "aws_logs" {
+  bucket     = aws_s3_bucket.aws_logs.id
+  acl        = var.s3_bucket_acl
+  depends_on = [aws_s3_bucket_ownership_controls.aws_logs]
+}
+
+resource "aws_s3_bucket_ownership_controls" "aws_logs" {
+  count = var.control_object_ownership ? 1 : 0
+
   bucket = aws_s3_bucket.aws_logs.id
-  acl    = var.s3_bucket_acl
+
+  rule {
+    object_ownership = var.object_ownership
+  }
+
+  # This `depends_on` is to prevent "A conflicting conditional operation is currently in progress against this resource."
+  depends_on = [
+    aws_s3_bucket_policy.aws_logs,
+    aws_s3_bucket_public_access_block.public_access_block,
+    aws_s3_bucket.aws_logs
+  ]
 }
 
 resource "aws_s3_bucket_lifecycle_configuration" "aws_logs" {
