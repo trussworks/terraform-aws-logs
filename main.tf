@@ -156,7 +156,7 @@ locals {
   # doesn't support logging to multiple accounts
   s3_effect = var.default_allow || var.allow_s3 ? "Allow" : "Deny"
 
-  s3_resources = "${local.bucket_arn}/${var.s3_logs_prefix}/*"
+  s3_resources = ["${local.bucket_arn}/${var.s3_logs_prefix}/*"]
 }
 
 #
