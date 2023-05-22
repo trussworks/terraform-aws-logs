@@ -21,6 +21,12 @@ variable "s3_bucket_acl" {
   type        = string
 }
 
+variable "s3_logs_prefix" {
+  description = "S3 prefix for S3 access logs."
+  default     = "s3"
+  type        = string
+}
+
 variable "elb_logs_prefix" {
   description = "S3 prefix for ELB logs."
   default     = "elb"
@@ -102,6 +108,12 @@ variable "allow_elb" {
 
 variable "allow_redshift" {
   description = "Allow Redshift service to log to bucket."
+  default     = false
+  type        = bool
+}
+
+variable "allow_s3" {
+  description = "Allow S3 service to log to bucket."
   default     = false
   type        = bool
 }
@@ -203,7 +215,7 @@ variable "enable_mfa_delete" {
 variable "control_object_ownership" {
   description = "Whether to manage S3 Bucket Ownership Controls on this bucket."
   type        = bool
-  default     = false
+  default     = true
 }
 
 variable "object_ownership" {

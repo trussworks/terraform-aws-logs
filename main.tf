@@ -148,6 +148,15 @@ locals {
   redshift_principal = "arn:${data.aws_partition.current.partition}:iam::${data.aws_redshift_service_account.main.id}:user/logs"
 
   redshift_resource = "${local.bucket_arn}/${var.redshift_logs_prefix}/*"
+
+  #
+  # S3 locals
+  #
+
+  # doesn't support logging to multiple accounts
+  s3_effect = var.default_allow || var.allow_s3 ? "Allow" : "Deny"
+
+  s3_resources = "${local.bucket_arn}/${var.s3_logs_prefix}/*"
 }
 
 #
@@ -342,6 +351,21 @@ data "aws_iam_policy_document" "main" {
     }
     actions   = ["s3:GetBucketAcl"]
     resources = [local.bucket_arn]
+  }
+
+  #
+  # S3 server access log bucket policies
+  #
+
+  statement {
+    sid    = "s3-logs-put-object"
+    effect = local.s3_effect
+    principals {
+      type        = "Service"
+      identifiers = ["logging.s3.amazonaws.com"]
+    }
+    actions   = ["s3:PutObject"]
+    resources = local.s3_resources
   }
 
   #
