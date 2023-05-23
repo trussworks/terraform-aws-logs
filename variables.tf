@@ -17,7 +17,13 @@ variable "noncurrent_version_retention" {
 
 variable "s3_bucket_acl" {
   description = "Set bucket ACL per [AWS S3 Canned ACL](<https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl>) list."
-  default     = "log-delivery-write"
+  default     = null
+  type        = string
+}
+
+variable "s3_logs_prefix" {
+  description = "S3 prefix for S3 access logs."
+  default     = "s3"
   type        = string
 }
 
@@ -102,6 +108,12 @@ variable "allow_elb" {
 
 variable "allow_redshift" {
   description = "Allow Redshift service to log to bucket."
+  default     = false
+  type        = bool
+}
+
+variable "allow_s3" {
+  description = "Allow S3 service to log to bucket."
   default     = false
   type        = bool
 }
@@ -198,4 +210,16 @@ variable "enable_mfa_delete" {
   description = "A bool that requires MFA to delete the log bucket."
   default     = false
   type        = bool
+}
+
+variable "control_object_ownership" {
+  description = "Whether to manage S3 Bucket Ownership Controls on this bucket."
+  type        = bool
+  default     = true
+}
+
+variable "object_ownership" {
+  description = "Object ownership. Valid values: BucketOwnerEnforced, BucketOwnerPreferred or ObjectWriter."
+  type        = string
+  default     = "BucketOwnerEnforced"
 }

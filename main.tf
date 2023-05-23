@@ -148,6 +148,15 @@ locals {
   redshift_principal = "arn:${data.aws_partition.current.partition}:iam::${data.aws_redshift_service_account.main.id}:user/logs"
 
   redshift_resource = "${local.bucket_arn}/${var.redshift_logs_prefix}/*"
+
+  #
+  # S3 locals
+  #
+
+  # doesn't support logging to multiple accounts
+  s3_effect = var.default_allow || var.allow_s3 ? "Allow" : "Deny"
+
+  s3_resources = ["${local.bucket_arn}/${var.s3_logs_prefix}/*"]
 }
 
 #
@@ -345,6 +354,21 @@ data "aws_iam_policy_document" "main" {
   }
 
   #
+  # S3 server access log bucket policies
+  #
+
+  statement {
+    sid    = "s3-logs-put-object"
+    effect = local.s3_effect
+    principals {
+      type        = "Service"
+      identifiers = ["logging.s3.amazonaws.com"]
+    }
+    actions   = ["s3:PutObject"]
+    resources = local.s3_resources
+  }
+
+  #
   # Enforce TLS requests only
   #
 
@@ -392,8 +416,26 @@ resource "aws_s3_bucket_policy" "aws_logs" {
 }
 
 resource "aws_s3_bucket_acl" "aws_logs" {
+  count      = var.s3_bucket_acl != null ? 1 : 0
+  bucket     = aws_s3_bucket.aws_logs.id
+  acl        = var.s3_bucket_acl
+  depends_on = [aws_s3_bucket_ownership_controls.aws_logs]
+}
+
+resource "aws_s3_bucket_ownership_controls" "aws_logs" {
+  count = var.control_object_ownership ? 1 : 0
+
   bucket = aws_s3_bucket.aws_logs.id
-  acl    = var.s3_bucket_acl
+
+  rule {
+    object_ownership = var.object_ownership
+  }
+
+  depends_on = [
+    aws_s3_bucket_policy.aws_logs,
+    aws_s3_bucket_public_access_block.public_access_block,
+    aws_s3_bucket.aws_logs
+  ]
 }
 
 resource "aws_s3_bucket_lifecycle_configuration" "aws_logs" {

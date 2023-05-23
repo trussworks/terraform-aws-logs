@@ -106,6 +106,7 @@ No modules.
 | [aws_s3_bucket_acl.aws_logs](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_acl) | resource |
 | [aws_s3_bucket_lifecycle_configuration.aws_logs](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_lifecycle_configuration) | resource |
 | [aws_s3_bucket_logging.aws_logs](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_logging) | resource |
+| [aws_s3_bucket_ownership_controls.aws_logs](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_ownership_controls) | resource |
 | [aws_s3_bucket_policy.aws_logs](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_policy) | resource |
 | [aws_s3_bucket_public_access_block.public_access_block](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_public_access_block) | resource |
 | [aws_s3_bucket_server_side_encryption_configuration.aws_logs](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_server_side_encryption_configuration) | resource |
@@ -130,12 +131,14 @@ No modules.
 | allow\_elb | Allow ELB service to log to bucket. | `bool` | `false` | no |
 | allow\_nlb | Allow NLB service to log to bucket. | `bool` | `false` | no |
 | allow\_redshift | Allow Redshift service to log to bucket. | `bool` | `false` | no |
+| allow\_s3 | Allow S3 service to log to bucket. | `bool` | `false` | no |
 | cloudtrail\_accounts | List of accounts for CloudTrail logs.  By default limits to the current account. | `list(string)` | `[]` | no |
 | cloudtrail\_logs\_prefix | S3 prefix for CloudTrail logs. | `string` | `"cloudtrail"` | no |
 | cloudtrail\_org\_id | AWS Organization ID for CloudTrail. | `string` | `""` | no |
 | cloudwatch\_logs\_prefix | S3 prefix for CloudWatch log exports. | `string` | `"cloudwatch"` | no |
 | config\_accounts | List of accounts for Config logs.  By default limits to the current account. | `list(string)` | `[]` | no |
 | config\_logs\_prefix | S3 prefix for AWS Config logs. | `string` | `"config"` | no |
+| control\_object\_ownership | Whether to manage S3 Bucket Ownership Controls on this bucket. | `bool` | `true` | no |
 | create\_public\_access\_block | Whether to create a public\_access\_block restricting public access to the bucket. | `bool` | `true` | no |
 | default\_allow | Whether all services included in this module should be allowed to write to the bucket by default. Alternatively select individual services. It's recommended to use the default bucket ACL of log-delivery-write. | `bool` | `true` | no |
 | elb\_accounts | List of accounts for ELB logs.  By default limits to the current account. | `list(string)` | `[]` | no |
@@ -148,10 +151,12 @@ No modules.
 | nlb\_account | Account for NLB logs.  By default limits to the current account. | `string` | `""` | no |
 | nlb\_logs\_prefixes | S3 key prefixes for NLB logs. | `list(string)` | ```[ "nlb" ]``` | no |
 | noncurrent\_version\_retention | Number of days to retain non-current versions of objects if versioning is enabled. | `string` | `30` | no |
+| object\_ownership | Object ownership. Valid values: BucketOwnerEnforced, BucketOwnerPreferred or ObjectWriter. | `string` | `"BucketOwnerEnforced"` | no |
 | redshift\_logs\_prefix | S3 prefix for RedShift logs. | `string` | `"redshift"` | no |
-| s3\_bucket\_acl | Set bucket ACL per [AWS S3 Canned ACL](<https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl>) list. | `string` | `"log-delivery-write"` | no |
+| s3\_bucket\_acl | Set bucket ACL per [AWS S3 Canned ACL](<https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl>) list. | `string` | `null` | no |
 | s3\_bucket\_name | S3 bucket to store AWS logs in. | `string` | n/a | yes |
 | s3\_log\_bucket\_retention | Number of days to keep AWS logs around. | `string` | `90` | no |
+| s3\_logs\_prefix | S3 prefix for S3 access logs. | `string` | `"s3"` | no |
 | tags | A mapping of tags to assign to the logs bucket. Please note that tags with a conflicting key will not override the original tag. | `map(string)` | `{}` | no |
 | versioning\_status | A string that indicates the versioning status for the log bucket. | `string` | `"Disabled"` | no |
 
@@ -166,3 +171,66 @@ No modules.
 | redshift\_logs\_path | S3 path for RedShift logs. |
 | s3\_bucket\_policy | S3 bucket policy |
 <!-- END_TF_DOCS -->
+
+## Upgrade Paths
+
+### Upgrading from 14.x.x to 15.x.x
+
+Version 15.x.x updates the module to account for changes made by AWS in April
+2023 to the default security settings of new S3 buckets.
+
+Version 15.x.x of this module adds the following resource and variables. How to
+use the new variables will depend on your use case.
+
+New resource:
+
+- `aws_s3_bucket_ownership_controls.aws_logs`
+
+New variables:
+
+- `allow_s3`
+- `control_object_ownership`
+- `object_ownership`
+- `s3_bucket_acl`
+- `s3_logs_prefix`
+
+Steps for updating existing buckets managed by this module:
+
+- **Option 1: Disable ACLs.** This module's default values for
+  `control_object_ownership`, `object_ownership`, and `s3_bucket_acl` follow the
+  new AWS recommended best practice. For a new S3 bucket, using those settings
+  will disable S3 access control lists for the bucket and set object ownership
+  to `BucketOwnerEnforced`. For an existing bucket that is used to store s3
+  server access logs, the bucket ACL permissions for the S3 log delivery group
+  must be migrated to the bucket policy. The changes must be applied
+  in multiple steps.
+
+Step 1: Update the log bucket policy to grant `s3:PutObject` permission to the
+logging service principal (`logging.s3.amazonaws.com`).
+
+  Example:
+
+```text
+  statement {
+    sid    = "s3-logs-put-object"
+    effect = "Allow"
+    principals {
+      type        = "Service"
+      identifiers = ["logging.s3.amazonaws.com"]
+    }
+    actions   = ["s3:PutObject"]
+    resources = ["BUCKET_ARN_PLACEHOLDER/LOGGING_PREFIX_PLACEHOLDER/*"]
+  }
+```
+
+Step 2: Change `s3_bucket_acl` to `private`.
+
+Step 3: Change `object_ownership` to `BucketOwnerEnforced`.
+
+- **Option 2: Continue using ACLs.** To continue using ACLs, set `s3_bucket_acl`
+  to `"log-delivery-write"` and set `object_ownership` to `ObjectWriter` or
+  `BucketOwnerPreferred`.
+
+See [Controlling ownership of objects and disabling ACLs for your
+bucket](https://docs.aws.amazon.com/AmazonS3/latest/userguide/about-object-ownership.html)
+for further details and migration considerations.
