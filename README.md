@@ -196,12 +196,17 @@ New variables:
 
 Steps for updating existing buckets managed by this module:
 
-- **Option 1: Disable ACLs.** In order to update an existing log bucket to use
-  the new AWS recommended defaults, use this module's default values for the new
-  input variables. Using those settings will disable S3 access control lists for
-  the bucket and set object ownership to `BucketOwnerEnforced`. Update the log
-  bucket policy to grant `s3:PutObject` permission to the logging service
-  principal (`logging.s3.amazonaws.com`).
+- **Option 1: Disable ACLs.** This module's default values for
+  `control_object_ownership`, `object_ownership`, and `s3_bucket_acl` follow the
+  new AWS recommended best practice. For a new S3 bucket, using those settings
+  will disable S3 access control lists for the bucket and set object ownership
+  to `BucketOwnerEnforced`. For an existing bucket that is used to store s3
+  server access logs, the bucket ACL permissions for the S3 log delivery group
+  must be migrated to the bucket policy. The changes must be applied
+  in multiple steps.
+
+Step 1: Update the log bucket policy to grant `s3:PutObject` permission to the
+logging service principal (`logging.s3.amazonaws.com`).
 
   Example:
 
@@ -217,6 +222,10 @@ Steps for updating existing buckets managed by this module:
     resources = ["BUCKET_ARN_PLACEHOLDER/LOGGING_PREFIX_PLACEHOLDER/*"]
   }
 ```
+
+Step 2: Change `s3_bucket_acl` to `private`.
+
+Step 3: Change `object_ownership` to `BucketOwnerEnforced`.
 
 - **Option 2: Continue using ACLs.** To continue using ACLs, set `s3_bucket_acl`
   to `"log-delivery-write"` and set `object_ownership` to `ObjectWriter` or
