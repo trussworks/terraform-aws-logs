@@ -416,6 +416,7 @@ resource "aws_s3_bucket_policy" "aws_logs" {
 }
 
 resource "aws_s3_bucket_acl" "aws_logs" {
+  count      = var.s3_bucket_acl != null ? 1 : 0
   bucket     = aws_s3_bucket.aws_logs.id
   acl        = var.s3_bucket_acl
   depends_on = [aws_s3_bucket_ownership_controls.aws_logs]

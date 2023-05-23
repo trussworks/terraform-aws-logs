@@ -153,7 +153,7 @@ No modules.
 | noncurrent\_version\_retention | Number of days to retain non-current versions of objects if versioning is enabled. | `string` | `30` | no |
 | object\_ownership | Object ownership. Valid values: BucketOwnerEnforced, BucketOwnerPreferred or ObjectWriter. | `string` | `"BucketOwnerEnforced"` | no |
 | redshift\_logs\_prefix | S3 prefix for RedShift logs. | `string` | `"redshift"` | no |
-| s3\_bucket\_acl | Set bucket ACL per [AWS S3 Canned ACL](<https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl>) list. | `string` | `"log-delivery-write"` | no |
+| s3\_bucket\_acl | Set bucket ACL per [AWS S3 Canned ACL](<https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl>) list. | `string` | `null` | no |
 | s3\_bucket\_name | S3 bucket to store AWS logs in. | `string` | n/a | yes |
 | s3\_log\_bucket\_retention | Number of days to keep AWS logs around. | `string` | `90` | no |
 | s3\_logs\_prefix | S3 prefix for S3 access logs. | `string` | `"s3"` | no |
