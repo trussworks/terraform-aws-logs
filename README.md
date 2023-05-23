@@ -171,3 +171,57 @@ No modules.
 | redshift\_logs\_path | S3 path for RedShift logs. |
 | s3\_bucket\_policy | S3 bucket policy |
 <!-- END_TF_DOCS -->
+
+## Upgrade Paths
+
+### Upgrading from 14.x.x to 15.x.x
+
+Version 15.x.x updates the module to account for changes made by AWS in April
+2023 to the default security settings of new S3 buckets.
+
+Version 15.x.x of this module adds the following resource and variables. How to
+use the new variables will depend on your use case.
+
+New resource:
+
+- `aws_s3_bucket_ownership_controls.aws_logs`
+
+New variables:
+
+- `allow_s3`
+- `control_object_ownership`
+- `object_ownership`
+- `s3_bucket_acl`
+- `s3_logs_prefix`
+
+Steps for updating existing buckets managed by this module:
+
+- **Option 1: Disable ACLs.** In order to update an existing log bucket to use
+  the new AWS recommended defaults, use this module's default values for the new
+  input variables. Using those settings will disable S3 access control lists for
+  the bucket and set object ownership to `BucketOwnerEnforced`. Update the log
+  bucket policy to grant `s3:PutObject` permission to the logging service
+  principal (`logging.s3.amazonaws.com`).
+
+  Example:
+
+```text
+  statement {
+    sid    = "s3-logs-put-object"
+    effect = "Allow"
+    principals {
+      type        = "Service"
+      identifiers = ["logging.s3.amazonaws.com"]
+    }
+    actions   = ["s3:PutObject"]
+    resources = ["BUCKET_ARN_PLACEHOLDER/LOGGING_PREFIX_PLACEHOLDER/*"]
+  }
+```
+
+- **Option 2: Continue using ACLs.** To continue using ACLs, set `s3_bucket_acl`
+  to `"log-delivery-write"` and set `object_ownership` to `ObjectWriter` or
+  `BucketOwnerPreferred`.
+
+See [Controlling ownership of objects and disabling ACLs for your
+bucket](https://docs.aws.amazon.com/AmazonS3/latest/userguide/about-object-ownership.html)
+for further details and migration considerations.
