@@ -85,7 +85,7 @@ module "aws_logs" {
 
 | Name | Version |
 |------|---------|
-| terraform | >= 0.13.0 |
+| terraform | >= 1.0 |
 | aws | >= 3.75.0 |
 
 ## Providers
