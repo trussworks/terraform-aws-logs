@@ -3,11 +3,6 @@
 data "aws_elb_service_account" "main" {
 }
 
-# Get the account id of the RedShift service account in a given region for the
-# purpose of allowing RedShift to store audit data in S3.
-data "aws_redshift_service_account" "main" {
-}
-
 # The AWS account id
 data "aws_caller_identity" "current" {
 }
@@ -143,9 +138,6 @@ locals {
   # doesn't support logging to multiple accounts
   # doesn't support logging to multiple prefixes
   redshift_effect = var.default_allow || var.allow_redshift ? "Allow" : "Deny"
-
-  # redshift logs user in our region
-  redshift_principal = "arn:${data.aws_partition.current.partition}:iam::${data.aws_redshift_service_account.main.id}:user/logs"
 
   redshift_resource = "${local.bucket_arn}/${var.redshift_logs_prefix}/*"
 
@@ -335,8 +327,8 @@ data "aws_iam_policy_document" "main" {
     sid    = "redshift-logs-put-object"
     effect = local.redshift_effect
     principals {
-      type        = "AWS"
-      identifiers = [local.redshift_principal]
+      type        = "Service"
+      identifiers = ["redshift.amazonaws.com"]
     }
     actions   = ["s3:PutObject"]
     resources = [local.redshift_resource]
@@ -346,8 +338,8 @@ data "aws_iam_policy_document" "main" {
     sid    = "redshift-logs-get-bucket-acl"
     effect = local.redshift_effect
     principals {
-      type        = "AWS"
-      identifiers = [local.redshift_principal]
+      type        = "Service"
+      identifiers = ["redshift.amazonaws.com"]
     }
     actions   = ["s3:GetBucketAcl"]
     resources = [local.bucket_arn]
