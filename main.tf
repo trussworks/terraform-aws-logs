@@ -389,11 +389,7 @@ resource "aws_s3_bucket" "aws_logs" {
   bucket        = var.s3_bucket_name
   force_destroy = var.force_destroy
 
-  tags = merge(
-    var.tags, {
-      Name = var.s3_bucket_name
-    }
-  )
+  tags = var.tags
 }
 
 resource "aws_s3_bucket_policy" "aws_logs" {
