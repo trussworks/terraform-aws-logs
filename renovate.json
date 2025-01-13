@@ -1,11 +1,22 @@
 {
   "extends": [
-    "config:base"
+    "config:base",
+    "helpers:pinGitHubActionDigests"
   ],
   "labels": [
     "dependencies"
   ],
   "packageRules": [
+    {
+      "automerge": true,
+      "description": "Automerge all updates except major versions",
+      "matchUpdateTypes": [
+        "patch",
+        "pin",
+        "digest",
+        "minor"
+      ]
+    },
     {
       "description": "Tag the waddlers Github Team for major updates",
       "matchUpdateTypes": [
@@ -19,14 +30,18 @@
       "automerge": true,
       "description": "Group minor and patch updates into a single PR",
       "groupName": "dependencies",
+      "managers": [
+        "terraform",
+        "pre-commit",
+        "github-actions"
+      ],
       "matchUpdateTypes": [
         "minor",
-        "patch",
-        "pin",
-        "digest"
+        "patch"
       ]
     }
   ],
+  "prConcurrentLimit": 2,
   "schedule": [
     "every weekend"
   ],
