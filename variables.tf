@@ -126,8 +126,8 @@ variable "elb_accounts" {
 
 variable "elb_logs_prefix" {
   description = "S3 prefix for ELB logs."
-  default     = ["elb"]
-  type        = list(string)
+  default     = "elb"
+  type        = string
 }
 
 variable "enable_mfa_delete" {
