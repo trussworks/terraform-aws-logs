@@ -395,12 +395,6 @@ resource "aws_s3_bucket" "aws_logs" {
 resource "aws_s3_bucket_policy" "aws_logs" {
   bucket = aws_s3_bucket.aws_logs.id
   policy = data.aws_iam_policy_document.main.json
-  lifecycle {
-    ignore_changes = [
-      # Allows a user to append a custom policy if needed
-      policy
-    ]
-  }
 }
 
 resource "aws_s3_bucket_acl" "aws_logs" {
