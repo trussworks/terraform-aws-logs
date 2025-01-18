@@ -24,7 +24,10 @@ module "aws_logs_logs" {
 
   s3_bucket_name = local.log_bucket_name
 
-  default_allow = false
+  default_allow  = false
+  allow_s3       = true
+  s3_logs_prefix = [var.s3_logs_prefix]
+
 
   force_destroy = var.force_destroy
 }
