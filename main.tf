@@ -1,6 +1,15 @@
+locals {
+  # The bucket policy that you'll use depends on the AWS Region of the bucket. Each expandable section in
+  # https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/enable-access-logs.html#attach-bucket-policy
+  # contains a bucket policy and information about when to use that policy.
+  is_region_after_082022 = contains(
+  ["ap-south-2", "ap-southeast-4", "ap-southeast-5", "ap-southeast-7", "ca-west-1", "eu-south-2", "eu-central-2", "il-central-1", "me-central-1"], data.aws_region.current.name)
+}
+
 # Get the account id of the AWS ALB and ELB service account in a given region for the
 # purpose of whitelisting in a S3 bucket policy.
 data "aws_elb_service_account" "main" {
+  count = local.is_region_after_082022 == true ? 0 : 1
 }
 
 # The AWS account id
@@ -266,8 +275,8 @@ data "aws_iam_policy_document" "main" {
     sid    = "elb-logs-put-object"
     effect = local.elb_effect
     principals {
-      type        = "AWS"
-      identifiers = [data.aws_elb_service_account.main.arn]
+      type        = local.is_region_after_082022 == true ? "Service" : "AWS"
+      identifiers = local.is_region_after_082022 == true ? ["logdelivery.elasticloadbalancing.amazonaws.com"] : [data.aws_elb_service_account.main.0.arn]
     }
     actions   = ["s3:PutObject"]
     resources = local.elb_resources
@@ -281,8 +290,8 @@ data "aws_iam_policy_document" "main" {
     sid    = "alb-logs-put-object"
     effect = local.alb_effect
     principals {
-      type        = "AWS"
-      identifiers = [data.aws_elb_service_account.main.arn]
+      type        = local.is_region_after_082022 == true ? "Service" : "AWS"
+      identifiers = local.is_region_after_082022 == true ? ["logdelivery.elasticloadbalancing.amazonaws.com"] : [data.aws_elb_service_account.main.0.arn]
     }
     actions   = ["s3:PutObject"]
     resources = local.alb_resources
