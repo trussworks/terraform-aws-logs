@@ -59,7 +59,7 @@ variable "allow_s3" {
 }
 
 variable "bucket_key_enabled" {
-  description = "Whether or not to use Amazon S3 Bucket Keys for SSE-KMS."
+  description = "Whether or not to use Amazon S3 Bucket Keys when kms_master_key_id is set for SSE-KMS."
   type        = bool
   default     = false
 }
@@ -149,7 +149,7 @@ variable "force_destroy" {
 }
 
 variable "kms_master_key_id" {
-  description = "The AWS KMS master key ID used for the SSE-KMS encryption. If blank, bucket encryption configuration defaults to AES256."
+  description = "The AWS KMS key ID used for SSE-KMS bucket encryption. If blank, the module does not manage bucket encryption and relies on S3 automatic SSE-S3 encryption."
   type        = string
   default     = ""
 }

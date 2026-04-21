@@ -34,6 +34,10 @@ module "aws_logs" {
 }
 ```
 
+## Encryption behavior
+
+Buckets created by this module rely on Amazon S3 automatic SSE-S3 encryption by default. Set `kms_master_key_id` to have the module manage an explicit SSE-KMS bucket encryption configuration. `bucket_key_enabled` only applies when `kms_master_key_id` is set.
+
 ## Usage for a single log bucket storing logs from multiple specified services (ALB and ELB in this case)
 
 ```hcl
@@ -92,7 +96,7 @@ module "aws_logs" {
 
 | Name | Version |
 |------|---------|
-| aws | >= 3.75.0 |
+| aws | >= 6.0.0 |
 
 ## Resources
 
@@ -128,7 +132,7 @@ module "aws_logs" {
 | allow_nlb | Allow NLB service to log to bucket. | `bool` | `false` | no |
 | allow_redshift | Allow Redshift service to log to bucket. | `bool` | `false` | no |
 | allow_s3 | Allow S3 service to log to bucket. | `bool` | `false` | no |
-| bucket_key_enabled | Whether or not to use Amazon S3 Bucket Keys for SSE-KMS. | `bool` | `false` | no |
+| bucket_key_enabled | Whether or not to use Amazon S3 Bucket Keys when kms_master_key_id is set for SSE-KMS. | `bool` | `false` | no |
 | cloudtrail_accounts | List of accounts for CloudTrail logs.  By default limits to the current account. | `list(string)` | `[]` | no |
 | cloudtrail_logs_prefix | S3 prefix for CloudTrail logs. | `string` | `"cloudtrail"` | no |
 | cloudtrail_org_id | AWS Organization ID for CloudTrail. | `string` | `""` | no |
@@ -143,7 +147,7 @@ module "aws_logs" {
 | enable_mfa_delete | A bool that requires MFA to delete the log bucket. | `bool` | `false` | no |
 | enable_s3_log_bucket_lifecycle_rule | Whether the lifecycle rule for the log bucket is enabled. | `bool` | `true` | no |
 | force_destroy | A bool that indicates all objects (including any locked objects) should be deleted from the bucket so the bucket can be destroyed without error. | `bool` | `false` | no |
-| kms_master_key_id | The AWS KMS master key ID used for the SSE-KMS encryption. If blank, bucket encryption configuration defaults to AES256. | `string` | `""` | no |
+| kms_master_key_id | The AWS KMS key ID used for SSE-KMS bucket encryption. If blank, the module does not manage bucket encryption and relies on S3 automatic SSE-S3 encryption. | `string` | `""` | no |
 | logging_target_bucket | S3 Bucket to send S3 logs to. Disables logging if omitted. | `string` | `""` | no |
 | logging_target_prefix | Prefix for logs going into the log_s3_bucket. | `string` | `"s3/"` | no |
 | nlb_account | Account for NLB logs.  By default limits to the current account. | `string` | `""` | no |
