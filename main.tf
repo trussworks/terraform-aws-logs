@@ -3,7 +3,7 @@ locals {
   # https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/enable-access-logs.html#attach-bucket-policy
   # contains a bucket policy and information about when to use that policy.
   is_region_after_082022 = contains(
-  ["ap-south-2", "ap-southeast-4", "ap-southeast-5", "ap-southeast-7", "ca-west-1", "eu-south-2", "eu-central-2", "il-central-1", "me-central-1"], data.aws_region.current.region)
+  ["ap-east-2", "ap-south-2", "ap-southeast-4", "ap-southeast-5", "ap-southeast-6", "ap-southeast-7", "ca-west-1", "eu-south-2", "eu-central-2", "il-central-1", "me-central-1", "mx-central-1"], data.aws_region.current.region)
 }
 
 # Get the account id of the AWS ALB and ELB service account in a given region for the
